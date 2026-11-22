@@ -613,7 +613,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <button
                   onClick={onOpenOwnerPanel}
                   title="Abrir Panel Privado de Owner"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-black text-xs font-black transition-all cursor-pointer shadow-lg active:scale-95"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 hover:brightness-110 text-white text-xs font-black transition-all cursor-pointer shadow-lg active:scale-95"
                 >
                   <Crown className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Owner</span>
@@ -875,14 +875,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <button
                   type="button"
                   onClick={onOpenOwnerPanel}
-                  className="w-full rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-fuchsia-600/15 hover:from-amber-500/30 hover:to-fuchsia-600/25 border border-amber-400/45 p-3.5 flex items-center justify-between gap-3 text-left cursor-pointer shadow-lg transition-all"
+                  className="w-full rounded-2xl bg-gradient-to-r from-pink-500/20 via-rose-500/15 to-fuchsia-600/20 hover:from-pink-500/30 hover:to-fuchsia-600/30 border border-pink-400/45 p-3.5 flex items-center justify-between gap-3 text-left cursor-pointer shadow-lg transition-all"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-black flex items-center justify-center shrink-0 shadow">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 text-white flex items-center justify-center shrink-0 shadow">
                       <Crown className="w-5 h-5 stroke-[2.4]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-black text-amber-300 truncate">
+                      <p className="text-sm font-black text-pink-200 truncate">
                         Panel Privado de Owner
                       </p>
                       <p className="text-xs text-zinc-300 truncate">
@@ -890,7 +890,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-amber-300 shrink-0" />
+                  <ChevronRight className="w-5 h-5 text-pink-300 shrink-0" />
                 </button>
               )}
               {showTuneaCard && (
