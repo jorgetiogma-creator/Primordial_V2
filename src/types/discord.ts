@@ -1,0 +1,580 @@
+export type PresenceStatus = 'online' | 'idle' | 'dnd' | 'offline';
+export type ThemeMode = 'onyx' | 'dark' | 'vice-city' | 'light';
+export type MainScreen =
+  | 'inicio'
+  | 'notificaciones'
+  | 'tu'
+  | 'misiones'
+  | 'tienda'
+  | 'nitro'
+  | 'ajustes'
+  | 'amigos'
+  | 'servidores'
+  | 'insignias'
+  | 'mejoras'
+  | 'servidor-ajustes';
+
+export type ServerSettingsSection =
+  | 'menu'
+  | 'vista-general'
+  | 'canales'
+  | 'integraciones'
+  | 'etiqueta'
+  | 'plantilla'
+  | 'emojis'
+  | 'stickers'
+  | 'miembros'
+  | 'roles'
+  | 'invitaciones'
+  | 'moderacion'
+  | 'automod'
+  | 'auditoria'
+  | 'baneos'
+  | 'seguridad'
+  | 'comunidad'
+  | 'info';
+
+export type ServerChatTheme =
+  | 'black'
+  | 'onyx'
+  | 'crimson'
+  | 'emerald'
+  | 'midnight'
+  | 'cyber'
+  | 'custom-photo';
+
+export type ServerChatStyle = 'classic' | 'bubbles' | 'compact';
+
+export interface ServerRole {
+  id: string;
+  name: string;
+  color: string;
+  gradientColors?: [string, string];
+  hoist?: boolean;
+  permissions: string[];
+}
+
+export interface ServerEmoji {
+  id: string;
+  name: string;
+  imageUrl?: string;
+  symbol?: string;
+  uploadedBy: string;
+}
+
+export interface ServerSticker {
+  id: string;
+  name: string;
+  imageUrl?: string;
+  emoji: string;
+}
+
+export type AvatarKey =
+  | 'madara'
+  | 'snuf'
+  | 'bumper'
+  | 'alex'
+  | 'discrofy'
+  | 'dev'
+  | 'joawasa'
+  | 'dragon'
+  | 'welcomer'
+  | 'yourbot'
+  | 'alirito'
+  | 'xjenx'
+  | 'jorge'
+  | 'carioca'
+  | 'phibi'
+  | 'locke'
+  | 'coffee';
+
+export type DecorationId =
+  | 'none'
+  | 'miyabi'
+  | 'ellen'
+  | 'burnice'
+  | 'alex'
+  | 'deadpool'
+  | 'wolverine'
+  | 'dbd'
+  | 'lofi'
+  | 'plantas'
+  | 'croma'
+  | 'gato'
+  | 'almas'
+  | 'observador'
+  | 'ofrenda'
+  | 'orejas'
+  | 'enfado'
+  | 'llama'
+  | 'pato'
+  | 'cerbero'
+  | 'pesadilla'
+  | 'gojo'
+  | 'sukuna'
+  | 'yuji'
+  | 'espectro'
+  | 'grabado'
+  | 'lobo';
+
+export type NameplateId =
+  | 'none'
+  | 'sakura'
+  | 'vice-city'
+  | 'miyabi'
+  | 'deadpool'
+  | 'wolverine'
+  | 'dbd'
+  | 'observador'
+  | 'rama'
+  | 'condenacion'
+  | 'vader'
+  | 'cerbero'
+  | 'pesadilla'
+  | 'gojo'
+  | 'sukuna'
+  | 'yuji'
+  | 'almas'
+  | 'lobo';
+
+export type BadgeId =
+  | 'hypesquad'
+  | 'misiones'
+  | 'nitro'
+  | 'mejora'
+  | 'antiguedad'
+  | 'orbs'
+  | 'regalos'
+  | 'transmision'
+  | 'juegos';
+
+export interface BadgeTier {
+  id: string;
+  name: string;
+  requirementLabel: string;
+  threshold: number;
+  color: string;
+  accent?: string;
+}
+
+export interface BadgeDefinition {
+  id: BadgeId;
+  title: string;
+  shortTitle: string;
+  description: string;
+  ctaLabel?: string;
+  hasNotificationDot?: boolean;
+  tiers: BadgeTier[];
+}
+
+export type DisplayNameStyle = 'default' | 'gta' | 'neon' | 'retro';
+export type ProfileEffectId =
+  | 'none'
+  | 'sparks'
+  | 'cyber'
+  | 'crimson'
+  | 'miyabi'
+  | 'ellen'
+  | 'burnice'
+  | 'deadpool'
+  | 'dbd'
+  | 'pesadilla'
+  | 'cerbero'
+  | 'jugar'
+  | 'gojo'
+  | 'grabado'
+  | 'sukuna'
+  | 'lobo'
+  | 'yuji';
+export type ProfileFrameId = 'none' | 'obsidian' | 'crimson' | 'neon-blue' | 'gold' | 'glitch';
+
+export interface PerServerProfile {
+  nickname?: string;
+  pronouns?: string;
+  bio?: string;
+  bannerColor?: string;
+  bannerImage?: string;
+}
+
+export interface UserProfile {
+  id: string;
+  displayName: string;
+  username: string;
+  email?: string;
+  phone?: string;
+  pronouns?: string;
+  displayNameStyle?: DisplayNameStyle;
+  status: PresenceStatus;
+  customStatus: string;
+  bio: string;
+  bannerColor: string;
+  bannerImage?: string;
+  avatar: AvatarKey;
+  customAvatarUrl?: string;
+  decoration: DecorationId;
+  profileEffect?: ProfileEffectId;
+  profileFrame?: ProfileFrameId;
+  nameplate: NameplateId;
+  orbs: number;
+  memberSince: string;
+  note: string;
+  nitroTier: 'none' | 'basic' | 'nitro';
+  serverTag?: string;
+  unlockedBadgeIds: BadgeId[];
+  equippedBadgeIds: BadgeId[];
+  boostsGiven: number;
+  boostStreakMonths: number;
+  giftsSent: number;
+  streamHours: number;
+  gamesPlayedCount: number;
+  accountYears: number;
+  perServerProfiles?: Record<string, PerServerProfile>;
+}
+
+export interface StoredAccount {
+  id: string;
+  contact: string;
+  password: string;
+  twoFactorEnabled?: boolean;
+  backupCodes?: string[];
+  user: UserProfile;
+  ownedBundleIds: string[];
+  wishlistIds: string[];
+}
+
+export interface PublicUserProfile {
+  id: string;
+  displayName: string;
+  username: string;
+  pronouns?: string;
+  avatar: AvatarKey;
+  status: PresenceStatus;
+  customStatus?: string;
+  bio: string;
+  bannerColor: string;
+  bannerImage?: string;
+  decoration?: DecorationId;
+  profileEffect?: ProfileEffectId;
+  profileFrame?: ProfileFrameId;
+  nameplate?: NameplateId;
+  serverTag?: string;
+  nitroTier?: 'none' | 'basic' | 'nitro';
+  badgeIds?: BadgeId[];
+  memberSince: string;
+  isBot?: boolean;
+  mutualServers?: string[];
+}
+
+export interface FriendActivity {
+  id: string;
+  userId: string;
+  displayName: string;
+  avatar: AvatarKey;
+  status: PresenceStatus;
+  gameTitle?: string;
+  gameBannerVariant?: 'aldea' | 'carioca' | 'valorant';
+  elapsed?: string;
+}
+
+export interface ChatReaction {
+  emoji: string;
+  count: number;
+  reacted: boolean;
+}
+
+export interface ChatEmbed {
+  type: 'invite' | 'link' | 'quest';
+  title: string;
+  subtitle: string;
+  serverName?: string;
+  onlineCount?: number;
+  memberCount?: number;
+  url?: string;
+  accentColor?: string;
+}
+
+export interface ChatPollOption {
+  id: string;
+  text: string;
+  votes: string[];
+}
+
+export interface ChatPoll {
+  question: string;
+  options: ChatPollOption[];
+  closed?: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar: AvatarKey;
+  authorIsBot?: boolean;
+  authorTag?: string;
+  timestamp: string;
+  content: string;
+  edited?: boolean;
+  editedAt?: string;
+  pinned?: boolean;
+  replyTo?: {
+    messageId?: string;
+    authorName: string;
+    content: string;
+  };
+  forwardedFrom?: {
+    authorName: string;
+    originLabel: string;
+    content: string;
+  };
+  embed?: ChatEmbed;
+  reactions: ChatReaction[];
+  attachmentLabel?: string;
+  imageUrl?: string;
+  sticker?: {
+    name: string;
+    emoji: string;
+    imageUrl?: string;
+  };
+  audioNote?: {
+    durationSec: number;
+    waveform: number[];
+  };
+  poll?: ChatPoll;
+}
+
+export interface DirectMessageThread {
+  id: string;
+  name: string;
+  username?: string;
+  avatar: AvatarKey;
+  secondaryAvatar?: AvatarKey;
+  isGroup?: boolean;
+  isBot?: boolean;
+  status: PresenceStatus;
+  lastMessagePreview: string;
+  lastTimestamp: string;
+  muted?: boolean;
+  unread?: boolean;
+  unreadCount?: number;
+  pinned?: boolean;
+  favorite?: boolean;
+  giftedBundleIds?: string[];
+  serverTag?: string;
+  decoration?: DecorationId;
+  nameplate?: NameplateId;
+  customIconUrl?: string;
+  groupEmoji?: string;
+  groupColor?: string;
+  isCallEnded?: boolean;
+  messages: ChatMessage[];
+}
+
+export interface Channel {
+  id: string;
+  name: string;
+  type: 'text' | 'voice' | 'announcement';
+  category: string;
+  isPrivate?: boolean;
+  unreadCount?: number;
+  topic?: string;
+  voiceParticipants?: {
+    id: string;
+    name: string;
+    avatar: AvatarKey;
+    muted?: boolean;
+    speaking?: boolean;
+  }[];
+  messages: ChatMessage[];
+}
+
+export interface Server {
+  id: string;
+  name: string;
+  shortCode: string;
+  badgeCount?: number;
+  hasUnread?: boolean;
+  hasEventBadge?: boolean;
+  iconStyle:
+    | 'jmt'
+    | 'hoyoverse'
+    | 'mtg'
+    | 'zn'
+    | 'tnu'
+    | 'b'
+    | 'imperio'
+    | 'fl'
+    | 'au'
+    | 'zevr'
+    | 'slbr'
+    | 'rebo'
+    | 'arrow'
+    | 'custom';
+  accentColor: string;
+  bannerColor: string;
+  bannerImage?: string;
+  customIconUrl?: string;
+  customEmoji?: string;
+  description?: string;
+  memberCount: number;
+  memberCountDisplay?: string;
+  onlineCount: number;
+  boostLevel: number;
+  boostCount: number;
+  unlockedPerkIds?: string[];
+  activeServerTag?: string;
+  categoriesOrder?: string[];
+  roles?: ServerRole[];
+  memberRoleIds?: Record<string, string[]>;
+  customEmojis?: ServerEmoji[];
+  stickers?: ServerSticker[];
+  chatTheme?: ServerChatTheme;
+  chatWallpaperUrl?: string;
+  chatMessageStyle?: ServerChatStyle;
+  chatAccentColor?: string;
+  showAllChannels?: boolean;
+  muted?: boolean;
+  communityEnabled?: boolean;
+  channels: Channel[];
+}
+
+export interface Quest {
+  id: string;
+  title: string;
+  sponsor: string;
+  endsAt: string;
+  rewardOrbs: number;
+  nitroMultiplier: string;
+  description: string;
+  ctaLabel: string;
+  secondaryLabel: string;
+  durationSeconds: number;
+  artVariant: 'dune' | 'badges' | 'exterminauts' | 'ad';
+  isLimitedTime?: boolean;
+  category?: string;
+  adBrand?: string;
+  adTagline?: string;
+  bannerGradient?: [string, string, string];
+  claimed: boolean;
+}
+
+export interface ShopBundleItem {
+  id: string;
+  name: string;
+  kind:
+    | 'Decoración de avatar'
+    | 'Placa de identificación'
+    | 'Efecto de perfil'
+    | 'Banner de perfil';
+  decorationId?: DecorationId;
+  nameplateId?: NameplateId;
+  profileEffectId?: ProfileEffectId;
+  bannerUrl?: string;
+}
+
+export interface ShopBundle {
+  id: string;
+  title: string;
+  shortTitle: string;
+  category:
+    | 'destacado'
+    | 'zzz'
+    | 'marvel'
+    | 'dbd'
+    | 'lofi'
+    | 'estilo'
+    | 'banners'
+    | 'anime'
+    | 'horror'
+    | 'fantasia';
+  priceOrbs: number;
+  priceUsd: string;
+  colorSwatches?: string[];
+  hasExtraSwatches?: boolean;
+  items: ShopBundleItem[];
+  artVariant:
+    | 'miyabi'
+    | 'ellen'
+    | 'burnice'
+    | 'deadpool'
+    | 'wolverine'
+    | 'dbd'
+    | 'plantas'
+    | 'croma'
+    | 'gato'
+    | 'almas'
+    | 'observador'
+    | 'vice-city'
+    | 'dune'
+    | 'pesadilla'
+    | 'pato'
+    | 'rama'
+    | 'vader'
+    | 'condenacion'
+    | 'cerbero'
+    | 'llama'
+    | 'jugar'
+    | 'gojo'
+    | 'orejas'
+    | 'grabado'
+    | 'sukuna'
+    | 'espectro'
+    | 'lobo'
+    | 'yuji';
+}
+
+export interface NotificationItem {
+  id: string;
+  type: 'mention' | 'reply' | 'friend' | 'quest' | 'system';
+  title: string;
+  body: string;
+  timestamp: string;
+  unread: boolean;
+  avatar: AvatarKey;
+  serverName?: string;
+  targetDmId?: string;
+  targetServerId?: string;
+  targetChannelId?: string;
+}
+
+export interface VoiceSession {
+  active: boolean;
+  callNonce?: number;
+  channelName: string;
+  contextName: string;
+  muted: boolean;
+  deafened: boolean;
+  videoOn: boolean;
+  screenSharing: boolean;
+  connectedSeconds: number;
+  participants: {
+    id: string;
+    name: string;
+    avatar: AvatarKey;
+    speaking?: boolean;
+    muted?: boolean;
+  }[];
+}
+
+export type ServerTemplateId =
+  | 'friends'
+  | 'gaming'
+  | 'community'
+  | 'study'
+  | 'art'
+  | 'custom';
+
+export interface CreateServerPayload {
+  name: string;
+  templateId: ServerTemplateId;
+  audience: 'friends' | 'community';
+  accentColor: string;
+  customIconUrl?: string;
+  customEmoji?: string;
+  chatTheme: ServerChatTheme;
+  chatMessageStyle: ServerChatStyle;
+  includeBots: boolean;
+  includeStarterRoles: boolean;
+  includeVoiceChannels: boolean;
+}
+

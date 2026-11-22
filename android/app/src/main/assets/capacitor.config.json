@@ -1,0 +1,9 @@
+{
+	"appId": "com.midiscord.app",
+	"appName": "MiDiscord",
+	"webDir": "dist",
+	"backgroundColor": "#111214",
+	"android": {
+		"backgroundColor": "#111214"
+	}
+}
