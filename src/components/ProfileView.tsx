@@ -1213,17 +1213,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <span className="text-[14.5px] font-semibold text-[var(--dc-text-secondary)]">
                   Amigos
                 </span>
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    {(['dragon', 'snuf', 'alex', 'joawasa', 'carioca'] as const).map((av) => (
-                      <div
-                        key={av}
-                        className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-[var(--dc-bg-card)]"
-                      >
-                        <UserAvatar avatar={av} size="xs" showStatus={false} />
-                      </div>
-                    ))}
-                  </div>
+                <div className="flex items-center gap-2 text-xs text-[var(--dc-text-muted)]">
+                  <span>Ver usuarios</span>
                   <ChevronRight className="w-4 h-4 text-[var(--dc-text-muted)]" />
                 </div>
               </button>

@@ -18,8 +18,8 @@ import {
   WumpusScooter,
 } from './DiscordArt';
 
-export const NITRO_ORBS_COST = 1_000_000;
-export const NITRO_BASIC_ORBS_COST = 500_000;
+export const NITRO_ORBS_COST = 100_000;
+export const NITRO_BASIC_ORBS_COST = 50_000;
 
 interface NitroViewProps {
   user: UserProfile;
@@ -74,10 +74,10 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
           </p>
         </div>
 
-        {/* NITRO Card — 1.000.000 Orbs */}
+        {/* NITRO Card — 100.000 Orbs */}
         <div className="relative rounded-3xl bg-gradient-to-br from-[#8b3dff] via-[#b845c9] to-[#6d28d9] p-5 pt-7 border border-white/20 shadow-[0_20px_50px_-15px_rgba(168,85,247,0.55)]">
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-white text-[#111216] text-[11.5px] font-black tracking-wide shadow-lg whitespace-nowrap">
-            EL MEJOR PLAN · 1M ORBS
+            EL MEJOR PLAN · 100K ORBS
           </div>
 
           <div className="flex items-start justify-between gap-2">
@@ -88,7 +88,7 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
               <div className="inline-flex items-center gap-2 mt-2.5 px-3 py-1.5 rounded-2xl bg-black/30 border border-white/20 backdrop-blur-xs">
                 <OrbsCrystalIcon colored className="w-5 h-5 shrink-0" />
                 <span className="font-display font-black text-lg text-white tabular-nums">
-                  1.000.000 Orbs
+                  100.000 Orbs
                 </span>
               </div>
               <p className="text-[12.5px] text-white/85 mt-1.5">
@@ -141,13 +141,13 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
             ) : (
               <>
                 <OrbsCrystalIcon colored className="w-4.5 h-4.5" />
-                <span>Desbloquear por 1M Orbs</span>
+                <span>Desbloquear por 100K Orbs</span>
               </>
             )}
           </button>
         </div>
 
-        {/* NITRO BASIC Card — 500.000 Orbs */}
+        {/* NITRO BASIC Card — 50.000 Orbs */}
         <div className="mt-5 rounded-3xl bg-gradient-to-br from-[#2563eb] via-[#1d4ed8] to-[#0284c7] p-5 border border-white/15 shadow-[0_18px_45px_-15px_rgba(37,99,235,0.55)]">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1">
@@ -157,7 +157,7 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
               <div className="inline-flex items-center gap-2 mt-2.5 px-3 py-1.5 rounded-2xl bg-black/30 border border-white/20 backdrop-blur-xs">
                 <OrbsCrystalIcon colored className="w-4.5 h-4.5 shrink-0" />
                 <span className="font-display font-black text-base text-white tabular-nums">
-                  500.000 Orbs
+                  50.000 Orbs
                 </span>
               </div>
               <p className="text-[12.5px] text-white/85 mt-1.5">
@@ -198,7 +198,7 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
             ) : (
               <>
                 <OrbsCrystalIcon colored className="w-4.5 h-4.5" />
-                <span>Obtener Basic por 500K Orbs</span>
+                <span>Obtener Basic por 50K Orbs</span>
               </>
             )}
           </button>
@@ -279,7 +279,7 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
                     : 'bg-white/10 text-zinc-500 cursor-not-allowed'
                 }`}
               >
-                Confirmar ({confirmTier === 'nitro' ? '1M' : '500K'})
+                Confirmar ({confirmTier === 'nitro' ? '100K' : '50K'})
               </button>
             </div>
           </div>

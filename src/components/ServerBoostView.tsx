@@ -665,8 +665,8 @@ export const ServerBoostView: React.FC<ServerBoostViewProps> = ({
                 />
                 <div className="relative z-10 w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-fuchsia-600 p-0.5 shadow-[0_0_24px_rgba(244,114,182,0.55)] overflow-hidden">
                   <SafeImage
-                    src={GENERATED_ASSETS.snufAvatar}
-                    alt="Nelly Role Showcase"
+                    src={GENERATED_ASSETS.shopMiyabiArt}
+                    alt="Role Showcase"
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>

@@ -118,7 +118,7 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
 }) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [dmFilter, setDmFilter] = useState<'all' | 'unread' | 'groups' | 'bots'>('all');
+  const [dmFilter, setDmFilter] = useState<'all' | 'unread' | 'groups'>('all');
   const [openDmMenuId, setOpenDmMenuId] = useState<string | null>(null);
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -132,7 +132,6 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
       if (activeContext.type === 'favorites') return true;
       if (dmFilter === 'unread') return Boolean(d.unread || (d.unreadCount ?? 0) > 0);
       if (dmFilter === 'groups') return Boolean(d.isGroup);
-      if (dmFilter === 'bots') return Boolean(d.isBot);
       return true;
     });
     const q = searchQuery.trim().toLowerCase();
@@ -154,7 +153,6 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
 
   const unreadDmCount = dms.filter((d) => d.unread || (d.unreadCount ?? 0) > 0).length;
   const groupsDmCount = dms.filter((d) => Boolean(d.isGroup)).length;
-  const botsDmCount = dms.filter((d) => Boolean(d.isBot)).length;
 
   /* EXACT SCREENSHOT 8: Servidores screen inside the rail panel */
   if (activeContext.type === 'servidores') {
@@ -559,13 +557,15 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
                     )}
                     <span className="truncate">{cat}</span>
                   </button>
-                  <button
-                    onClick={() => onOpenServerSettings(server.id, 'canales')}
-                    title="Gestionar canales"
-                    className="p-0.5 rounded hover:bg-white/10 text-[var(--dc-text-muted)] hover:text-white cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
+                  {canManageServer(server, currentUser.id) && (
+                    <button
+                      onClick={() => onOpenServerSettings(server.id, 'canales')}
+                      title="Gestionar canales"
+                      className="p-0.5 rounded hover:bg-white/10 text-[var(--dc-text-muted)] hover:text-white cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
 
                 {!isCollapsed && (
@@ -648,8 +648,9 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
 
                   <button
                     onClick={() => {
+                      navigator.clipboard?.writeText(server.id).catch(() => undefined);
                       setShowServerSheet(false);
-                      onNotify(`Enlace copiado: https://discord.gg/${server.shortCode.toLowerCase()}`);
+                      onNotify(`ID de invitación copiado: ${server.id}`);
                     }}
                     className="flex flex-col items-center gap-1.5 cursor-pointer group"
                   >
@@ -691,11 +692,13 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
                     <div className="w-12 h-12 rounded-2xl bg-[#16171d] group-hover:bg-[#22242d] border border-white/10 flex items-center justify-center">
                       <Settings className="w-5 h-5 text-white" />
                     </div>
-                    <span className="text-[11.5px] font-medium text-zinc-300">Ajustes</span>
+                    <span className="text-[11.5px] font-medium text-zinc-300">
+                      {canManageServer(server, currentUser.id) ? 'Ajustes' : 'Información'}
+                    </span>
                   </button>
                 </div>
 
-                {/* Card 1: Marcar como leído / Explorar canales */}
+                {/* Card 1: Marcar como leído / Info o Explorar canales */}
                 <div className="rounded-2xl bg-[#131419] border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">
                   <button
                     onClick={() => {
@@ -709,73 +712,82 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
                   <button
                     onClick={() => {
                       setShowServerSheet(false);
-                      onOpenServerSettings(server.id, 'canales');
+                      onOpenServerSettings(
+                        server.id,
+                        canManageServer(server, currentUser.id) ? 'canales' : 'miembros'
+                      );
                     }}
                     className="w-full px-4 py-3.5 text-left text-[15px] font-medium text-white hover:bg-white/[0.04] cursor-pointer"
                   >
-                    Explorar canales
+                    {canManageServer(server, currentUser.id)
+                      ? 'Explorar y gestionar canales'
+                      : 'Ver miembros del servidor'}
                   </button>
                 </div>
 
-                {/* Card 2: Reanudar la configuración de tu servidor */}
-                <button
-                  onClick={() => {
-                    setShowServerSheet(false);
-                    onOpenServerSettings(server.id, 'vista-general');
-                  }}
-                  className="w-full rounded-2xl bg-[#131419] hover:bg-[#191a21] border border-white/[0.08] p-4 text-left space-y-2.5 cursor-pointer"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <p className="font-display font-bold text-[15px] text-white">
-                        Reanudar la configuración de tu servidor
-                      </p>
-                      <p className="text-xs text-zinc-400 mt-0.5">
-                        Paso 3 de 4: Personaliza banners, roles y diseños
-                      </p>
+                {canManageServer(server, currentUser.id) && (
+                  <>
+                    {/* Card 2: Reanudar la configuración de tu servidor */}
+                    <button
+                      onClick={() => {
+                        setShowServerSheet(false);
+                        onOpenServerSettings(server.id, 'vista-general');
+                      }}
+                      className="w-full rounded-2xl bg-[#131419] hover:bg-[#191a21] border border-white/[0.08] p-4 text-left space-y-2.5 cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <p className="font-display font-bold text-[15px] text-white">
+                            Reanudar la configuración de tu servidor
+                          </p>
+                          <p className="text-xs text-zinc-400 mt-0.5">
+                            Personaliza banners, roles y diseños
+                          </p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />
+                      </div>
+                      <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                        <div className="h-full w-3/4 rounded-full bg-[#5865F2]" />
+                      </div>
+                    </button>
+
+                    {/* Card 3: Crear canal / Crear categoría / Crear evento */}
+                    <div className="rounded-2xl bg-[#131419] border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">
+                      <button
+                        onClick={() => {
+                          setShowServerSheet(false);
+                          onOpenServerSettings(server.id, 'canales');
+                        }}
+                        className="w-full px-4 py-3.5 text-left text-[15px] font-medium text-white hover:bg-white/[0.04] flex items-center justify-between cursor-pointer"
+                      >
+                        <span>Crear canal</span>
+                        <Hash className="w-4 h-4 text-zinc-400" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowServerSheet(false);
+                          onOpenServerSettings(server.id, 'canales');
+                        }}
+                        className="w-full px-4 py-3.5 text-left text-[15px] font-medium text-white hover:bg-white/[0.04] flex items-center justify-between cursor-pointer"
+                      >
+                        <span>Crear categoría</span>
+                        <Plus className="w-4 h-4 text-zinc-400" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowServerSheet(false);
+                          onNotify(`Evento programado en ${server.name}`);
+                        }}
+                        className="w-full px-4 py-3.5 text-left text-[15px] font-medium text-white hover:bg-white/[0.04] flex items-center justify-between cursor-pointer"
+                      >
+                        <span>Crear evento</span>
+                        <CalendarPlus className="w-4 h-4 text-zinc-400" />
+                      </button>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />
-                  </div>
-                  <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-                    <div className="h-full w-3/4 rounded-full bg-[#5865F2]" />
-                  </div>
-                </button>
+                  </>
+                )}
 
-                {/* Card 3: Crear canal / Crear categoría / Crear evento */}
-                <div className="rounded-2xl bg-[#131419] border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">
-                  <button
-                    onClick={() => {
-                      setShowServerSheet(false);
-                      onOpenServerSettings(server.id, 'canales');
-                    }}
-                    className="w-full px-4 py-3.5 text-left text-[15px] font-medium text-white hover:bg-white/[0.04] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Crear canal</span>
-                    <Hash className="w-4 h-4 text-zinc-400" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowServerSheet(false);
-                      onOpenServerSettings(server.id, 'canales');
-                    }}
-                    className="w-full px-4 py-3.5 text-left text-[15px] font-medium text-white hover:bg-white/[0.04] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Crear categoría</span>
-                    <Plus className="w-4 h-4 text-zinc-400" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowServerSheet(false);
-                      onNotify('Evento programado en 🎉-beacon-events');
-                    }}
-                    className="w-full px-4 py-3.5 text-left text-[15px] font-medium text-white hover:bg-white/[0.04] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Crear evento</span>
-                    <CalendarPlus className="w-4 h-4 text-zinc-400" />
-                  </button>
-                </div>
-
-                {/* Card 4: Editar perfil por servidor / Mostrar todos los canales */}
+                {/* Card 4: Editar perfil por servidor */}
                 <div className="rounded-2xl bg-[#131419] border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden">
                   <button
                     onClick={() => {
@@ -786,17 +798,19 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
                   >
                     Editar perfil por servidor
                   </button>
-                  <label className="w-full px-4 py-3.5 flex items-center justify-between text-[15px] font-medium text-white cursor-pointer">
-                    <span>Mostrar todos los canales</span>
-                    <input
-                      type="checkbox"
-                      checked={server.showAllChannels ?? true}
-                      onChange={(e) =>
-                        onUpdateServer(server.id, { showAllChannels: e.target.checked })
-                      }
-                      className="w-5 h-5 accent-[#5865F2]"
-                    />
-                  </label>
+                  {canManageServer(server, currentUser.id) && (
+                    <label className="w-full px-4 py-3.5 flex items-center justify-between text-[15px] font-medium text-white cursor-pointer">
+                      <span>Mostrar todos los canales</span>
+                      <input
+                        type="checkbox"
+                        checked={server.showAllChannels ?? true}
+                        onChange={(e) =>
+                          onUpdateServer(server.id, { showAllChannels: e.target.checked })
+                        }
+                        className="w-5 h-5 accent-[#5865F2]"
+                      />
+                    </label>
+                  )}
                 </div>
               </motion.div>
             </motion.div>
@@ -880,7 +894,6 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
                 { id: 'all', label: 'Todos', count: dms.length },
                 { id: 'unread', label: 'No leídos', count: unreadDmCount },
                 { id: 'groups', label: 'Grupos', count: groupsDmCount },
-                { id: 'bots', label: 'Bots', count: botsDmCount },
               ] as const
             ).map((tab) => (
               <button

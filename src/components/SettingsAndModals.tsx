@@ -5,6 +5,7 @@ import {
   DirectMessageThread,
   NotificationItem,
   PublicUserProfile,
+  Server,
   ServerRole,
   ServerTemplateId,
   ThemeMode,
@@ -19,7 +20,6 @@ import {
   SafeImage,
   UserAvatar,
 } from './DiscordArt';
-import { DISCOVERABLE_COMMUNITIES, FRIEND_DIRECTORY } from '../data/discordData';
 import { BoostGemIcon } from './ServerBoostView';
 import { PWAInstallButton } from './PWAPrompts';
 
@@ -102,18 +102,13 @@ export const SettingsView: React.FC<{
 
   return (
     <div className="flex-1 flex flex-col h-full bg-[var(--dc-bg-sidebar)] text-[var(--dc-text-primary)] overflow-hidden">
-      {/* Top Header (Exact Screenshot 6: ✕ 99  Ajustes) */}
+      {/* Top Header */}
       <header className="h-14 px-4 flex items-center gap-3 bg-[var(--dc-bg-sidebar)] shrink-0">
         <button
           onClick={activeSubPanel ? () => setActiveSubPanel(null) : onBack}
           className="relative p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-[var(--dc-text-primary)] cursor-pointer"
         >
           {activeSubPanel ? <ArrowLeft className="w-6 h-6" /> : <X className="w-6 h-6" />}
-          {!activeSubPanel && (
-            <span className="absolute -bottom-1 -right-1 px-1.5 py-[1px] rounded-full bg-[#da373c] text-white text-[10px] font-bold tabular-nums leading-tight border-2 border-[var(--dc-bg-sidebar)]">
-              99
-            </span>
-          )}
         </button>
         <h1 className="font-display font-bold text-[19px]">
           {activeSubPanel || 'Ajustes'}
@@ -454,36 +449,68 @@ export const FriendsView: React.FC<{
     username: string,
     opts?: { avatar?: UserProfile['avatar']; status?: UserProfile['status']; initialGreeting?: string }
   ) => void;
+  onSearchUsers?: (query: string) => Promise<PublicUserProfile[]>;
+  onAddRealUser?: (profile: PublicUserProfile) => Promise<void>;
   onInspectUser?: (userId: string, fallback?: Partial<PublicUserProfile>) => void;
-}> = ({ dms, onBack, onOpenDm, onAddFriend, onInspectUser }) => {
+}> = ({ dms, onBack, onOpenDm, onAddFriend, onSearchUsers, onAddRealUser, onInspectUser }) => {
   const friendThreads = dms.filter((d) => !d.isBot && !d.isGroup);
   const [tab, setTab] = useState<'online' | 'all' | 'add'>(friendThreads.length === 0 ? 'add' : 'all');
   const [friendHandle, setFriendHandle] = useState('');
   const [addedMsg, setAddedMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [realUsers, setRealUsers] = useState<PublicUserProfile[]>([]);
+  const [searching, setSearching] = useState(false);
 
   const filtered =
     tab === 'online' ? friendThreads.filter((f) => f.status === 'online') : friendThreads;
 
   const q = friendHandle.trim().toLowerCase();
-  const directoryMatches = FRIEND_DIRECTORY.filter(
-    (entry) =>
-      !q ||
-      entry.displayName.toLowerCase().includes(q) ||
-      entry.username.toLowerCase().includes(q) ||
-      entry.bio.toLowerCase().includes(q)
-  );
 
-  const handleAdd = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (tab !== 'add' || !onSearchUsers) return;
+    let cancelled = false;
+    setSearching(true);
+    const timer = window.setTimeout(() => {
+      onSearchUsers(friendHandle)
+        .then((res) => {
+          if (!cancelled) setRealUsers(res);
+        })
+        .catch(() => {
+          if (!cancelled) setRealUsers([]);
+        })
+        .finally(() => {
+          if (!cancelled) setSearching(false);
+        });
+    }, 180);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [tab, friendHandle, onSearchUsers]);
+
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    const clean = friendHandle.trim();
+    const clean = friendHandle.trim().replace(/^@+/, '');
     if (!clean) return;
-    const matched = FRIEND_DIRECTORY.find(
+    setErrorMsg(null);
+    const exactMatch = realUsers.find(
       (entry) =>
         entry.username.toLowerCase() === clean.toLowerCase() ||
         entry.displayName.toLowerCase() === clean.toLowerCase()
     );
-    onAddFriend(matched ? matched.displayName : clean, matched ? { avatar: matched.avatar, status: matched.status } : undefined);
-    setAddedMsg(`Chat abierto con ${matched ? matched.displayName : clean}`);
+    if (onAddRealUser) {
+      if (!exactMatch) {
+        setErrorMsg(`No encontramos ninguna cuenta real con el usuario «@${clean}». Pídele que cree su cuenta primero.`);
+        return;
+      }
+      await onAddRealUser(exactMatch);
+      setAddedMsg(`Chat abierto con ${exactMatch.displayName} (@${exactMatch.username})`);
+      setFriendHandle('');
+      setTimeout(() => setAddedMsg(null), 2600);
+      return;
+    }
+    onAddFriend(clean);
+    setAddedMsg(`Chat abierto con ${clean}`);
     setFriendHandle('');
     setTimeout(() => setAddedMsg(null), 2600);
   };
@@ -513,7 +540,7 @@ export const FriendsView: React.FC<{
         {[
           { id: 'all', label: `Todos (${friendThreads.length})` },
           { id: 'online', label: 'En línea' },
-          { id: 'add', label: 'Buscar y añadir' },
+          { id: 'add', label: 'Buscar usuarios reales' },
         ].map((t) => (
           <button
             key={t.id}
@@ -534,9 +561,9 @@ export const FriendsView: React.FC<{
               onSubmit={handleAdd}
               className="space-y-3 bg-[var(--dc-bg-card)] p-5 rounded-2xl border border-[var(--dc-border)]"
             >
-              <h2 className="font-display font-bold text-base">Buscar o añadir amigos</h2>
+              <h2 className="font-display font-bold text-base">Buscar y añadir usuarios reales</h2>
               <p className="text-xs text-[var(--dc-text-secondary)]">
-                Busca personas en Primordial por nombre o escribe su usuario exacto para empezar a chatear.
+                Busca personas que ya crearon su cuenta en Primordial por su @usuario exacto o nombre para enviarles mensajes en tiempo real.
               </p>
               <div className="flex gap-2">
                 <div className="flex-1 flex items-center gap-2 bg-[var(--dc-bg-input)] border border-[var(--dc-border)] rounded-xl px-3.5 focus-within:border-[#5865F2]">
@@ -545,7 +572,7 @@ export const FriendsView: React.FC<{
                     type="text"
                     value={friendHandle}
                     onChange={(e) => setFriendHandle(e.target.value)}
-                    placeholder="Buscar por nombre o @usuario..."
+                    placeholder="Buscar por @usuario o nombre..."
                     className="flex-1 bg-transparent py-2.5 text-sm text-[var(--dc-text-primary)] focus:outline-none"
                   />
                   {friendHandle && (
@@ -572,33 +599,34 @@ export const FriendsView: React.FC<{
                   <span>{addedMsg}</span>
                 </p>
               )}
+              {errorMsg && (
+                <p className="text-xs text-[#f87171] font-semibold">
+                  {errorMsg}
+                </p>
+              )}
             </form>
 
             <div className="space-y-2">
               <p className="text-xs font-bold uppercase tracking-wider text-[var(--dc-text-muted)] px-1">
-                {q ? `Resultados (${directoryMatches.length})` : 'Personas en Primordial'}
+                {searching
+                  ? 'Buscando cuentas reales...'
+                  : q
+                    ? `Resultados (${realUsers.length})`
+                    : `Usuarios registrados en Primordial (${realUsers.length})`}
               </p>
 
-              {directoryMatches.map((person) => {
+              {realUsers.map((person) => {
                 const existingDm = dms.find(
                   (d) =>
-                    d.id === person.id ||
-                    d.id === `dm-${person.id}` ||
-                    d.name.toLowerCase() === person.displayName.toLowerCase()
+                    d.otherUid === person.id ||
+                    (d.username && d.username.toLowerCase() === person.username.toLowerCase())
                 );
 
                 return (
                   <div
                     key={person.id}
                     onClick={() =>
-                      onInspectUser?.(person.id, {
-                        displayName: person.displayName,
-                        username: person.username,
-                        avatar: person.avatar,
-                        status: person.status,
-                        bio: person.bio,
-                        customStatus: person.customStatus,
-                      })
+                      onInspectUser?.(person.id, person)
                     }
                     className="w-full flex items-center justify-between gap-3 p-3 rounded-2xl bg-[var(--dc-bg-card)] hover:bg-[var(--dc-bg-elevated)] border border-[var(--dc-border)] transition-colors cursor-pointer"
                   >
@@ -628,6 +656,8 @@ export const FriendsView: React.FC<{
                         e.stopPropagation();
                         if (existingDm) {
                           onOpenDm(existingDm.id);
+                        } else if (onAddRealUser) {
+                          void onAddRealUser(person);
                         } else {
                           onAddFriend(person.displayName, {
                             avatar: person.avatar,
@@ -645,23 +675,15 @@ export const FriendsView: React.FC<{
                 );
               })}
 
-              {q && directoryMatches.length === 0 && (
-                <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] p-5 text-center space-y-3">
-                  <p className="text-sm text-[var(--dc-text-secondary)]">
-                    No aparece «{friendHandle.trim()}» en sugerencias, pero puedes agregarlo directamente por usuario.
+              {!searching && realUsers.length === 0 && (
+                <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] p-6 text-center space-y-2">
+                  <Users className="w-8 h-8 text-[var(--dc-text-muted)] mx-auto" />
+                  <p className="text-sm font-semibold text-[var(--dc-text-primary)]">
+                    {q ? `Sin cuentas reales para «${friendHandle.trim()}»` : 'Aún no hay otros usuarios registrados'}
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const clean = friendHandle.trim();
-                      onAddFriend(clean);
-                      setFriendHandle('');
-                    }}
-                    className="px-4 py-2 rounded-full dc-btn-primary text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    <span>Añadir a «{friendHandle.trim()}»</span>
-                  </button>
+                  <p className="text-xs text-[var(--dc-text-muted)]">
+                    Cuando otra persona inicie sesión con Google y cree su @usuario, aparecerá aquí al instante para chatear contigo.
+                  </p>
                 </div>
               )}
             </div>
@@ -1643,21 +1665,72 @@ export const CreateServerModal: React.FC<{
 export const DiscoverModal: React.FC<{
   open: boolean;
   onClose: () => void;
-  onJoinCommunity: (name: string) => void;
-}> = ({ open, onClose, onJoinCommunity }) => {
+  discoverableServers?: Server[];
+  joinedServerIds?: string[];
+  onLoadServers?: () => Promise<Server[]>;
+  onJoinServer?: (serverIdOrInvite: string) => Promise<boolean>;
+  onOpenCreateServer?: () => void;
+}> = ({
+  open,
+  onClose,
+  discoverableServers = [],
+  joinedServerIds = [],
+  onLoadServers,
+  onJoinServer,
+  onOpenCreateServer,
+}) => {
   const [q, setQ] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [servers, setServers] = useState<Server[]>(discoverableServers);
+  const [loading, setLoading] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    setJoinError(null);
+    if (!onLoadServers) {
+      setServers(discoverableServers);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    onLoadServers()
+      .then((res) => {
+        if (!cancelled) setServers(res);
+      })
+      .catch(() => {
+        if (!cancelled) setServers([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, onLoadServers, discoverableServers]);
+
   if (!open) return null;
 
-  const trimmed = q.trim();
-  const lowerQ = trimmed.toLowerCase();
-  const communities = DISCOVERABLE_COMMUNITIES.filter(
-    (c) =>
+  const lowerQ = q.trim().toLowerCase();
+  const filtered = servers.filter(
+    (s) =>
       !lowerQ ||
-      c.name.toLowerCase().includes(lowerQ) ||
-      c.category.toLowerCase().includes(lowerQ) ||
-      c.desc.toLowerCase().includes(lowerQ)
+      s.name.toLowerCase().includes(lowerQ) ||
+      (s.description || '').toLowerCase().includes(lowerQ)
   );
-  const hasExactMatch = communities.some((c) => c.name.toLowerCase() === lowerQ);
+
+  const handleJoin = async (idOrInvite: string) => {
+    if (!onJoinServer) return;
+    setJoinError(null);
+    const ok = await onJoinServer(idOrInvite);
+    if (!ok) {
+      setJoinError('No se encontró ese servidor o código de invitación.');
+      return;
+    }
+    setQ('');
+    setInviteCode('');
+    onClose();
+  };
 
   return (
     <div
@@ -1672,7 +1745,7 @@ export const DiscoverModal: React.FC<{
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-[#23a55a]" />
             <h3 className="font-display font-bold text-lg text-[var(--dc-text-primary)]">
-              Buscar y descubrir servidores
+              Descubrir y unirse a servidores
             </h3>
           </div>
           <button onClick={onClose} className="p-1 text-[var(--dc-text-muted)] cursor-pointer">
@@ -1680,14 +1753,37 @@ export const DiscoverModal: React.FC<{
           </button>
         </div>
 
+        {/* Invite code bar */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (inviteCode.trim()) void handleJoin(inviteCode.trim());
+          }}
+          className="flex gap-2"
+        >
+          <input
+            type="text"
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
+            placeholder="Código o ID de invitación (ej. srv-...)"
+            className="flex-1 bg-[var(--dc-bg-input)] border border-[var(--dc-border)] rounded-xl px-3 py-2 text-xs text-[var(--dc-text-primary)] focus:outline-none focus:border-[#5865F2]"
+          />
+          <button
+            type="submit"
+            disabled={!inviteCode.trim()}
+            className="px-3.5 py-2 rounded-xl dc-btn-primary text-xs font-bold disabled:opacity-40 cursor-pointer whitespace-nowrap"
+          >
+            Unirse por ID
+          </button>
+        </form>
+
         <div className="flex items-center gap-2 bg-[var(--dc-bg-input)] rounded-xl px-3 py-2 border border-[var(--dc-border)] focus-within:border-[#5865F2]">
           <Search className="w-4 h-4 text-[var(--dc-text-muted)] shrink-0" />
           <input
             type="text"
-            autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar servidores por nombre o tema..."
+            placeholder="Buscar servidores creados por usuarios..."
             className="flex-1 bg-transparent text-sm text-[var(--dc-text-primary)] focus:outline-none"
           />
           {q && (
@@ -1701,64 +1797,84 @@ export const DiscoverModal: React.FC<{
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-2.5">
-          {communities.map((c) => (
-            <div
-              key={c.name}
-              className="p-3 rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] flex items-center justify-between gap-3"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-12 h-12 rounded-2xl overflow-hidden border border-white/15 shrink-0">
-                  <SafeImage src={c.thumb} alt={c.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <p className="font-bold text-sm text-[var(--dc-text-primary)] truncate">{c.name}</p>
-                    <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-[var(--dc-text-muted)] shrink-0">
-                      {c.category}
-                    </span>
-                  </div>
-                  <p className="text-xs text-[var(--dc-text-muted)] mt-0.5 line-clamp-1">{c.desc}</p>
-                  <p className="text-[11px] text-[#23a55a] font-semibold mt-1 tabular-nums">
-                    {c.online} · {c.members}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  onJoinCommunity(c.name);
-                  setQ('');
-                  onClose();
-                }}
-                className="px-4 py-2 rounded-full dc-btn-success text-xs font-bold shrink-0 cursor-pointer whitespace-nowrap"
-              >
-                Unirse
-              </button>
-            </div>
-          ))}
+        {joinError && (
+          <p className="text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/25 rounded-xl px-3 py-2">
+            {joinError}
+          </p>
+        )}
 
-          {trimmed && !hasExactMatch && (
-            <div className="p-3.5 rounded-2xl bg-[#5865F2]/10 border border-[#5865F2]/30 flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="font-bold text-sm text-[var(--dc-text-primary)] truncate">
-                  Crear o unirse a «{trimmed}»
-                </p>
-                <p className="text-xs text-[var(--dc-text-muted)] mt-0.5">
-                  Abre este servidor directamente en tu barra lateral
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  onJoinCommunity(trimmed);
-                  setQ('');
-                  onClose();
-                }}
-                className="px-4 py-2 rounded-full dc-btn-primary text-xs font-bold shrink-0 cursor-pointer whitespace-nowrap"
-              >
-                Crear / Unirse
-              </button>
+        <div className="flex-1 overflow-y-auto space-y-2.5">
+          {loading ? (
+            <p className="text-xs text-[var(--dc-text-muted)] text-center py-6">
+              Cargando servidores reales...
+            </p>
+          ) : filtered.length === 0 ? (
+            <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] p-5 text-center space-y-3">
+              <p className="text-sm font-semibold text-[var(--dc-text-primary)]">
+                No hay servidores públicos disponibles aún
+              </p>
+              <p className="text-xs text-[var(--dc-text-muted)]">
+                Crea tu propio servidor o pide el ID de invitación a otro usuario real.
+              </p>
+              {onOpenCreateServer && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenCreateServer();
+                  }}
+                  className="px-4 py-2 rounded-full dc-btn-primary text-xs font-bold cursor-pointer"
+                >
+                  Crear mi servidor
+                </button>
+              )}
             </div>
+          ) : (
+            filtered.map((srv) => {
+              const alreadyJoined = joinedServerIds.includes(srv.id);
+              return (
+                <div
+                  key={srv.id}
+                  className="p-3 rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] flex items-center justify-between gap-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className="w-12 h-12 rounded-2xl overflow-hidden border border-white/15 shrink-0 flex items-center justify-center font-display font-bold text-white"
+                      style={{ backgroundColor: srv.accentColor }}
+                    >
+                      {srv.customIconUrl ? (
+                        <SafeImage src={srv.customIconUrl} alt={srv.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span>{srv.customEmoji || srv.shortCode}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm text-[var(--dc-text-primary)] truncate">
+                        {srv.name}
+                      </p>
+                      <p className="text-xs text-[var(--dc-text-muted)] mt-0.5 line-clamp-1">
+                        {srv.description || 'Servidor comunitario en Primordial'}
+                      </p>
+                      <p className="text-[11px] text-[#23a55a] font-semibold mt-1 tabular-nums">
+                        {srv.memberCount} {srv.memberCount === 1 ? 'miembro' : 'miembros'}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={alreadyJoined}
+                    onClick={() => void handleJoin(srv.id)}
+                    className={`px-4 py-2 rounded-full text-xs font-bold shrink-0 whitespace-nowrap ${
+                      alreadyJoined
+                        ? 'bg-white/10 text-zinc-400 cursor-default'
+                        : 'dc-btn-success cursor-pointer'
+                    }`}
+                  >
+                    {alreadyJoined ? 'Ya unido' : 'Unirse'}
+                  </button>
+                </div>
+              );
+            })
           )}
         </div>
       </div>

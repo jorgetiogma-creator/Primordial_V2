@@ -405,6 +405,7 @@ export interface ChatMessage {
   edited?: boolean;
   editedAt?: string;
   pinned?: boolean;
+  mentionEveryone?: boolean;
   replyTo?: {
     messageId?: string;
     authorName: string;
@@ -455,6 +456,8 @@ export interface DirectMessageThread {
   groupEmoji?: string;
   groupColor?: string;
   isCallEnded?: boolean;
+  participantIds?: string[];
+  otherUid?: string;
   messages: ChatMessage[];
 }
 
@@ -476,10 +479,26 @@ export interface Channel {
   messages: ChatMessage[];
 }
 
+export interface ServerMemberSummary {
+  uid: string;
+  displayName: string;
+  username: string;
+  avatar: AvatarKey;
+  customAvatarUrl?: string;
+  status: PresenceStatus;
+  roleIds: string[];
+  isAdmin: boolean;
+  joinedAt?: string;
+}
+
 export interface Server {
   id: string;
   name: string;
   shortCode: string;
+  ownerId?: string;
+  adminIds?: string[];
+  members?: ServerMemberSummary[];
+  isDiscoverable?: boolean;
   badgeCount?: number;
   hasUnread?: boolean;
   hasEventBadge?: boolean;
@@ -685,6 +704,7 @@ export interface NotificationItem {
   timestamp: string;
   unread: boolean;
   avatar: AvatarKey;
+  senderUid?: string;
   serverName?: string;
   targetDmId?: string;
   targetServerId?: string;
