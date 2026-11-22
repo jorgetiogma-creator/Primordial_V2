@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { AvatarKey, StoredAccount } from '../types/discord';
 import { PrimordialAppIcon, UserAvatar } from './DiscordArt';
+import { RESERVED_OWNER_USERNAME } from '../utils/ownerAccess';
 
 interface AuthViewProps {
   accounts: StoredAccount[];
@@ -578,6 +579,15 @@ export const AuthView: React.FC<AuthViewProps> = ({
       regUsername.trim() || display.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'usuario';
     if (!display || regPassword.trim().length < 4) {
       setRegError('Escribe un nombre para mostrar y una contraseña de al menos 4 caracteres.');
+      return;
+    }
+    const ownerAlreadyExists = accounts.some(
+      (a) =>
+        a.isOwnerAccount === true ||
+        a.user.username.trim().toLowerCase() === RESERVED_OWNER_USERNAME
+    );
+    if (ownerAlreadyExists && uname.toLowerCase() === RESERVED_OWNER_USERNAME) {
+      setRegError('Este nombre de usuario es privado y pertenece en exclusiva a la cuenta Owner.');
       return;
     }
     const duplicate = accounts.some(

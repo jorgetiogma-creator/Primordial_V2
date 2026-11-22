@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
+  Crown,
   FileText,
   Heart,
   Image as ImageIcon,
@@ -76,6 +77,8 @@ interface ProfileViewProps {
   ownedBundleIds: string[];
   shopBundles: ShopBundle[];
   hasUnclaimedQuests: boolean;
+  isOwner?: boolean;
+  onOpenOwnerPanel?: () => void;
   profileViewTrigger?: number;
   initialEditorRequest?: { tab: 'principal' | 'servidor'; serverId?: string } | null;
   onConsumeEditorRequest?: () => void;
@@ -337,6 +340,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   ownedBundleIds,
   shopBundles,
   hasUnclaimedQuests,
+  isOwner = false,
+  onOpenOwnerPanel,
   profileViewTrigger = 0,
   initialEditorRequest,
   onConsumeEditorRequest,
@@ -604,6 +609,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </button>
 
             <div className="absolute top-3 right-3 flex items-center gap-1.5 z-30">
+              {isOwner && onOpenOwnerPanel && (
+                <button
+                  onClick={onOpenOwnerPanel}
+                  title="Abrir Panel Privado de Owner"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-black text-xs font-black transition-all cursor-pointer shadow-lg active:scale-95"
+                >
+                  <Crown className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Owner</span>
+                </button>
+              )}
               {activeProfileEffect !== 'none' && (
                 <button
                   onClick={() => setEffectPlayKey((k) => k + 1)}
@@ -856,6 +871,28 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           {/* Tab Content */}
           {activeTab === 'principal' && (
             <div className="space-y-3 mt-4">
+              {isOwner && onOpenOwnerPanel && (
+                <button
+                  type="button"
+                  onClick={onOpenOwnerPanel}
+                  className="w-full rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-fuchsia-600/15 hover:from-amber-500/30 hover:to-fuchsia-600/25 border border-amber-400/45 p-3.5 flex items-center justify-between gap-3 text-left cursor-pointer shadow-lg transition-all"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-black flex items-center justify-center shrink-0 shadow">
+                      <Crown className="w-5 h-5 stroke-[2.4]" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-black text-amber-300 truncate">
+                        Panel Privado de Owner
+                      </p>
+                      <p className="text-xs text-zinc-300 truncate">
+                        Ponte Orbs, cosméticos, insignias, Nitro y todo al instante
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-amber-300 shrink-0" />
+                </button>
+              )}
               {showTuneaCard && (
                 <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-white/12 p-3.5 shadow-md">
                   <div className="flex items-center justify-between mb-3">

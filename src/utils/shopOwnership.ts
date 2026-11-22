@@ -70,7 +70,7 @@ export function findBundleForCosmetic(
   },
   bundles: ShopBundle[] = INITIAL_SHOP_BUNDLES
 ): ShopBundle | undefined {
-  return bundles.find((b) =>
+  const direct = bundles.find((b) =>
     b.items.some(
       (item) =>
         (params.decorationId && item.decorationId === params.decorationId) ||
@@ -80,6 +80,18 @@ export function findBundleForCosmetic(
         (params.bannerUrl && item.bannerUrl === params.bannerUrl)
     )
   );
+  if (direct) return direct;
+
+  if (params.decorationId === 'wolverine' || params.nameplateId === 'wolverine') {
+    return bundles.find((b) => b.id === 'bundle-deadpool');
+  }
+  if (params.nameplateId === 'sakura') {
+    return bundles.find((b) => b.id === 'bundle-rama');
+  }
+  if (params.nameplateId === 'vice-city') {
+    return bundles.find((b) => b.id === 'bundle-banner-vice');
+  }
+  return undefined;
 }
 
 export const NITRO_EXCLUSIVE_DECORATIONS: DecorationId[] = [

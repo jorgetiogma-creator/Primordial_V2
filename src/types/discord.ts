@@ -318,6 +318,7 @@ export interface StoredAccount {
   id: string;
   contact: string;
   password: string;
+  isOwnerAccount?: boolean;
   twoFactorEnabled?: boolean;
   backupCodes?: string[];
   user: UserProfile;

@@ -16,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import {
+  BADGE_DEFINITIONS,
   INITIAL_ACTIVITIES,
   INITIAL_DMS,
   INITIAL_NOTIFICATIONS,
@@ -68,7 +69,13 @@ import { BadgesView } from './components/BadgesView';
 import { BoostGemIcon, ServerBoostView } from './components/ServerBoostView';
 import { ServerSettingsView } from './components/ServerSettingsView';
 import { UserProfileModal } from './components/UserProfileModal';
+import { OwnerPanelModal } from './components/OwnerPanelModal';
 import { sanitizeUserShopCosmetics } from './utils/shopOwnership';
+import {
+  isActiveAccountOwner,
+  normalizeSingleOwnerAccounts,
+  RESERVED_OWNER_USERNAME,
+} from './utils/ownerAccess';
 import {
   CreateServerModal,
   DiscoverModal,
@@ -224,7 +231,7 @@ export default function App() {
             };
           });
           localStorage.setItem(ORBS_BUGFIX_KEY, '1');
-          return sanitized;
+          return normalizeSingleOwnerAccounts(sanitized);
         }
       }
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -246,14 +253,14 @@ export default function App() {
             wishlistIds: parsed.wishlistIds || ['bundle-miyabi'],
           };
           localStorage.setItem(ORBS_BUGFIX_KEY, '1');
-          return [seeded];
+          return normalizeSingleOwnerAccounts([seeded]);
         }
       }
       localStorage.setItem(ORBS_BUGFIX_KEY, '1');
     } catch {
       /* ignore */
     }
-    return [DEFAULT_ACCOUNT];
+    return normalizeSingleOwnerAccounts([DEFAULT_ACCOUNT]);
   });
 
   const [activeAccountId, setActiveAccountId] = useState<string | null>(() => {
@@ -422,7 +429,19 @@ export default function App() {
     serverId?: string;
   } | null>(null);
   const [profileViewTrigger, setProfileViewTrigger] = useState(0);
+  const [showOwnerPanel, setShowOwnerPanel] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+
+  const isOwner = useMemo(
+    () => isActiveAccountOwner(activeAccountId, accounts, user),
+    [activeAccountId, accounts, user]
+  );
+
+  useEffect(() => {
+    if (!isOwner && showOwnerPanel) {
+      setShowOwnerPanel(false);
+    }
+  }, [isOwner, showOwnerPanel]);
 
   const [voiceSession, setVoiceSession] = useState<VoiceSession>({
     active: false,
@@ -1697,23 +1716,35 @@ export default function App() {
       gamesPlayedCount: 0,
       accountYears: 0,
     };
+    const hasExistingOwner = accounts.some(
+      (acc) =>
+        acc.isOwnerAccount === true ||
+        acc.user.username.trim().toLowerCase() === RESERVED_OWNER_USERNAME
+    );
+    const shouldPinOwner =
+      !hasExistingOwner &&
+      payload.username.trim().toLowerCase() === RESERVED_OWNER_USERNAME &&
+      payload.displayName.trim().toLowerCase() === 'owen';
+
     const newAccount: StoredAccount = {
       id: newId,
       contact: payload.contact,
       password: payload.password,
       twoFactorEnabled: payload.twoFactorEnabled,
       backupCodes: payload.backupCodes,
+      isOwnerAccount: shouldPinOwner,
       user: newUser,
       ownedBundleIds: [],
       wishlistIds: [],
     };
-    setAccounts((prev) => [...prev, newAccount]);
+    setAccounts((prev) => normalizeSingleOwnerAccounts([...prev, newAccount]));
     setActiveAccountId(newId);
     setUser(newUser);
     setOwnedBundleIds([]);
     setWishlistIds([]);
     setScreen('inicio');
     setMobileChatOpen(false);
+    setShowOwnerPanel(false);
     try {
       localStorage.setItem(SESSION_KEY, newId);
     } catch {
@@ -1729,12 +1760,86 @@ export default function App() {
     showToastMsg('Contraseña actualizada de forma segura');
   };
 
+  const handleOwnerUpdateProfile = (patch: Partial<UserProfile>, ensureBundleIds?: string[]) => {
+    if (!isOwner) return;
+    const nextOwned =
+      ensureBundleIds && ensureBundleIds.length > 0
+        ? Array.from(new Set([...ownedBundleIds, ...ensureBundleIds]))
+        : ownedBundleIds;
+    if (nextOwned.length !== ownedBundleIds.length) {
+      setOwnedBundleIds(nextOwned);
+    }
+    setUser((prev) =>
+      sanitizeUserShopCosmetics({ ...prev, ...patch }, nextOwned, INITIAL_SHOP_BUNDLES)
+    );
+  };
+
+  const handleOwnerUnlockAllShopBundles = () => {
+    if (!isOwner) return;
+    const allIds = INITIAL_SHOP_BUNDLES.map((b) => b.id);
+    setOwnedBundleIds(allIds);
+    showToastMsg(`¡Todos los ${allIds.length} lotes de la Tienda desbloqueados!`);
+  };
+
+  const handleOwnerClearAllShopBundles = () => {
+    if (!isOwner) return;
+    setOwnedBundleIds([]);
+    setUser((prev) => sanitizeUserShopCosmetics(prev, [], INITIAL_SHOP_BUNDLES));
+    showToastMsg('Inventario de tienda vaciado');
+  };
+
+  const handleOwnerUnlockAllBadges = () => {
+    if (!isOwner) return;
+    const allBadgeIds = BADGE_DEFINITIONS.map((b) => b.id);
+    setUser((prev) => ({
+      ...prev,
+      nitroTier: prev.nitroTier === 'none' ? 'nitro' : prev.nitroTier,
+      unlockedBadgeIds: allBadgeIds,
+      equippedBadgeIds: allBadgeIds,
+      boostsGiven: Math.max(prev.boostsGiven || 0, 12),
+      boostStreakMonths: Math.max(prev.boostStreakMonths || 0, 24),
+      giftsSent: Math.max(prev.giftsSent || 0, 25),
+      streamHours: Math.max(prev.streamHours || 0, 250),
+      gamesPlayedCount: Math.max(prev.gamesPlayedCount || 0, 40),
+      accountYears: Math.max(prev.accountYears || 0, 9),
+    }));
+    showToastMsg('¡Todas las insignias y logros desbloqueados al máximo!');
+  };
+
+  const handleOwnerUnlockAllEverything = () => {
+    if (!isOwner) return;
+    const allIds = INITIAL_SHOP_BUNDLES.map((b) => b.id);
+    const allBadgeIds = BADGE_DEFINITIONS.map((b) => b.id);
+    setOwnedBundleIds(allIds);
+    setUser((prev) =>
+      sanitizeUserShopCosmetics(
+        {
+          ...prev,
+          orbs: 999_999_999_999_999,
+          nitroTier: 'nitro',
+          unlockedBadgeIds: allBadgeIds,
+          equippedBadgeIds: allBadgeIds,
+          boostsGiven: Math.max(prev.boostsGiven || 0, 12),
+          boostStreakMonths: Math.max(prev.boostStreakMonths || 0, 24),
+          giftsSent: Math.max(prev.giftsSent || 0, 25),
+          streamHours: Math.max(prev.streamHours || 0, 250),
+          gamesPlayedCount: Math.max(prev.gamesPlayedCount || 0, 40),
+          accountYears: Math.max(prev.accountYears || 0, 9),
+        },
+        allIds,
+        INITIAL_SHOP_BUNDLES
+      )
+    );
+    showToastMsg('¡Todo desbloqueado al máximo para tu cuenta Owner!');
+  };
+
   const handleLogout = () => {
     try {
       localStorage.removeItem(SESSION_KEY);
     } catch {
       /* ignore */
     }
+    setShowOwnerPanel(false);
     setActiveAccountId(null);
     setScreen('inicio');
     setMobileChatOpen(false);
@@ -2062,6 +2167,8 @@ export default function App() {
           ownedBundleIds={ownedBundleIds}
           shopBundles={INITIAL_SHOP_BUNDLES}
           hasUnclaimedQuests={hasUnclaimedQuests}
+          isOwner={isOwner}
+          onOpenOwnerPanel={() => isOwner && setShowOwnerPanel(true)}
           profileViewTrigger={profileViewTrigger}
           initialEditorRequest={profileEditorRequest}
           onConsumeEditorRequest={() => setProfileEditorRequest(null)}
@@ -3133,6 +3240,21 @@ export default function App() {
           }
         }}
       />
+      {isOwner && showOwnerPanel && (
+        <OwnerPanelModal
+          isOpen={showOwnerPanel}
+          user={user}
+          ownedBundleIds={ownedBundleIds}
+          shopBundles={INITIAL_SHOP_BUNDLES}
+          onClose={() => setShowOwnerPanel(false)}
+          onUpdateOwnerProfile={handleOwnerUpdateProfile}
+          onUnlockAllEverything={handleOwnerUnlockAllEverything}
+          onUnlockAllShopBundles={handleOwnerUnlockAllShopBundles}
+          onClearAllShopBundles={handleOwnerClearAllShopBundles}
+          onUnlockAllBadges={handleOwnerUnlockAllBadges}
+          onNotify={showToastMsg}
+        />
+      )}
       <OfflineIndicator />
     </div>
     </MotionConfig>
