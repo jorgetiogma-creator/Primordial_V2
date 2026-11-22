@@ -566,25 +566,38 @@ export const AvatarDecorationRing: React.FC<{
     );
   }
 
-  /* 3. Burnice White — Nitro-Fuel Blazing Pyromaniac Halo */
+  /* 3. Burnice White — Nitro-Fuel Blazing Pyromaniac Corona */
   if (decoration === 'burnice') {
     return (
-      <div className="absolute -inset-[22%] w-[144%] h-[144%] pointer-events-none z-10">
-        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ember">
+      <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible">
           <defs>
             <linearGradient id="burniceRing" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#fef08a" />
-              <stop offset="45%" stopColor="#f97316" />
-              <stop offset="100%" stopColor="#dc2626" />
+              <stop offset="0%" stopColor="#fef9c3" />
+              <stop offset="38%" stopColor="#fb923c" />
+              <stop offset="75%" stopColor="#ef4444" />
+              <stop offset="100%" stopColor="#991b1b" />
             </linearGradient>
+            <filter id="burniceGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="2.5" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
-          <circle cx="60" cy="60" r="51" fill="none" stroke="url(#burniceRing)" strokeWidth="5.5" />
-          <circle cx="60" cy="60" r="48" fill="none" stroke="#fef9c3" strokeWidth="1" opacity="0.65" />
-          <path d="M14 48 Q8 14 36 10 Q27 26 39 30 Q24 35 14 48 Z" fill="url(#burniceRing)" />
-          <path d="M106 48 Q112 14 84 10 Q93 26 81 30 Q96 35 106 48 Z" fill="url(#burniceRing)" />
-          <circle cx="22" cy="95" r="5" fill="#fde047" />
-          <circle cx="98" cy="95" r="5" fill="#fb923c" />
-          <circle cx="60" cy="7" r="3" fill="#fef08a" />
+          <g className="anim-ember" filter="url(#burniceGlow)">
+            <circle cx="60" cy="60" r="50.5" fill="none" stroke="url(#burniceRing)" strokeWidth="5" />
+            <circle cx="60" cy="60" r="47" fill="none" stroke="#fef08a" strokeWidth="1.2" opacity="0.75" />
+            <path d="M13 52 Q2 18 33 7 Q23 23 36 27 Q20 33 13 52 Z" fill="url(#burniceRing)" />
+            <path d="M107 52 Q118 18 87 7 Q97 23 84 27 Q100 33 107 52 Z" fill="url(#burniceRing)" />
+            <path d="M48 11 Q60 -3 72 11 Q60 15 48 11 Z" fill="#fef08a" />
+          </g>
+          <g className="anim-flame">
+            <path d="M22 96 Q16 86 24 81 Q31 86 22 96 Z" fill="#fde047" />
+            <path d="M98 96 Q91 86 99 81 Q106 86 98 96 Z" fill="#fb923c" />
+            <circle cx="60" cy="112" r="3.2" fill="#fef08a" />
+          </g>
         </svg>
       </div>
     );
@@ -597,14 +610,14 @@ export const AvatarDecorationRing: React.FC<{
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-sway">
           <defs>
             <linearGradient id="lofiVineGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#84cc16" />
+              <stop offset="0%" stopColor="#a3e635" />
               <stop offset="50%" stopColor="#4d7c0f" />
               <stop offset="100%" stopColor="#15803d" />
             </linearGradient>
           </defs>
-          <circle cx="60" cy="60" r="50.5" fill="none" stroke="url(#lofiVineGrad)" strokeWidth="4.2" opacity="0.92" />
-          <path d="M18 42 Q32 8 64 11 Q95 15 102 48" stroke="#65a30d" strokeWidth="2.8" fill="none" strokeLinecap="round" />
-          <path d="M20 76 Q32 108 62 108 Q92 106 100 76" stroke="#84cc16" strokeWidth="2.4" fill="none" strokeLinecap="round" opacity="0.85" />
+          <circle cx="60" cy="60" r="50.5" fill="none" stroke="url(#lofiVineGrad)" strokeWidth="4.2" opacity="0.95" />
+          <path d="M18 42 Q32 8 64 11 Q95 15 102 48" stroke="#84cc16" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+          <path d="M20 76 Q32 108 62 108 Q92 106 100 76" stroke="#84cc16" strokeWidth="2.4" fill="none" strokeLinecap="round" opacity="0.9" />
           <ellipse cx="21" cy="46" rx="7" ry="10.5" fill="#65a30d" stroke="#365314" strokeWidth="1" transform="rotate(-24 21 46)" />
           <ellipse cx="15" cy="68" rx="6" ry="9" fill="#84cc16" stroke="#365314" strokeWidth="1" transform="rotate(14 15 68)" />
           <ellipse cx="99" cy="44" rx="7" ry="10.5" fill="#4d7c0f" stroke="#365314" strokeWidth="1" transform="rotate(24 99 44)" />
@@ -613,7 +626,7 @@ export const AvatarDecorationRing: React.FC<{
           <circle cx="50" cy="12" r="2.2" fill="#f97316" />
           <circle cx="78" cy="17" r="4.2" fill="#fde047" />
           <circle cx="78" cy="17" r="1.8" fill="#ea580c" />
-          <circle cx="88" cy="98" r="4.5" fill="#7dd3fc" opacity="0.9" />
+          <circle cx="88" cy="98" r="4.5" fill="#7dd3fc" opacity="0.92" />
         </svg>
       </div>
     );
@@ -631,7 +644,7 @@ export const AvatarDecorationRing: React.FC<{
             maskImage:
               'radial-gradient(circle, transparent 42%, rgba(0,0,0,0.9) 50%, black 66%, transparent 94%)',
             mixBlendMode: 'screen',
-            filter: 'saturate(1.25) contrast(1.1) drop-shadow(0 0 12px rgba(168,85,247,0.65))',
+            filter: 'saturate(1.35) contrast(1.12) drop-shadow(0 0 14px rgba(168,85,247,0.75))',
           }}
         >
           <img
@@ -642,7 +655,18 @@ export const AvatarDecorationRing: React.FC<{
           />
         </div>
         <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full overflow-visible">
-          <circle cx="60" cy="60" r="44" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1.2" />
+          <defs>
+            <linearGradient id="cromaRim" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#38bdf8" />
+              <stop offset="50%" stopColor="#e879f9" />
+              <stop offset="100%" stopColor="#fde047" />
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="44.5" fill="none" stroke="url(#cromaRim)" strokeWidth="1.6" opacity="0.85" />
+          <g className="anim-twinkle">
+            <path d="M98 20 L100 25 L105 27 L100 29 L98 34 L96 29 L91 27 L96 25 Z" fill="#ffffff" />
+            <path d="M22 92 L23.5 95.5 L27 97 L23.5 98.5 L22 102 L20.5 98.5 L17 97 L20.5 95.5 Z" fill="#e879f9" />
+          </g>
         </svg>
       </div>
     );
@@ -676,10 +700,10 @@ export const AvatarDecorationRing: React.FC<{
     );
   }
 
-  /* 7. Alex Cyber Ring */
+  /* 7. Alex Cyber HUD Ring */
   if (decoration === 'alex') {
     return (
-      <div className="absolute -inset-[18%] w-[136%] h-[136%] pointer-events-none z-10">
+      <div className="absolute -inset-[21%] w-[142%] h-[142%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible">
           <defs>
             <linearGradient id="alexRingGrad" x1="0" y1="0" x2="1" y2="1">
@@ -689,40 +713,61 @@ export const AvatarDecorationRing: React.FC<{
             </linearGradient>
           </defs>
           <g className="anim-spin-slow" style={{ transformOrigin: '60px 60px' }}>
-            <circle cx="60" cy="60" r="51" fill="none" stroke="url(#alexRingGrad)" strokeWidth="4.5" strokeDasharray="22 7" />
-            <circle cx="96" cy="24" r="5" fill="#fbbf24" />
+            <circle cx="60" cy="60" r="51" fill="none" stroke="url(#alexRingGrad)" strokeWidth="3.8" strokeDasharray="24 6 6 6" />
+            <circle cx="96" cy="24" r="4.5" fill="#fbbf24" stroke="#09090b" strokeWidth="1.2" />
+            <circle cx="24" cy="96" r="4" fill="#38bdf8" stroke="#09090b" strokeWidth="1.2" />
+          </g>
+          <g className="anim-spin-reverse" style={{ transformOrigin: '60px 60px' }}>
+            <circle cx="60" cy="60" r="55" fill="none" stroke="#38bdf8" strokeWidth="1" strokeDasharray="10 14" opacity="0.6" />
           </g>
         </svg>
       </div>
     );
   }
 
-  /* 8. Marvel Deadpool & Wolverine — Crossed Adamantium Claws & Twin Katanas */
+  /* 8. Marvel Deadpool & Wolverine — Crossed Adamantium Claws & Twin Forged Katanas */
   if (decoration === 'deadpool' || decoration === 'wolverine') {
     const isWolv = decoration === 'wolverine';
     return (
-      <div className="absolute -inset-[20%] w-[140%] h-[140%] pointer-events-none z-10">
-        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ember">
+      <div className="absolute -inset-[23%] w-[146%] h-[146%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible">
           <defs>
             <linearGradient id="katanaSteel" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#f8fafc" />
-              <stop offset="50%" stopColor="#94a3b8" />
-              <stop offset="100%" stopColor="#ef4444" />
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="45%" stopColor="#cbd5e1" />
+              <stop offset="85%" stopColor="#ef4444" />
+              <stop offset="100%" stopColor="#7f1d1d" />
+            </linearGradient>
+            <linearGradient id="adamantium" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="55%" stopColor="#94a3b8" />
+              <stop offset="100%" stopColor="#facc15" />
             </linearGradient>
           </defs>
           {isWolv ? (
-            <>
-              <circle cx="60" cy="60" r="51" fill="none" stroke="#eab308" strokeWidth="4.5" />
-              <path d="M12 24 L37 44 M8 34 L34 52 M17 15 L41 37" stroke="#fef08a" strokeWidth="4.2" strokeLinecap="round" />
-              <path d="M108 24 L83 44 M112 34 L86 52 M103 15 L79 37" stroke="#facc15" strokeWidth="4.2" strokeLinecap="round" />
-            </>
+            <g className="anim-ember">
+              <circle cx="60" cy="60" r="50.5" fill="none" stroke="#eab308" strokeWidth="4.2" />
+              <circle cx="60" cy="60" r="47" fill="none" stroke="#fef08a" strokeWidth="1.2" opacity="0.7" />
+              <path d="M8 28 L37 45 M5 37 L34 52 M14 18 L41 37" stroke="#09090b" strokeWidth="6.4" strokeLinecap="round" />
+              <path d="M8 28 L37 45 M5 37 L34 52 M14 18 L41 37" stroke="url(#adamantium)" strokeWidth="3.6" strokeLinecap="round" />
+              <path d="M112 28 L83 45 M115 37 L86 52 M106 18 L79 37" stroke="#09090b" strokeWidth="6.4" strokeLinecap="round" />
+              <path d="M112 28 L83 45 M115 37 L86 52 M106 18 L79 37" stroke="url(#adamantium)" strokeWidth="3.6" strokeLinecap="round" />
+              <polygon points="56,6 64,6 60,15" fill="#fde047" />
+            </g>
           ) : (
-            <>
-              <line x1="12" y1="12" x2="108" y2="108" stroke="#991b1b" strokeWidth="6" strokeLinecap="round" />
-              <line x1="108" y1="12" x2="12" y2="108" stroke="url(#katanaSteel)" strokeWidth="4.5" strokeLinecap="round" />
-              <circle cx="60" cy="60" r="51" fill="none" stroke="#dc2626" strokeWidth="4.8" />
-              <circle cx="60" cy="60" r="47.5" fill="none" stroke="#fca5a5" strokeWidth="1" opacity="0.6" />
-            </>
+            <g className="anim-ember">
+              {/* Crossed Katanas behind circle */}
+              <line x1="10" y1="10" x2="110" y2="110" stroke="#09090b" strokeWidth="7.5" strokeLinecap="round" />
+              <line x1="10" y1="10" x2="110" y2="110" stroke="url(#katanaSteel)" strokeWidth="4.2" strokeLinecap="round" />
+              <line x1="110" y1="10" x2="10" y2="110" stroke="#09090b" strokeWidth="7.5" strokeLinecap="round" />
+              <line x1="110" y1="10" x2="10" y2="110" stroke="url(#katanaSteel)" strokeWidth="4.2" strokeLinecap="round" />
+              {/* Katana Tsuba Guards */}
+              <rect x="8" y="16" width="12" height="3.5" rx="1.5" fill="#facc15" transform="rotate(-45 14 18)" />
+              <rect x="100" y="16" width="12" height="3.5" rx="1.5" fill="#facc15" transform="rotate(45 106 18)" />
+              <circle cx="60" cy="60" r="50.5" fill="none" stroke="#dc2626" strokeWidth="4.8" />
+              <circle cx="60" cy="60" r="47" fill="none" stroke="#fecaca" strokeWidth="1" opacity="0.7" />
+              <circle cx="60" cy="109" r="5" fill="#dc2626" stroke="#ffffff" strokeWidth="1.5" />
+            </g>
           )}
         </svg>
       </div>
@@ -732,43 +777,63 @@ export const AvatarDecorationRing: React.FC<{
   /* 9. Dead by Daylight — The Entity's Jagged Claw Ring & Embers */
   if (decoration === 'dbd') {
     return (
-      <div className="absolute -inset-[20%] w-[140%] h-[140%] pointer-events-none z-10">
+      <div className="absolute -inset-[23%] w-[146%] h-[146%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ember">
           <defs>
             <linearGradient id="dbdFireRing" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#f97316" />
+              <stop offset="0%" stopColor="#fb923c" />
               <stop offset="50%" stopColor="#dc2626" />
-              <stop offset="100%" stopColor="#7f1d1d" />
+              <stop offset="100%" stopColor="#450a0a" />
             </linearGradient>
           </defs>
           <circle cx="60" cy="60" r="50.5" fill="none" stroke="url(#dbdFireRing)" strokeWidth="4.2" />
-          <path d="M12 24 L34 44 L22 39 Z" fill="#ea580c" stroke="#18181b" strokeWidth="1.2" />
-          <path d="M108 24 L86 44 L98 39 Z" fill="#dc2626" stroke="#18181b" strokeWidth="1.2" />
-          <path d="M14 94 L35 76 L24 89 Z" fill="#f97316" stroke="#18181b" strokeWidth="1.2" />
-          <path d="M106 94 L85 76 L96 89 Z" fill="#ea580c" stroke="#18181b" strokeWidth="1.2" />
-          <circle cx="26" cy="16" r="2.6" fill="#fde047" />
-          <circle cx="98" cy="90" r="2.6" fill="#fb923c" />
+          <circle cx="60" cy="60" r="47" fill="none" stroke="#fed7aa" strokeWidth="0.9" strokeDasharray="12 6" opacity="0.6" />
+          <path d="M10 22 Q20 35 34 45 L20 38 Z" fill="#ea580c" stroke="#09090b" strokeWidth="1.4" />
+          <path d="M110 22 Q100 35 86 45 L100 38 Z" fill="#dc2626" stroke="#09090b" strokeWidth="1.4" />
+          <path d="M12 96 Q24 85 35 76 L24 91 Z" fill="#f97316" stroke="#09090b" strokeWidth="1.4" />
+          <path d="M108 96 Q96 85 85 76 L96 91 Z" fill="#ea580c" stroke="#09090b" strokeWidth="1.4" />
+          <circle cx="26" cy="14" r="2.6" fill="#fde047" />
+          <circle cx="96" cy="92" r="2.6" fill="#fb923c" />
+          <circle cx="60" cy="8" r="2.4" fill="#fca5a5" />
         </svg>
       </div>
     );
   }
 
-  /* 10. Almas atrapadas / Observador — Spectral Eyes & Mist Ring */
+  /* 10. Almas atrapadas / Observador — Spectral Eyes & Reaching Ink Hands */
   if (decoration === 'almas' || decoration === 'observador') {
+    const isSouls = decoration === 'almas';
     return (
-      <div className="absolute -inset-[20%] w-[140%] h-[140%] pointer-events-none z-10">
+      <div className="absolute -inset-[23%] w-[146%] h-[146%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ghost">
-          <circle cx="60" cy="60" r="50.5" fill="none" stroke="#e4e4e7" strokeWidth="3" strokeDasharray="16 5 5 5" opacity="0.85" />
-          <g className="anim-eye-blink">
-            <ellipse cx="95" cy="28" rx="11.5" ry="6" fill="#ffffff" stroke="#09090b" strokeWidth="1.6" />
-            <circle cx="95" cy="28" r="3.4" fill="#09090b" />
-            <circle cx="96.3" cy="26.7" r="1.1" fill="#ffffff" />
-          </g>
-          <g className="anim-eye-blink">
-            <ellipse cx="25" cy="90" rx="9.5" ry="5" fill="#e4e4e7" stroke="#09090b" strokeWidth="1.6" />
-            <circle cx="25" cy="90" r="2.7" fill="#09090b" />
-            <circle cx="26" cy="88.8" r="0.9" fill="#ffffff" />
-          </g>
+          <circle cx="60" cy="60" r="50.5" fill="none" stroke="#e4e4e7" strokeWidth="2.8" strokeDasharray="16 5 5 5" opacity="0.85" />
+          <circle cx="60" cy="60" r="54" fill="none" stroke="#71717a" strokeWidth="1" strokeDasharray="6 8" opacity="0.55" />
+          {isSouls ? (
+            <>
+              {/* Reaching Spectral Hands */}
+              <path d="M14 78 L8 60 M18 76 L14 55 M22 76 L21 56 M26 78 L27 60" stroke="#e4e4e7" strokeWidth="2.4" strokeLinecap="round" />
+              <path d="M14 78 Q20 88 28 82" fill="#e4e4e7" stroke="#09090b" strokeWidth="1.2" />
+              <path d="M94 42 L91 23 M99 41 L99 20 M104 42 L106 23 M108 45 L112 28" stroke="#f4f4f5" strokeWidth="2.4" strokeLinecap="round" />
+              <path d="M93 43 Q101 52 109 45" fill="#f4f4f5" stroke="#09090b" strokeWidth="1.2" />
+            </>
+          ) : (
+            <>
+              <g className="anim-eye-blink">
+                <ellipse cx="95" cy="26" rx="12" ry="6.2" fill="#ffffff" stroke="#09090b" strokeWidth="1.6" />
+                <circle cx="95" cy="26" r="3.6" fill="#09090b" />
+                <circle cx="96.3" cy="24.7" r="1.2" fill="#ffffff" />
+              </g>
+              <g className="anim-eye-blink">
+                <ellipse cx="24" cy="91" rx="10" ry="5.2" fill="#e4e4e7" stroke="#09090b" strokeWidth="1.6" />
+                <circle cx="24" cy="91" r="2.9" fill="#09090b" />
+                <circle cx="25" cy="89.8" r="1" fill="#ffffff" />
+              </g>
+              <g className="anim-eye-blink">
+                <ellipse cx="26" cy="26" rx="7.5" ry="4" fill="#d4d4d8" stroke="#09090b" strokeWidth="1.4" />
+                <circle cx="26" cy="26" r="2.2" fill="#09090b" />
+              </g>
+            </>
+          )}
         </svg>
       </div>
     );
@@ -1140,27 +1205,29 @@ export const AvatarDecorationRing: React.FC<{
     );
   }
 
-  /* 22. Polilla fantasma (Dark Folklore) — Pale Feathered Moth Wings & Delicate Antennae */
+  /* 22. Polilla fantasma (Dark Folklore) — Veined Spectral Luna-Moth Wings & Plumed Antennae */
   if (decoration === 'polilla') {
     return (
       <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-float">
           <defs>
             <linearGradient id="mothWingL" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#f4f4f5" />
-              <stop offset="60%" stopColor="#d4d4d8" />
-              <stop offset="100%" stopColor="#71717a" />
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="55%" stopColor="#d4d4d8" />
+              <stop offset="100%" stopColor="#52525b" />
             </linearGradient>
           </defs>
+          <circle cx="60" cy="60" r="49.5" fill="none" stroke="#e4e4e7" strokeWidth="1.8" opacity="0.65" />
           {/* Feathered Moth Antennae on Top */}
-          <path d="M55 15 Q42 2 24 8 Q34 15 48 18" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1" />
-          <path d="M65 15 Q78 2 96 8 Q86 15 72 18" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1" />
-          {/* Lower Lace Moth Wings Framing Avatar */}
-          <path d="M12 64 Q4 88 22 104 Q40 112 52 98 Q36 86 24 62 Z" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1.2" opacity="0.92" />
-          <path d="M108 64 Q116 88 98 104 Q80 112 68 98 Q84 86 96 62 Z" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1.2" opacity="0.92" />
-          <circle cx="23" cy="90" r="4" fill="#52525b" opacity="0.55" />
-          <circle cx="97" cy="90" r="4" fill="#52525b" opacity="0.55" />
-          <circle cx="60" cy="60" r="49" fill="none" stroke="#e4e4e7" strokeWidth="1.4" opacity="0.45" />
+          <path d="M55 15 Q40 1 20 7 Q31 15 48 18" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1.1" />
+          <path d="M65 15 Q80 1 100 7 Q89 15 72 18" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1.1" />
+          {/* Sculpted Veined Moth Wings */}
+          <path d="M12 61 Q2 89 22 106 Q42 114 53 98 Q36 86 24 60 Z" fill="url(#mothWingL)" stroke="#18181b" strokeWidth="1.3" opacity="0.95" />
+          <path d="M108 61 Q118 89 98 106 Q78 114 67 98 Q84 86 96 60 Z" fill="url(#mothWingL)" stroke="#18181b" strokeWidth="1.3" opacity="0.95" />
+          <circle cx="24" cy="91" r="4.8" fill="#18181b" stroke="#f4f4f5" strokeWidth="1.2" />
+          <circle cx="96" cy="91" r="4.8" fill="#18181b" stroke="#f4f4f5" strokeWidth="1.2" />
+          <circle cx="24" cy="91" r="1.8" fill="#ef4444" />
+          <circle cx="96" cy="91" r="1.8" fill="#ef4444" />
         </svg>
       </div>
     );
@@ -1177,7 +1244,7 @@ export const AvatarDecorationRing: React.FC<{
               'radial-gradient(circle, transparent 41%, black 47%, black 80%, transparent 96%)',
             maskImage:
               'radial-gradient(circle, transparent 41%, black 47%, black 80%, transparent 96%)',
-            filter: 'saturate(1.15) drop-shadow(0 0 10px rgba(187,247,208,0.45))',
+            filter: 'saturate(1.2) drop-shadow(0 0 12px rgba(187,247,208,0.55))',
           }}
         >
           <img
@@ -1188,7 +1255,8 @@ export const AvatarDecorationRing: React.FC<{
           />
         </div>
         <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full overflow-visible">
-          <circle cx="60" cy="8" r="5" fill="#fef9c3" opacity="0.9" />
+          <circle cx="60" cy="60" r="45" fill="none" stroke="#86efac" strokeWidth="1.3" opacity="0.7" />
+          <circle cx="60" cy="8" r="5" fill="#fef9c3" />
           <circle cx="24" cy="90" r="5.5" fill="#fef08a" stroke="#4d7c0f" strokeWidth="1.2" />
           <circle cx="96" cy="88" r="5.5" fill="#fef9c3" stroke="#4d7c0f" strokeWidth="1.2" />
         </svg>
@@ -1196,25 +1264,26 @@ export const AvatarDecorationRing: React.FC<{
     );
   }
 
-  /* 24. Cuernos de demonio (Dark Folklore) — Twisted Cryptid Horns & Furry Ears */
+  /* 24. Cuernos de demonio (Dark Folklore) — Ridged Cryptid Horns & Furry Ears */
   if (decoration === 'cuernos') {
     return (
-      <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
+      <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-float">
           <defs>
             <linearGradient id="hornMetal" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#94a3b8" />
-              <stop offset="50%" stopColor="#334155" />
+              <stop offset="0%" stopColor="#cbd5e1" />
+              <stop offset="45%" stopColor="#334155" />
               <stop offset="100%" stopColor="#09090b" />
             </linearGradient>
           </defs>
-          {/* Left & Right Curved Dark Cryptid Horns */}
-          <path d="M26 42 Q8 18 22 4 Q20 20 34 32 Z" fill="url(#hornMetal)" stroke="#cbd5e1" strokeWidth="1" />
-          <path d="M94 42 Q112 18 98 4 Q100 20 86 32 Z" fill="url(#hornMetal)" stroke="#cbd5e1" strokeWidth="1" />
-          {/* Cryptid Ears */}
-          <path d="M16 48 Q4 35 13 28 Q23 36 28 45 Z" fill="#1e293b" stroke="#fb923c" strokeWidth="1.1" />
-          <path d="M104 48 Q116 35 107 28 Q97 36 92 45 Z" fill="#1e293b" stroke="#fb923c" strokeWidth="1.1" />
-          <circle cx="60" cy="60" r="49" fill="none" stroke="#475569" strokeWidth="1.8" opacity="0.55" />
+          <circle cx="60" cy="60" r="49.5" fill="none" stroke="#64748b" strokeWidth="2.4" opacity="0.7" />
+          <path d="M25 43 Q6 16 23 2 Q20 19 35 32 Z" fill="url(#hornMetal)" stroke="#e2e8f0" strokeWidth="1.1" />
+          <path d="M95 43 Q114 16 97 2 Q100 19 85 32 Z" fill="url(#hornMetal)" stroke="#e2e8f0" strokeWidth="1.1" />
+          <path d="M18 30 L27 28 M16 21 L24 20 M102 30 L93 28 M104 21 L96 20" stroke="#94a3b8" strokeWidth="1.1" strokeLinecap="round" />
+          <path d="M15 48 Q2 35 12 26 Q23 35 28 45 Z" fill="#1e293b" stroke="#fb923c" strokeWidth="1.2" />
+          <path d="M105 48 Q118 35 108 26 Q97 35 92 45 Z" fill="#1e293b" stroke="#fb923c" strokeWidth="1.2" />
+          <circle cx="22" cy="4" r="1.8" fill="#fb923c" />
+          <circle cx="98" cy="4" r="1.8" fill="#fb923c" />
         </svg>
       </div>
     );
@@ -1228,16 +1297,16 @@ export const AvatarDecorationRing: React.FC<{
           <defs>
             <radialGradient id="wispGlow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="40%" stopColor="#5eead4" />
+              <stop offset="35%" stopColor="#5eead4" />
               <stop offset="100%" stopColor="#0d9488" stopOpacity="0" />
             </radialGradient>
           </defs>
-          <circle cx="60" cy="60" r="49" fill="none" stroke="#2dd4bf" strokeWidth="2.5" opacity="0.45" />
-          <circle cx="22" cy="30" r="14" fill="url(#wispGlow)" />
-          <circle cx="98" cy="36" r="11" fill="url(#wispGlow)" />
-          <circle cx="88" cy="96" r="15" fill="url(#wispGlow)" />
-          <circle cx="24" cy="86" r="10" fill="url(#wispGlow)" />
-          <circle cx="60" cy="11" r="6" fill="#ccfbf1" />
+          <circle cx="60" cy="60" r="49" fill="none" stroke="#2dd4bf" strokeWidth="2.4" strokeDasharray="20 8" opacity="0.65" />
+          <circle cx="22" cy="30" r="15" fill="url(#wispGlow)" />
+          <circle cx="98" cy="36" r="12" fill="url(#wispGlow)" />
+          <circle cx="88" cy="96" r="16" fill="url(#wispGlow)" />
+          <circle cx="24" cy="86" r="11" fill="url(#wispGlow)" />
+          <path d="M56 12 Q60 2 65 12 Q60 17 56 12 Z" fill="#ccfbf1" />
         </svg>
       </div>
     );
@@ -1250,18 +1319,18 @@ export const AvatarDecorationRing: React.FC<{
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ember">
           <defs>
             <linearGradient id="entityClaw" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#fb923c" />
-              <stop offset="55%" stopColor="#ea580c" />
+              <stop offset="0%" stopColor="#fdba74" />
+              <stop offset="50%" stopColor="#ea580c" />
               <stop offset="100%" stopColor="#09090b" />
             </linearGradient>
           </defs>
-          <circle cx="60" cy="60" r="49.5" fill="none" stroke="#f97316" strokeWidth="3" opacity="0.85" />
-          {/* Entity Curved Talons */}
-          <path d="M18 32 Q6 14 28 8 Q18 22 30 32 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.2" />
-          <path d="M102 32 Q114 14 92 8 Q102 22 90 32 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.2" />
-          <path d="M12 76 Q0 96 22 108 Q16 90 24 80 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.2" />
-          <path d="M108 76 Q120 96 98 108 Q104 90 96 80 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.2" />
-          <path d="M56 12 Q60 -2 68 8 Q62 14 60 15 Z" fill="#fb923c" />
+          <circle cx="60" cy="60" r="49.5" fill="none" stroke="#f97316" strokeWidth="3.2" opacity="0.9" />
+          <circle cx="60" cy="60" r="46.5" fill="none" stroke="#fed7aa" strokeWidth="0.9" opacity="0.6" />
+          <path d="M18 32 Q5 12 29 6 Q18 21 31 32 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.3" />
+          <path d="M102 32 Q115 12 91 6 Q102 21 89 32 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.3" />
+          <path d="M12 76 Q-1 97 23 110 Q16 90 25 80 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.3" />
+          <path d="M108 76 Q121 97 97 110 Q104 90 95 80 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.3" />
+          <path d="M55 12 Q60 -3 68 8 Q62 15 60 15 Z" fill="#fb923c" />
         </svg>
       </div>
     );
@@ -1277,11 +1346,12 @@ export const AvatarDecorationRing: React.FC<{
             d="M46 12 A49 49 0 1 0 98 92 A41 41 0 1 1 46 12 Z"
             fill="#09090b"
             stroke={ringTone}
-            strokeWidth="2.4"
+            strokeWidth="2.5"
           />
-          <circle cx="60" cy="60" r="50.5" fill="none" stroke={ringTone} strokeWidth="1.6" strokeDasharray="34 10 8 6" opacity="0.85" />
+          <circle cx="60" cy="60" r="50.5" fill="none" stroke={ringTone} strokeWidth="1.7" strokeDasharray="34 10 8 6" opacity="0.88" />
+          <path d="M88 18 Q94 12 98 18 L94 21 Z" fill={ringTone} />
           <circle cx="24" cy="28" r="2.2" fill={ringTone} />
-          <circle cx="94" cy="84" r="2" fill={ringTone} />
+          <circle cx="94" cy="84" r="2.2" fill={ringTone} />
         </svg>
       </div>
     );
@@ -1298,7 +1368,7 @@ export const AvatarDecorationRing: React.FC<{
               'radial-gradient(circle, transparent 41%, rgba(0,0,0,0.95) 47%, black 78%, transparent 95%)',
             maskImage:
               'radial-gradient(circle, transparent 41%, rgba(0,0,0,0.95) 47%, black 78%, transparent 95%)',
-            filter: 'saturate(1.3) drop-shadow(0 0 12px rgba(220,38,38,0.85))',
+            filter: 'saturate(1.35) drop-shadow(0 0 14px rgba(220,38,38,0.9))',
           }}
         >
           <img
@@ -1309,7 +1379,7 @@ export const AvatarDecorationRing: React.FC<{
           />
         </div>
         <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full overflow-visible">
-          <circle cx="60" cy="60" r="44" fill="none" stroke="#ef4444" strokeWidth="1.5" opacity="0.7" />
+          <circle cx="60" cy="60" r="44.5" fill="none" stroke="#ef4444" strokeWidth="1.8" opacity="0.8" />
         </svg>
       </div>
     );
@@ -1320,16 +1390,17 @@ export const AvatarDecorationRing: React.FC<{
     return (
       <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ember">
-          <circle cx="60" cy="60" r="50" fill="none" stroke="#f97316" strokeWidth="4" opacity="0.85" />
-          <circle cx="60" cy="60" r="53" fill="none" stroke="#fde047" strokeWidth="1.2" strokeDasharray="24 12" opacity="0.7" />
-          {/* Top-Right & Bottom-Left Jack-o'-Lanterns */}
-          <g transform="translate(86, 12)">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#f97316" strokeWidth="4" opacity="0.9" />
+          <circle cx="60" cy="60" r="53.5" fill="none" stroke="#fde047" strokeWidth="1.2" strokeDasharray="24 12" opacity="0.75" />
+          <g transform="translate(86, 11)">
+            <path d="M12 0 Q14 -4 16 -2" stroke="#4d7c0f" strokeWidth="2.2" fill="none" strokeLinecap="round" />
             <circle cx="12" cy="12" r="10.5" fill="#ea580c" stroke="#18181b" strokeWidth="1.4" />
             <polygon points="7,9 10,12 6,12" fill="#fef08a" />
             <polygon points="17,9 14,12 18,12" fill="#fef08a" />
             <path d="M7 15 Q12 19 17 15" stroke="#fef08a" strokeWidth="2" fill="none" />
           </g>
           <g transform="translate(8, 86)">
+            <path d="M12 0 Q10 -4 8 -2" stroke="#4d7c0f" strokeWidth="2.2" fill="none" strokeLinecap="round" />
             <circle cx="12" cy="12" r="10.5" fill="#c2410c" stroke="#18181b" strokeWidth="1.4" />
             <polygon points="7,9 10,12 6,12" fill="#fde047" />
             <polygon points="17,9 14,12 18,12" fill="#fde047" />
@@ -1343,24 +1414,29 @@ export const AvatarDecorationRing: React.FC<{
   /* 30. Stardust & Lights (¡Luces, cámara...!, Onda cósmica) — Golden/Emerald Shimmering Stardust Ring */
   if (decoration === 'luces-camara' || decoration === 'onda-cosmica') {
     const color = decoration === 'onda-cosmica' ? '#4ade80' : '#fbbf24';
+    const secColor = decoration === 'onda-cosmica' ? '#2dd4bf' : '#fef08a';
     const glow = decoration === 'onda-cosmica' ? 'rgba(74,222,128,0.85)' : 'rgba(251,191,36,0.85)';
     return (
       <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
-        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-spin-slow">
-          <circle
-            cx="60"
-            cy="60"
-            r="50"
-            fill="none"
-            stroke={color}
-            strokeWidth="3.2"
-            strokeDasharray="6 3 2 4 12 3"
-            style={{ filter: `drop-shadow(0 0 10px ${glow})` }}
-          />
-          <circle cx="60" cy="60" r="54" fill="none" stroke="#ffffff" strokeWidth="1.2" strokeDasharray="2 7 1 5" opacity="0.8" />
-          <path d="M60 4 L62 9 L67 11 L62 13 L60 18 L58 13 L53 11 L58 9 Z" fill="#ffffff" />
-          <path d="M108 58 L110 61 L113 63 L110 65 L108 68 L106 65 L103 63 L106 61 Z" fill={color} />
-          <path d="M16 88 L17.5 90.5 L20 92 L17.5 93.5 L16 96 L14.5 93.5 L12 92 L14.5 90.5 Z" fill="#ffffff" />
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible">
+          <g className="anim-spin-slow" style={{ transformOrigin: '60px 60px' }}>
+            <circle
+              cx="60"
+              cy="60"
+              r="50"
+              fill="none"
+              stroke={color}
+              strokeWidth="3.6"
+              strokeDasharray="10 4 2 4 16 4"
+              style={{ filter: `drop-shadow(0 0 10px ${glow})` }}
+            />
+            <circle cx="60" cy="60" r="54.5" fill="none" stroke="#ffffff" strokeWidth="1.2" strokeDasharray="3 8 1 6" opacity="0.85" />
+          </g>
+          <g className="anim-twinkle">
+            <path d="M60 3 L62.5 9.5 L69 12 L62.5 14.5 L60 21 L57.5 14.5 L51 12 L57.5 9.5 Z" fill="#ffffff" />
+            <path d="M108 58 L110.5 62 L114.5 64 L110.5 66 L108 70 L105.5 66 L101.5 64 L105.5 62 Z" fill={secColor} />
+            <path d="M16 86 L18 89.5 L21.5 91.5 L18 93.5 L16 97 L14 93.5 L10.5 91.5 L14 89.5 Z" fill="#ffffff" />
+          </g>
         </svg>
       </div>
     );
@@ -1370,18 +1446,20 @@ export const AvatarDecorationRing: React.FC<{
   if (decoration === 'boveda' || decoration === 'saqueo' || decoration === 'claptrap') {
     if (decoration === 'claptrap') {
       return (
-        <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
+        <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
           <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-float">
-            <circle cx="60" cy="60" r="49" fill="none" stroke="#facc15" strokeWidth="2.5" opacity="0.7" />
-            {/* Mini Claptrap Dancing at Bottom-Left */}
-            <g transform="translate(8, 66)">
-              <rect x="6" y="4" width="24" height="26" rx="4" fill="#facc15" stroke="#18181b" strokeWidth="2" />
-              <rect x="6" y="14" width="24" height="5" fill="#f8fafc" />
-              <circle cx="18" cy="11" r="4.5" fill="#38bdf8" stroke="#18181b" strokeWidth="1.4" />
-              <line x1="18" y1="0" x2="18" y2="4" stroke="#71717a" strokeWidth="2" />
-              <line x1="2" y1="16" x2="6" y2="14" stroke="#71717a" strokeWidth="2.2" />
-              <line x1="30" y1="14" x2="34" y2="8" stroke="#71717a" strokeWidth="2.2" />
-              <circle cx="18" cy="36" r="5" fill="#27272a" stroke="#18181b" strokeWidth="1.5" />
+            <circle cx="60" cy="60" r="49.5" fill="none" stroke="#facc15" strokeWidth="3.2" strokeDasharray="24 6" />
+            <circle cx="60" cy="60" r="46" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.6" />
+            <g transform="translate(6, 65)">
+              <rect x="6" y="4" width="25" height="27" rx="4.5" fill="#facc15" stroke="#09090b" strokeWidth="2.2" />
+              <rect x="6" y="14" width="25" height="5.5" fill="#f8fafc" />
+              <circle cx="18.5" cy="11" r="4.8" fill="#38bdf8" stroke="#09090b" strokeWidth="1.5" />
+              <circle cx="19.5" cy="10" r="1.4" fill="#ffffff" />
+              <line x1="18.5" y1="-2" x2="18.5" y2="4" stroke="#94a3b8" strokeWidth="2" />
+              <circle cx="18.5" cy="-3" r="2.2" fill="#ef4444" />
+              <line x1="1" y1="16" x2="6" y2="14" stroke="#94a3b8" strokeWidth="2.4" strokeLinecap="round" />
+              <line x1="31" y1="14" x2="36" y2="7" stroke="#94a3b8" strokeWidth="2.4" strokeLinecap="round" />
+              <circle cx="18.5" cy="36.5" r="5" fill="#27272a" stroke="#09090b" strokeWidth="1.8" />
             </g>
           </svg>
         </div>
@@ -1398,8 +1476,11 @@ export const AvatarDecorationRing: React.FC<{
               <stop offset="100%" stopColor={isRainbow ? '#22d3ee' : '#f97316'} />
             </linearGradient>
           </defs>
-          <circle cx="60" cy="60" r="50" fill="none" stroke={`url(#blGrad-${decoration})`} strokeWidth="5" />
-          <circle cx="60" cy="60" r="46" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.65" />
+          <circle cx="60" cy="60" r="50.5" fill="none" stroke={`url(#blGrad-${decoration})`} strokeWidth="5" />
+          <circle cx="60" cy="60" r="46" fill="none" stroke="#ffffff" strokeWidth="1.2" opacity="0.7" />
+          {/* Vault Crest Top */}
+          <circle cx="60" cy="10" r="7.5" fill="#09090b" stroke={isRainbow ? '#facc15' : '#f97316'} strokeWidth="2.2" />
+          <path d="M55 13 L60 5 L65 13" fill="none" stroke={isRainbow ? '#ec4899' : '#38bdf8'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
     );
@@ -1417,7 +1498,7 @@ export const AvatarDecorationRing: React.FC<{
             maskImage:
               'radial-gradient(circle, transparent 41%, black 47%, black 78%, transparent 95%)',
             mixBlendMode: 'screen',
-            filter: 'saturate(1.25) drop-shadow(0 0 12px rgba(96,165,250,0.85))',
+            filter: 'saturate(1.3) drop-shadow(0 0 14px rgba(96,165,250,0.9))',
           }}
         >
           <img
@@ -1427,6 +1508,12 @@ export const AvatarDecorationRing: React.FC<{
             className="w-full h-full object-cover scale-115"
           />
         </div>
+        <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full overflow-visible">
+          <circle cx="60" cy="60" r="45" fill="none" stroke="#a5b4fc" strokeWidth="1.4" opacity="0.75" />
+          <g className="anim-twinkle">
+            <path d="M96 20 L98 24 L102 26 L98 28 L96 32 L94 28 L90 26 L94 24 Z" fill="#fef9c3" />
+          </g>
+        </svg>
       </div>
     );
   }
@@ -1435,14 +1522,20 @@ export const AvatarDecorationRing: React.FC<{
   if (decoration === 'trebol' || decoration === 'jardin-secreto' || decoration === 'lirio') {
     const tone = decoration === 'lirio' ? '#34d399' : decoration === 'trebol' ? '#22c55e' : '#a3e635';
     return (
-      <div className="absolute -inset-[23%] w-[146%] h-[146%] pointer-events-none z-10">
+      <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-sway">
-          <circle cx="60" cy="60" r="50" fill="none" stroke={tone} strokeWidth="3.5" opacity="0.88" />
+          <circle cx="60" cy="60" r="50" fill="none" stroke={tone} strokeWidth="3.8" opacity="0.92" />
+          <circle cx="60" cy="60" r="46.5" fill="none" stroke="#dcfce7" strokeWidth="1" opacity="0.65" />
           <ellipse cx="20" cy="40" rx="8" ry="12" fill="#16a34a" stroke="#14532d" strokeWidth="1.2" transform="rotate(-25 20 40)" />
           <ellipse cx="100" cy="42" rx="8" ry="12" fill="#22c55e" stroke="#14532d" strokeWidth="1.2" transform="rotate(25 100 42)" />
-          <circle cx="48" cy="12" r="4" fill="#fef9c3" />
-          <circle cx="72" cy="14" r="3.5" fill="#ffffff" />
-          <circle cx="30" cy="96" r="4.5" fill="#bbf7d0" />
+          {/* 4-leaf clover accent at top */}
+          <g transform="translate(52, 2)">
+            <circle cx="5" cy="5" r="4" fill="#22c55e" stroke="#14532d" strokeWidth="0.9" />
+            <circle cx="11" cy="5" r="4" fill="#4ade80" stroke="#14532d" strokeWidth="0.9" />
+            <circle cx="5" cy="11" r="4" fill="#4ade80" stroke="#14532d" strokeWidth="0.9" />
+            <circle cx="11" cy="11" r="4" fill="#22c55e" stroke="#14532d" strokeWidth="0.9" />
+          </g>
+          <circle cx="30" cy="96" r="4.5" fill="#fef9c3" />
           <circle cx="90" cy="94" r="4.5" fill="#fde047" />
         </svg>
       </div>
@@ -1453,7 +1546,7 @@ export const AvatarDecorationRing: React.FC<{
   if (decoration === 'adorable' || decoration === 'random-xd' || decoration === 'scene-xd') {
     const primary = decoration === 'scene-xd' ? '#a3e635' : decoration === 'random-xd' ? '#f472b6' : '#c084fc';
     return (
-      <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
+      <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
         <div
           className="w-full h-full rounded-full overflow-hidden anim-float"
           style={{
@@ -1461,7 +1554,7 @@ export const AvatarDecorationRing: React.FC<{
               'radial-gradient(circle, transparent 41%, black 47%, black 78%, transparent 94%)',
             maskImage:
               'radial-gradient(circle, transparent 41%, black 47%, black 78%, transparent 94%)',
-            filter: `drop-shadow(0 0 10px ${primary})`,
+            filter: `drop-shadow(0 0 12px ${primary})`,
           }}
         >
           <img
@@ -1471,6 +1564,9 @@ export const AvatarDecorationRing: React.FC<{
             className="w-full h-full object-cover scale-115"
           />
         </div>
+        <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full overflow-visible">
+          <circle cx="60" cy="60" r="45" fill="none" stroke={primary} strokeWidth="1.6" strokeDasharray="8 4" />
+        </svg>
       </div>
     );
   }
@@ -1478,11 +1574,11 @@ export const AvatarDecorationRing: React.FC<{
   /* 35. Exclusivo de Nitro (nitro-disco, nitro-auris, nitro-chip) */
   if (decoration === 'nitro-disco') {
     return (
-      <div className="absolute -inset-[18%] w-[136%] h-[136%] pointer-events-none z-10">
+      <div className="absolute -inset-[20%] w-[140%] h-[140%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-spin-slow">
           <defs>
             <linearGradient id="nitro-disco-g" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#a3e635" />
+              <stop offset="0%" stopColor="#bef264" />
               <stop offset="50%" stopColor="#f4f4f5" />
               <stop offset="100%" stopColor="#65a30d" />
             </linearGradient>
@@ -1493,6 +1589,7 @@ export const AvatarDecorationRing: React.FC<{
             stroke="#18181b"
             strokeWidth="1.8"
           />
+          <circle cx="60" cy="60" r="53" fill="none" stroke="#a3e635" strokeWidth="1" strokeDasharray="4 6" opacity="0.7" />
           <polygon points="94,22 97,28 103,31 97,34 94,40 91,34 85,31 91,28" fill="#bef264" />
           <polygon points="22,88 24,93 29,95 24,97 22,102 20,97 15,95 20,93" fill="#a3e635" />
         </svg>
@@ -1502,26 +1599,14 @@ export const AvatarDecorationRing: React.FC<{
 
   if (decoration === 'nitro-auris') {
     return (
-      <div className="absolute -inset-[20%] w-[140%] h-[140%] pointer-events-none z-10">
+      <div className="absolute -inset-[21%] w-[142%] h-[142%] pointer-events-none z-10">
         <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-float">
-          <path
-            d="M20 62 C20 26 100 26 100 62"
-            fill="none"
-            stroke="#3b82f6"
-            strokeWidth="6.5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M24 60 C24 30 96 30 96 60"
-            fill="none"
-            stroke="#38bdf8"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-          />
-          <rect x="10" y="52" width="15" height="28" rx="6" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
-          <rect x="95" y="52" width="15" height="28" rx="6" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
-          <circle cx="17.5" cy="66" r="3" fill="#818cf8" />
-          <circle cx="102.5" cy="66" r="3" fill="#818cf8" />
+          <path d="M20 62 C20 24 100 24 100 62" fill="none" stroke="#1d4ed8" strokeWidth="7.5" strokeLinecap="round" />
+          <path d="M22 60 C22 27 98 27 98 60" fill="none" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round" />
+          <rect x="8" y="51" width="16" height="30" rx="6.5" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+          <rect x="96" y="51" width="16" height="30" rx="6.5" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+          <circle cx="16" cy="66" r="3.4" fill="#818cf8" />
+          <circle cx="104" cy="66" r="3.4" fill="#818cf8" />
         </svg>
       </div>
     );
@@ -1529,11 +1614,12 @@ export const AvatarDecorationRing: React.FC<{
 
   if (decoration === 'nitro-chip') {
     return (
-      <div className="absolute -inset-[20%] w-[140%] h-[140%] pointer-events-none z-10">
-        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible">
+      <div className="absolute -inset-[21%] w-[142%] h-[142%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-holo-glow">
           <defs>
             <linearGradient id="nitro-chip-g" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#f472b6" />
+              <stop offset="50%" stopColor="#818cf8" />
               <stop offset="100%" stopColor="#22d3ee" />
             </linearGradient>
           </defs>
@@ -1541,46 +1627,132 @@ export const AvatarDecorationRing: React.FC<{
             d="M16 28 L34 14 L88 14 L104 28 L104 92 L88 106 L34 106 L16 92 Z"
             fill="none"
             stroke="url(#nitro-chip-g)"
-            strokeWidth="3.5"
+            strokeWidth="3.8"
             strokeLinejoin="round"
           />
-          <path d="M26 24 H52 M68 96 H94" stroke="#f472b6" strokeWidth="2.5" strokeLinecap="round" />
-          <circle cx="92" cy="24" r="3" fill="#22d3ee" />
-          <circle cx="28" cy="96" r="3" fill="#f472b6" />
+          <path d="M26 24 H52 M68 96 H94" stroke="#f472b6" strokeWidth="2.6" strokeLinecap="round" />
+          <circle cx="92" cy="24" r="3.4" fill="#22d3ee" />
+          <circle cx="28" cy="96" r="3.4" fill="#f472b6" />
         </svg>
       </div>
     );
   }
 
+  /* 36. Fallback Premium Iridescent Ring (ofrenda / enfado / etc.) */
   return (
-    <svg viewBox="0 0 120 120" className="absolute -inset-[12%] w-[124%] h-[124%] pointer-events-none z-10">
-      <circle cx="60" cy="60" r="52" fill="none" stroke="#a855f7" strokeWidth="4" />
-    </svg>
+    <div className="absolute -inset-[18%] w-[136%] h-[136%] pointer-events-none z-10">
+      <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-holo-glow">
+        <defs>
+          <linearGradient id="fallbackRingG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#f472b6" />
+            <stop offset="50%" stopColor="#a855f7" />
+            <stop offset="100%" stopColor="#38bdf8" />
+          </linearGradient>
+        </defs>
+        <circle cx="60" cy="60" r="51" fill="none" stroke="url(#fallbackRingG)" strokeWidth="4.2" />
+        <circle cx="60" cy="60" r="47" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.6" />
+      </svg>
+    </div>
   );
 };
 
-/* Ornate Discord Profile Frames (wrap cleanly around profile cards & break outer edge just like screenshots) */
+/* Ornate Discord Profile Frames (all 12 collector frames crafted across 4 edges) */
 export const ProfileFrameArtwork: React.FC<{
   frame?: ProfileFrameId;
   accentColor?: string;
 }> = ({ frame, accentColor }) => {
-  if (
-    !frame ||
-    frame === 'none' ||
-    frame === 'obsidian' ||
-    frame === 'crimson' ||
-    frame === 'neon-blue' ||
-    frame === 'gold' ||
-    frame === 'glitch'
-  ) {
+  if (!frame || frame === 'none') {
     return null;
   }
 
-  /* Night Terrors: Espectro — Pale Ghoul Climbing Over Top Edge of Profile Card */
+  /* 1. Obsidiana — Faceted Obsidian Crystal Bevel Frame */
+  if (frame === 'obsidian') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-zinc-300/40 shadow-[0_0_26px_rgba(255,255,255,0.14)]" />
+        <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible">
+          <polygon points="4,22 22,4 28,10 10,28" fill="#e4e4e7" stroke="#18181b" strokeWidth="1.2" />
+          <polygon points="196,22 178,4 172,10 190,28" fill="#e4e4e7" stroke="#18181b" strokeWidth="1.2" />
+          <polygon points="4,158 22,176 28,170 10,152" fill="#a1a1aa" stroke="#18181b" strokeWidth="1.2" />
+          <polygon points="196,158 178,176 172,170 190,152" fill="#a1a1aa" stroke="#18181b" strokeWidth="1.2" />
+          <polygon points="94,4 100,-2 106,4 100,10" fill="#ffffff" stroke="#27272a" strokeWidth="1" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 2. Carmesí GTA — Metallic Vice Racing Frame & Ruby Locks */
+  if (frame === 'crimson') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-red-500/80 shadow-[0_0_28px_rgba(239,68,68,0.38)]" />
+        <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible anim-ember">
+          <path d="M6 28 L6 10 Q6 6 10 6 L34 6" fill="none" stroke="#f87171" strokeWidth="4" strokeLinecap="round" />
+          <path d="M194 28 L194 10 Q194 6 190 6 L166 6" fill="none" stroke="#f87171" strokeWidth="4" strokeLinecap="round" />
+          <path d="M6 152 L6 170 Q6 174 10 174 L34 174" fill="none" stroke="#dc2626" strokeWidth="4" strokeLinecap="round" />
+          <path d="M194 152 L194 170 Q194 174 190 174 L166 174" fill="none" stroke="#dc2626" strokeWidth="4" strokeLinecap="round" />
+          <path d="M74 6 L82 0 L118 0 L126 6 Z" fill="#ef4444" stroke="#fecaca" strokeWidth="0.9" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 3. Neón Azul — Cyber Tactical HUD Brackets */
+  if (frame === 'neon-blue') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-sky-400/80 shadow-[0_0_28px_rgba(56,189,248,0.42)]" />
+        <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible">
+          <path d="M4 32 V10 L14 4 H40" fill="none" stroke="#38bdf8" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M196 32 V10 L186 4 H160" fill="none" stroke="#38bdf8" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M4 148 V170 L14 176 H40" fill="none" stroke="#22d3ee" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M196 148 V170 L186 176 H160" fill="none" stroke="#22d3ee" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="82" y1="4" x2="118" y2="4" stroke="#bae6fd" strokeWidth="3" strokeLinecap="round" />
+          <circle cx="100" cy="176" r="2.6" fill="#38bdf8" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 4. Dorado Real — Royal Baroque Gold Filigree Frame */
+  if (frame === 'gold') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-amber-400/85 shadow-[0_0_28px_rgba(245,158,11,0.36)]" />
+        <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible">
+          <path d="M72 6 Q100 -8 128 6" fill="none" stroke="#fbbf24" strokeWidth="4" strokeLinecap="round" />
+          <polygon points="100,-5 107,3 100,11 93,3" fill="#fef08a" stroke="#b45309" strokeWidth="1.2" />
+          <path d="M6 26 Q6 6 26 6" fill="none" stroke="#f59e0b" strokeWidth="4.2" strokeLinecap="round" />
+          <path d="M194 26 Q194 6 174 6" fill="none" stroke="#f59e0b" strokeWidth="4.2" strokeLinecap="round" />
+          <path d="M6 154 Q6 174 26 174" fill="none" stroke="#d97706" strokeWidth="4.2" strokeLinecap="round" />
+          <path d="M194 154 Q194 174 174 174" fill="none" stroke="#d97706" strokeWidth="4.2" strokeLinecap="round" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 5. Cyber Glitch — Chromatic RGB Split & Pixel Glitch Blocks */
+  if (frame === 'glitch') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-indigo-400/85 shadow-[0_0_28px_rgba(88,101,242,0.45)]" />
+        <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible anim-holo-glow">
+          <rect x="18" y="-2" width="32" height="5" fill="#22d3ee" />
+          <rect x="132" y="-3" width="24" height="5" fill="#ec4899" />
+          <rect x="-2" y="42" width="5" height="26" fill="#ec4899" />
+          <rect x="197" y="96" width="5" height="28" fill="#22d3ee" />
+          <rect x="64" y="176" width="44" height="5" fill="#a855f7" />
+          <rect x="148" y="175" width="16" height="4" fill="#a3e635" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* Night Terrors: Espectro — Pale Ghoul Climbing Over Top & Bottom Edges */
   if (frame === 'espectro') {
     return (
       <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
-        <div className="w-full h-full rounded-2xl border-2 border-zinc-200/45 shadow-[0_0_24px_rgba(255,255,255,0.12)]" />
+        <div className="w-full h-full rounded-2xl border-2 border-zinc-200/55 shadow-[0_0_26px_rgba(255,255,255,0.16)]" />
         <svg viewBox="0 0 200 180" className="absolute -top-6 inset-x-0 w-full h-auto overflow-visible anim-ghost">
           <path d="M18 42 Q8 14 38 14 Q48 26 42 40 Z" fill="#18181b" stroke="#e4e4e7" strokeWidth="2.2" />
           <path d="M36 32 Q72 8 104 22 Q128 8 164 26 Q178 36 168 46 Q128 32 100 34 Q70 30 36 32 Z" fill="#f4f4f5" stroke="#09090b" strokeWidth="2.4" />
@@ -1597,7 +1769,7 @@ export const ProfileFrameArtwork: React.FC<{
   if (frame === 'observador') {
     return (
       <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
-        <div className="w-full h-full rounded-2xl border-[3px] border-black shadow-[0_0_25px_rgba(0,0,0,0.95)] ring-1 ring-white/25" />
+        <div className="w-full h-full rounded-2xl border-[3px] border-black shadow-[0_0_25px_rgba(0,0,0,0.95)] ring-1 ring-white/30" />
         <svg viewBox="0 0 200 180" className="absolute -top-6 inset-x-0 w-full h-auto overflow-visible">
           <path d="M10 42 Q26 4 62 10 Q100 -2 138 10 Q174 4 190 42 Q145 30 100 32 Q55 30 10 42 Z" fill="#050507" stroke="#ffffff" strokeWidth="1.2" />
           <g className="anim-eye-blink">
@@ -1617,14 +1789,16 @@ export const ProfileFrameArtwork: React.FC<{
   if (frame === 'ramas-desnudas') {
     return (
       <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
-        <div className="w-full h-full rounded-2xl border-2 border-zinc-400/50 shadow-[0_0_20px_rgba(228,228,231,0.12)]" />
+        <div className="w-full h-full rounded-2xl border-2 border-zinc-400/55 shadow-[0_0_20px_rgba(228,228,231,0.16)]" />
         <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible">
           <path d="M12 36 Q18 10 56 12 Q100 4 146 12 Q184 10 188 36" fill="none" stroke="#52525b" strokeWidth="4.5" strokeLinecap="round" />
           <path d="M16 32 Q12 120 18 168 M184 32 Q188 120 182 168" fill="none" stroke="#3f3f46" strokeWidth="3.5" strokeLinecap="round" />
           <path d="M24 164 Q100 176 176 164" fill="none" stroke="#52525b" strokeWidth="3.5" strokeLinecap="round" />
-          <circle cx="52" cy="8" r="2.2" fill="#fef9c3" />
-          <circle cx="110" cy="6" r="2.6" fill="#ffffff" />
-          <circle cx="152" cy="10" r="2" fill="#fde047" />
+          <g className="anim-twinkle">
+            <circle cx="52" cy="8" r="2.4" fill="#fef9c3" />
+            <circle cx="110" cy="6" r="2.8" fill="#ffffff" />
+            <circle cx="152" cy="10" r="2.2" fill="#fde047" />
+          </g>
         </svg>
       </div>
     );
@@ -1634,7 +1808,7 @@ export const ProfileFrameArtwork: React.FC<{
   if (frame === 'flores-luna') {
     return (
       <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
-        <div className="w-full h-full rounded-2xl border-2 border-emerald-400/60 shadow-[0_0_24px_rgba(74,222,128,0.22)]" />
+        <div className="w-full h-full rounded-2xl border-2 border-emerald-400/65 shadow-[0_0_24px_rgba(74,222,128,0.28)]" />
         <svg viewBox="0 0 200 180" className="absolute -top-5 inset-x-0 w-full h-auto overflow-visible anim-sway">
           <path d="M14 48 Q20 12 100 16 Q180 12 186 48" fill="none" stroke="#4d7c0f" strokeWidth="5.5" strokeLinecap="round" />
           <circle cx="44" cy="18" r="10" fill="#fef9c3" stroke="#65a30d" strokeWidth="1.5" />
@@ -1653,7 +1827,7 @@ export const ProfileFrameArtwork: React.FC<{
   if (frame === 'diablo-jersey') {
     return (
       <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
-        <div className="w-full h-full rounded-2xl border-[3px] border-slate-500/70 shadow-[0_0_22px_rgba(148,163,184,0.22)]" />
+        <div className="w-full h-full rounded-2xl border-[3px] border-slate-500/75 shadow-[0_0_24px_rgba(148,163,184,0.28)]" />
         <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible">
           <path d="M12 24 L26 10 L44 20 L66 8 L88 20 L112 8 L134 20 L156 8 L174 20 L188 12" fill="none" stroke="#64748b" strokeWidth="4" strokeLinejoin="round" />
           <path d="M14 168 L36 156 L58 170 L88 158 L116 170 L146 156 L176 168" fill="none" stroke="#475569" strokeWidth="3.5" strokeLinejoin="round" />
@@ -1666,7 +1840,7 @@ export const ProfileFrameArtwork: React.FC<{
   if (frame === 'el-ente') {
     return (
       <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
-        <div className="w-full h-full rounded-2xl border-2 border-orange-500/65 shadow-[0_0_26px_rgba(249,115,22,0.28)]" />
+        <div className="w-full h-full rounded-2xl border-2 border-orange-500/70 shadow-[0_0_26px_rgba(249,115,22,0.34)]" />
         <svg viewBox="0 0 200 180" className="absolute -top-6 inset-x-0 w-full h-auto overflow-visible anim-ember">
           <path d="M24 38 Q16 8 40 4 Q32 22 42 36 Z" fill="#f97316" stroke="#18181b" strokeWidth="1.5" />
           <path d="M62 34 Q58 4 82 2 Q74 20 80 34 Z" fill="#ea580c" stroke="#18181b" strokeWidth="1.5" />
@@ -1682,11 +1856,10 @@ export const ProfileFrameArtwork: React.FC<{
     const moonColor = accentColor === '#ef4444' ? '#fca5a5' : '#f8fafc';
     return (
       <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
-        <div className="w-full h-full rounded-2xl border-2 border-slate-400/50 shadow-[0_0_24px_rgba(148,163,184,0.2)]" />
+        <div className="w-full h-full rounded-2xl border-2 border-slate-400/55 shadow-[0_0_24px_rgba(148,163,184,0.24)]" />
         <svg viewBox="0 0 200 180" className="absolute -top-7 inset-x-0 w-full h-auto overflow-visible">
-          <circle cx="92" cy="22" r="18" fill={moonColor} opacity="0.92" />
+          <circle cx="92" cy="22" r="18" fill={moonColor} opacity="0.94" />
           <path d="M16 40 Q42 18 82 28 Q128 18 184 40" fill="none" stroke="#1e293b" strokeWidth="5" strokeLinecap="round" />
-          {/* Crows */}
           <path d="M46 24 Q52 14 60 22 L54 27 Z" fill="#09090b" />
           <path d="M116 20 Q122 10 130 18 L124 23 Z" fill="#09090b" />
         </svg>
@@ -2043,15 +2216,28 @@ export const NameplateStripBackground: React.FC<{
     );
   }
 
-  return null;
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div
+        className="w-full h-full"
+        style={{
+          background:
+            'linear-gradient(90deg, rgba(16,18,27,0.92) 0%, rgba(88,101,242,0.34) 55%, rgba(236,72,153,0.28) 100%)',
+        }}
+      />
+      <div className="absolute inset-x-0 top-0 h-[1px] bg-white/25" />
+    </div>
+  );
 };
 
 export const NameplateRowDecor: React.FC<{ nameplate: NameplateId }> = ({ nameplate }) => {
+  if (nameplate === 'none') return null;
+
   if (nameplate === 'miyabi') {
     return (
-      <div className="flex items-center justify-end gap-2 shrink-0 z-10">
+      <div className="flex items-center justify-end shrink-0 z-10">
         <svg viewBox="0 0 80 48" className="w-16 h-10 shrink-0 overflow-visible">
-          <path d="M5 42 Q25 10 60 18 Q42 36 18 46 Z" fill="#22d3ee" opacity="0.5" className="anim-flame" />
+          <path d="M5 42 Q25 10 60 18 Q42 36 18 46 Z" fill="#22d3ee" opacity="0.55" className="anim-flame" />
           <g className="anim-float">
             <circle cx="52" cy="24" r="13" fill="#18181b" stroke="#38bdf8" strokeWidth="2" />
             <g className="anim-eye-blink">
@@ -2064,23 +2250,103 @@ export const NameplateRowDecor: React.FC<{ nameplate: NameplateId }> = ({ namepl
     );
   }
 
+  /* Custom SVG Emblem Crests for every Nameplate (zero raw emoji fallbacks) */
   if (nameplate === 'deadpool' || nameplate === 'wolverine') {
+    const isWolv = nameplate === 'wolverine';
     return (
-      <span className="text-lg z-10 anim-float drop-shadow">
-        {nameplate === 'wolverine' ? '⚔️' : '🫶'}
-      </span>
+      <svg viewBox="0 0 40 32" className="w-9 h-7 shrink-0 z-10 anim-float">
+        {isWolv ? (
+          <>
+            <path d="M10 26 L18 5 M19 27 L25 4 M28 26 L33 6" stroke="#facc15" strokeWidth="3.2" strokeLinecap="round" />
+            <path d="M10 26 L18 5 M19 27 L25 4 M28 26 L33 6" stroke="#ffffff" strokeWidth="1.1" strokeLinecap="round" />
+          </>
+        ) : (
+          <>
+            <line x1="8" y1="5" x2="32" y2="27" stroke="#e2e8f0" strokeWidth="3" strokeLinecap="round" />
+            <line x1="32" y1="5" x2="8" y2="27" stroke="#e2e8f0" strokeWidth="3" strokeLinecap="round" />
+            <circle cx="20" cy="16" r="7" fill="#dc2626" stroke="#09090b" strokeWidth="1.5" />
+            <ellipse cx="17.5" cy="15.5" rx="1.6" ry="2.2" fill="#ffffff" />
+            <ellipse cx="22.5" cy="15.5" rx="1.6" ry="2.2" fill="#ffffff" />
+          </>
+        )}
+      </svg>
     );
   }
 
-  if (nameplate === 'dbd' || nameplate === 'marcas-aranazos') {
-    return <span className="text-lg z-10 anim-ember drop-shadow">🔥</span>;
+  if (nameplate === 'dbd' || nameplate === 'marcas-aranazos' || nameplate === 'red-sangre') {
+    const tone = nameplate === 'red-sangre' ? '#ef4444' : '#f97316';
+    return (
+      <svg viewBox="0 0 40 32" className="w-9 h-7 shrink-0 z-10 anim-ember">
+        <path d="M8 25 Q18 14 34 6" stroke={tone} strokeWidth="3" strokeLinecap="round" fill="none" />
+        <path d="M12 28 Q21 18 35 12" stroke="#fca5a5" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+        <path d="M18 29 Q25 22 36 18" stroke={tone} strokeWidth="2" strokeLinecap="round" fill="none" />
+      </svg>
+    );
   }
 
   if (nameplate === 'conejito-fresero') {
-    return <span className="text-lg z-10 anim-float drop-shadow">🍓</span>;
+    return (
+      <svg viewBox="0 0 36 32" className="w-8 h-7 shrink-0 z-10 anim-float">
+        <ellipse cx="14" cy="10" rx="3.2" ry="7.5" fill="#fdf2f8" stroke="#ec4899" strokeWidth="1.3" transform="rotate(-10 14 10)" />
+        <ellipse cx="22" cy="10" rx="3.2" ry="7.5" fill="#fdf2f8" stroke="#ec4899" strokeWidth="1.3" transform="rotate(10 22 10)" />
+        <circle cx="18" cy="20" r="8" fill="#fdf2f8" stroke="#ec4899" strokeWidth="1.4" />
+        <circle cx="15" cy="19" r="1.3" fill="#be185d" />
+        <circle cx="21" cy="19" r="1.3" fill="#be185d" />
+        <path d="M16.5 22 Q18 23.8 19.5 22" stroke="#f43f5e" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+      </svg>
+    );
   }
 
-  return null;
+  if (nameplate === 'el-mismo-pato') {
+    return (
+      <svg viewBox="0 0 36 32" className="w-8 h-7 shrink-0 z-10 anim-float">
+        <circle cx="18" cy="16" r="9" fill="#ffffff" stroke="#38bdf8" strokeWidth="1.4" />
+        <path d="M24 16 Q32 16 31 19 Q27 21 23 19 Z" fill="#fb923c" />
+        <circle cx="21" cy="14" r="1.4" fill="#0f172a" />
+      </svg>
+    );
+  }
+
+  if (nameplate === 'gojo' || nameplate === 'sukuna' || nameplate === 'yuji') {
+    const c1 = nameplate === 'gojo' ? '#38bdf8' : nameplate === 'sukuna' ? '#ef4444' : '#fb7185';
+    const c2 = nameplate === 'gojo' ? '#a855f7' : '#f97316';
+    return (
+      <svg viewBox="0 0 36 32" className="w-8 h-7 shrink-0 z-10 anim-holo-glow">
+        <circle cx="14" cy="16" r="7" fill="none" stroke={c1} strokeWidth="2.4" />
+        <circle cx="22" cy="16" r="7" fill="none" stroke={c2} strokeWidth="2.4" />
+        <circle cx="18" cy="16" r="2.2" fill="#ffffff" />
+      </svg>
+    );
+  }
+
+  if (nameplate === 'observador' || nameplate === 'almas' || nameplate === 'luna-oscura' || nameplate === 'lobo') {
+    return (
+      <svg viewBox="0 0 36 32" className="w-8 h-7 shrink-0 z-10 anim-ghost">
+        <path d="M22 6 A10 10 0 1 0 28 24 A8 8 0 1 1 22 6 Z" fill="#f4f4f5" />
+        <circle cx="25" cy="12" r="1.5" fill="#ffffff" />
+      </svg>
+    );
+  }
+
+  if (nameplate === 'rama' || nameplate === 'sakura' || nameplate === 'flores-luna' || nameplate === 'jardin-secreto') {
+    const petal = nameplate === 'flores-luna' ? '#fef08a' : nameplate === 'jardin-secreto' ? '#4ade80' : '#f9a8d4';
+    return (
+      <svg viewBox="0 0 36 32" className="w-8 h-7 shrink-0 z-10 anim-sway">
+        <circle cx="18" cy="11" r="4" fill={petal} />
+        <circle cx="13" cy="16" r="4" fill={petal} />
+        <circle cx="23" cy="16" r="4" fill={petal} />
+        <circle cx="16" cy="21" r="4" fill={petal} />
+        <circle cx="20" cy="21" r="4" fill={petal} />
+        <circle cx="18" cy="16" r="2.6" fill="#fde047" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 32 32" className="w-7 h-7 shrink-0 z-10 anim-twinkle">
+      <path d="M16 4 L18.5 12.5 L27 15 L18.5 17.5 L16 26 L13.5 17.5 L5 15 L13.5 12.5 Z" fill="#ffffff" opacity="0.88" />
+    </svg>
+  );
 };
 
 export const PROFILE_EFFECT_META: Record<
@@ -2484,37 +2750,67 @@ export const ProfileEffectAnimationOverlay: React.FC<{
             meta.particles === 'petals' ||
             meta.particles === 'cyber' ||
             meta.particles === 'horror') && (
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 pointer-events-none">
               {[
-                { left: '62%', top: '18%', size: 8, delay: 0 },
-                { left: '78%', top: '34%', size: 10, delay: 0.15 },
-                { left: '88%', top: '22%', size: 6, delay: 0.3 },
-                { left: '54%', top: '44%', size: 7, delay: 0.45 },
-                { left: '72%', top: '56%', size: 9, delay: 0.2 },
-                { left: '91%', top: '48%', size: 6, delay: 0.5 },
-                { left: '44%', top: '24%', size: 5, delay: 0.35 },
-              ].map((dot, idx) => (
-                <motion.span
-                  key={idx}
-                  initial={{ opacity: 0, y: 18, scale: 0.4 }}
-                  animate={{
-                    opacity: [0, 1, 0.85, 0],
-                    y: meta.particles === 'petals' ? [0, 28, 52] : [18, -14, -36],
-                    x: meta.particles === 'petals' ? [0, -14, -26] : [0, 6, -4],
-                    scale: [0.4, 1.15, 0.7],
-                  }}
-                  transition={{ duration: 2.3, delay: dot.delay, ease: 'easeOut' }}
-                  className="absolute rounded-full"
-                  style={{
-                    left: dot.left,
-                    top: dot.top,
-                    width: meta.particles === 'cyber' ? 2 : dot.size,
-                    height: meta.particles === 'cyber' ? 24 : dot.size,
-                    backgroundColor: idx % 2 === 0 ? meta.primary : meta.secondary,
-                    boxShadow: `0 0 12px ${idx % 2 === 0 ? meta.primary : meta.secondary}`,
-                  }}
-                />
-              ))}
+                { left: '62%', top: '18%', size: 13, delay: 0, rot: 14 },
+                { left: '78%', top: '34%', size: 15, delay: 0.15, rot: -22 },
+                { left: '88%', top: '22%', size: 11, delay: 0.3, rot: 35 },
+                { left: '54%', top: '44%', size: 12, delay: 0.45, rot: -15 },
+                { left: '72%', top: '56%', size: 14, delay: 0.2, rot: 28 },
+                { left: '91%', top: '48%', size: 11, delay: 0.5, rot: -30 },
+                { left: '44%', top: '24%', size: 10, delay: 0.35, rot: 10 },
+              ].map((dot, idx) => {
+                const tone = idx % 2 === 0 ? meta.primary : meta.secondary;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 16, scale: 0.4, rotate: dot.rot }}
+                    animate={{
+                      opacity: [0, 1, 0.9, 0],
+                      y: meta.particles === 'petals' ? [0, 28, 56] : [18, -14, -40],
+                      x: meta.particles === 'petals' ? [0, -14, -28] : [0, 6, -4],
+                      scale: [0.4, 1.15, 0.72],
+                      rotate: meta.particles === 'petals' ? [dot.rot, dot.rot + 45, dot.rot + 95] : [0, 15, 0],
+                    }}
+                    transition={{ duration: 2.35, delay: dot.delay, ease: 'easeOut' }}
+                    className="absolute"
+                    style={{
+                      left: dot.left,
+                      top: dot.top,
+                      filter: `drop-shadow(0 0 8px ${tone})`,
+                    }}
+                  >
+                    {meta.particles === 'petals' ? (
+                      <svg width={dot.size} height={dot.size} viewBox="0 0 20 20">
+                        <path d="M10 1 C15 5 17 13 10 19 C3 13 5 5 10 1 Z" fill={tone} />
+                      </svg>
+                    ) : meta.particles === 'sparks' ? (
+                      <svg width={dot.size} height={dot.size} viewBox="0 0 20 20">
+                        <path d="M10 0 L12.5 7.5 L20 10 L12.5 12.5 L10 20 L7.5 12.5 L0 10 L7.5 7.5 Z" fill={tone} />
+                      </svg>
+                    ) : meta.particles === 'horror' ? (
+                      <svg width={dot.size + 4} height={dot.size} viewBox="0 0 24 16">
+                        <ellipse cx="12" cy="8" rx="10" ry="5" fill="#ffffff" stroke="#09090b" strokeWidth="1.2" />
+                        <circle cx="12" cy="8" r="2.8" fill="#09090b" />
+                      </svg>
+                    ) : meta.particles === 'cyber' ? (
+                      <span
+                        className="block rounded-full"
+                        style={{
+                          width: 2.5,
+                          height: dot.size * 1.8,
+                          background: `linear-gradient(180deg, #ffffff, ${tone}, transparent)`,
+                        }}
+                      />
+                    ) : (
+                      <svg width={dot.size} height={dot.size + 4} viewBox="0 0 16 20">
+                        <path d="M8 1 Q14 9 8 19 Q2 9 8 1 Z" fill={tone} />
+                        <circle cx="8" cy="12" r="2.2" fill="#ffffff" />
+                      </svg>
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
           )}
 

@@ -1330,8 +1330,8 @@ export const ServerSettingsView: React.FC<ServerSettingsViewProps> = ({
         <div className="flex-1 overflow-y-auto px-4 pt-4 pb-20 space-y-5">
           <div className="max-w-lg mx-auto space-y-5">
             <div className="rounded-2xl bg-[#111216] border border-white/10 divide-y divide-white/[0.06] overflow-hidden">
-              {roles.map((r) => (
-                <button
+              {roles.map((r, idx) => (
+                <div
                   key={r.id}
                   onClick={() => {
                     setEditingRole(r);
@@ -1340,9 +1340,12 @@ export const ServerSettingsView: React.FC<ServerSettingsViewProps> = ({
                     setRoleUseGradient(!!r.gradientColors);
                     if (r.gradientColors) setRoleGradEnd(r.gradientColors[1]);
                   }}
-                  className="w-full px-4 py-3.5 flex items-center justify-between gap-3 hover:bg-white/[0.04] text-left cursor-pointer"
+                  className="w-full px-3.5 py-3 flex items-center justify-between gap-2.5 hover:bg-white/[0.04] text-left cursor-pointer"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <span className="text-[11px] font-bold text-zinc-500 tabular-nums w-5 shrink-0">
+                      #{idx + 1}
+                    </span>
                     <span
                       className="w-4 h-4 rounded-full shrink-0"
                       style={{
@@ -1351,7 +1354,7 @@ export const ServerSettingsView: React.FC<ServerSettingsViewProps> = ({
                           : r.color,
                       }}
                     />
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p
                         className="font-bold text-[15px] truncate"
                         style={
@@ -1371,8 +1374,43 @@ export const ServerSettingsView: React.FC<ServerSettingsViewProps> = ({
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />
-                </button>
+                  <div
+                    className="flex items-center gap-1 shrink-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      aria-label={`Subir rol ${r.name}`}
+                      onClick={() => {
+                        if (idx === 0) return;
+                        const next = [...roles];
+                        const [item] = next.splice(idx, 1);
+                        next.splice(idx - 1, 0, item);
+                        onUpdateServer(server.id, { roles: next });
+                      }}
+                      className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/10 disabled:opacity-25 flex items-center justify-center text-zinc-300 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      <ArrowUp className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === roles.length - 1}
+                      aria-label={`Bajar rol ${r.name}`}
+                      onClick={() => {
+                        if (idx === roles.length - 1) return;
+                        const next = [...roles];
+                        const [item] = next.splice(idx, 1);
+                        next.splice(idx + 1, 0, item);
+                        onUpdateServer(server.id, { roles: next });
+                      }}
+                      className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/10 disabled:opacity-25 flex items-center justify-center text-zinc-300 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      <ArrowDown className="w-3.5 h-3.5" />
+                    </button>
+                    <ChevronRight className="w-4 h-4 text-zinc-400 ml-0.5" />
+                  </div>
+                </div>
               ))}
             </div>
 

@@ -100,89 +100,6 @@ const USER_ONLY_ORBS_AMOUNT = 1000000000000000;
 const SQUAD_DEV_MEMBER_COUNT = 20909470267;
 const SQUAD_DEV_MEMBER_DISPLAY = '209.0947.0267';
 
-interface CommunityHuman {
-  id: string;
-  name: string;
-  avatar: AvatarKey;
-  tag?: string;
-}
-
-const COMMUNITY_HUMANS: CommunityHuman[] = [
-  { id: 'snuf', name: 'snuf', avatar: 'snuf' },
-  { id: 'jorge', name: 'Jorge', avatar: 'jorge' },
-  { id: 'alex', name: '-/alex_rawr\\-', avatar: 'alex', tag: '⚡ 培根' },
-  { id: 'dev', name: 'Dev', avatar: 'dev' },
-  { id: 'joawasa', name: 'Joawasa', avatar: 'joawasa' },
-  { id: 'carioca', name: 'Carioca', avatar: 'carioca' },
-  { id: 'phibi', name: 'Phibi', avatar: 'phibi' },
-  { id: 'alirito', name: 'Alirito', avatar: 'alirito' },
-  { id: 'locke', name: 'LockE', avatar: 'locke' },
-  { id: 'dragon', name: '𒅒龙的传人𒅒', avatar: 'dragon' },
-];
-
-const HUMAN_GENERAL_CHAT_POOL = [
-  'alguien ya probó el último build? a mí me cargó al toque 🔥',
-  'uff qué limpio se ve el dark mode nuevo ngl',
-  'quién se mete a Sala Dev un rato? estamos poniendo temazos 🎧',
-  'jajaja literal no dormimos nunca en este server 💀',
-  'acabo de arreglar un bug que llevaba 2 horas buscando y era una coma 😭',
-  'wenaaa gente cómo anda todo por acá?',
-  'alguien para unas partidas más tarde o siguen full código?',
-  'me encanta lo activo que está el general hoy jaja',
-  'pasen captura de cómo les quedó el setup 👀',
-  'yo recién me hice otro café, toca trasnochar hoy ☕',
-  'broo ese diseño quedó 10/10 sin exagerar',
-  'quién anda en llamada? entro en 2 minutos que reinicio el mic',
-  'siento que somos millones conectados ahorita y el chat volando 🚀',
-  'jajajaj totalmente de acuerdo con eso',
-  'alguien sabe si van a hacer evento hoy en la noche?',
-  'ey acabo de llegar, de qué me perdí? 👀',
-  'nahhh eso quedó demasiado clean 💯',
-  'estoy probando unas animaciones nuevas y casi explota el navegador 😂',
-  'buenas noches genteee, activos por aquí!',
-  'literal este servidor es mi casa ya jajaja ❤️',
-  'vengan a #desarrollo que ahí tiramos ideas para la v3',
-  'si alguien necesita ayuda con TypeScript que avise por acá 👍',
-];
-
-const buildServerHumanReply = (
-  content: string,
-  senderName: string,
-  responder: CommunityHuman
-): string => {
-  const lower = content.toLowerCase();
-  if (lower.includes('hola') || lower.includes('buenas') || lower.includes('hey') || lower.includes('wena')) {
-    const greetings = [
-      `eyyy buenas @${senderName}! cómo anda todo? 🔥`,
-      `qué pasa @${senderName}!! bienvenido al chat 👋`,
-      `holaaa @${senderName}, justo estábamos hablando por acá jaja`,
-    ];
-    return greetings[Math.floor(Math.random() * greetings.length)];
-  }
-  if (lower.includes('?') || lower.includes('alguien') || lower.includes('quien') || lower.includes('como')) {
-    const answers = [
-      `yo estoy acá activo @${senderName}! dime qué necesitas 👀`,
-      `sí bro, justo estábamos viendo eso en el grupo jaja`,
-      `dale @${senderName}, si quieres pásate a Sala Dev y lo vemos rápido 🚀`,
-    ];
-    return answers[Math.floor(Math.random() * answers.length)];
-  }
-  if (lower.includes('dev') || lower.includes('codigo') || lower.includes('código') || lower.includes('bug') || lower.includes('app')) {
-    return `ufff @${senderName} quedó durísimo eso 💻🔥 me apunto a probarlo`;
-  }
-  if (lower.includes('voz') || lower.includes('llamada') || lower.includes('call') || lower.includes('jugar')) {
-    return `yooo me sumo @${senderName}! métanse a Sala Dev en un toque 🎧`;
-  }
-  const casual = [
-    `jajaja facts @${senderName} 💯`,
-    `literal @${senderName} 🔥🔥`,
-    `totalmente bro, está re activo el general hoy 🙌`,
-    `uff sí @${senderName}, ${responder.name === 'snuf' ? 'de una' : 'apoyo eso al 100%'} 😂`,
-    `qué grande @${senderName} 🚀`,
-  ];
-  return casual[Math.floor(Math.random() * casual.length)];
-};
-
 const DEFAULT_ACCOUNT: StoredAccount = {
   id: 'acc-zinepth',
   contact: 'zinepth@discord.gg',
@@ -431,6 +348,7 @@ export default function App() {
   const [profileViewTrigger, setProfileViewTrigger] = useState(0);
   const [showOwnerPanel, setShowOwnerPanel] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
 
   const isOwner = useMemo(
     () => isActiveAccountOwner(activeAccountId, accounts, user),
@@ -529,7 +447,13 @@ export default function App() {
 
   const showToastMsg = (msg: string) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 2800);
+    if (toastTimerRef.current !== null) {
+      window.clearTimeout(toastTimerRef.current);
+    }
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 2800);
   };
 
   const unreadTotal = useMemo(() => {
@@ -556,108 +480,6 @@ export default function App() {
       : undefined;
 
   const activeChannelObj = activeServer?.channels.find((c) => c.id === selectedChannelId);
-  const isLiveHumanChannel = Boolean(
-    activeAccountId &&
-      screen === 'inicio' &&
-      activeServer &&
-      activeChannelObj &&
-      activeChannelObj.type === 'text' &&
-      !activeChannelObj.isPrivate &&
-      (activeChannelObj.name.toLowerCase().includes('general') ||
-        activeChannelObj.name.toLowerCase().includes('desarrollo') ||
-        activeChannelObj.name.toLowerCase().includes('off-topic'))
-  );
-  const liveServerId = activeServer?.id;
-  const liveChannelId = activeChannelObj?.id;
-
-  useEffect(() => {
-    if (!isLiveHumanChannel || !liveServerId || !liveChannelId) return;
-
-    let cancelled = false;
-    let postTimer: number | undefined;
-
-    const triggerChatter = () => {
-      if (cancelled) return;
-      const speaker = COMMUNITY_HUMANS[Math.floor(Math.random() * COMMUNITY_HUMANS.length)];
-      const coTyper =
-        Math.random() < 0.35
-          ? COMMUNITY_HUMANS.find((m) => m.id !== speaker.id)
-          : undefined;
-      const typingText = coTyper
-        ? `${speaker.name} y ${coTyper.name} están escribiendo...`
-        : `${speaker.name} está escribiendo...`;
-
-      setTypingMap((prev) => ({ ...prev, [liveChannelId]: typingText }));
-
-      postTimer = window.setTimeout(() => {
-        if (cancelled) return;
-        setTypingMap((prev) => ({ ...prev, [liveChannelId]: null }));
-
-        setServers((prev) =>
-          prev.map((s) => {
-            if (s.id !== liveServerId) return s;
-            return {
-              ...s,
-              channels: s.channels.map((c) => {
-                if (c.id !== liveChannelId) return c;
-                const recentContents = new Set(c.messages.slice(-8).map((m) => m.content));
-                const candidates = HUMAN_GENERAL_CHAT_POOL.filter(
-                  (line) => !recentContents.has(line)
-                );
-                const pool = candidates.length > 0 ? candidates : HUMAN_GENERAL_CHAT_POOL;
-                const text = pool[Math.floor(Math.random() * pool.length)];
-
-                const lastHumanMsg = [...c.messages]
-                  .reverse()
-                  .find((m) => m.authorId !== speaker.id && !m.authorIsBot);
-                const shouldReply = Boolean(lastHumanMsg && Math.random() < 0.35);
-
-                const newMsg: ChatMessage = {
-                  id: `live-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-                  authorId: speaker.id,
-                  authorName: speaker.name,
-                  authorAvatar: speaker.avatar,
-                  authorTag: speaker.tag,
-                  timestamp: 'Ahora',
-                  ...(shouldReply && lastHumanMsg
-                    ? {
-                        replyTo: {
-                          authorName: lastHumanMsg.authorName,
-                          content: lastHumanMsg.content.slice(0, 80),
-                        },
-                      }
-                    : {}),
-                  content: text,
-                  reactions:
-                    Math.random() < 0.3
-                      ? [
-                          {
-                            emoji: ['🔥', '😂', '👀', '💯'][Math.floor(Math.random() * 4)],
-                            count: 1,
-                            reacted: false,
-                          },
-                        ]
-                      : [],
-                };
-
-                return { ...c, messages: [...c.messages.slice(-79), newMsg] };
-              }),
-            };
-          })
-        );
-      }, 1450);
-    };
-
-    const initialTimer = window.setTimeout(triggerChatter, 2800);
-    const interval = window.setInterval(triggerChatter, 6200);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(initialTimer);
-      window.clearInterval(interval);
-      if (postTimer) window.clearTimeout(postTimer);
-    };
-  }, [isLiveHumanChannel, liveServerId, liveChannelId]);
 
   const handleInspectUser = (
     userId: string,
@@ -787,47 +609,6 @@ export default function App() {
     return payload.content || '';
   };
 
-  const buildSmartReply = (dmThread: DirectMessageThread, payload: RichMessagePayload): string => {
-    const lower = (payload.content || '').toLowerCase();
-    if (payload.poll) {
-      return `Buena encuesta! Yo ya voy votando 👀`;
-    }
-    if (payload.audioNote) {
-      return `Recibido ese audio de ${payload.audioNote.durationSec}s 🎧 te escucho claro!`;
-    }
-    if (payload.sticker) {
-      return `${payload.sticker.emoji} jajaja top ese sticker!`;
-    }
-    if (dmThread.isBot) {
-      if (lower.includes('bump')) {
-        return '🤖 ¡Servidor bumpeado correctamente! Sube posiciones en el listado público.';
-      }
-      if (lower.includes('help') || lower.includes('ayuda')) {
-        return '🤖 Comandos disponibles: `/bump`, `/stats`, `/ping` y `/server`.';
-      }
-      if (lower.includes('stats')) {
-        return '📊 Estadísticas actuales: 102 miembros · 48 en línea · Latencia 24ms.';
-      }
-      return `🤖 Comando procesado: "${payload.content || 'multimedia'}". Todo operando al 100%.`;
-    }
-    if (lower.includes('hola') || lower.includes('buenas') || lower.includes('hey')) {
-      return `¡Qué pasa ${user.displayName}! ¿Cómo va todo por el server?`;
-    }
-    if (lower.includes('?')) {
-      return 'Sí, de una! Avísame cuando quieras darle 🔥';
-    }
-    if (dmThread.id === 'dm-snuf') {
-      return 'Brutal bro 🔥 seguimos subiendo la comunidad!';
-    }
-    if (dmThread.id === 'dm-alex') {
-      return 'Dale perfecto, avísame cuando entres a probarlo ⚡';
-    }
-    if (dmThread.isGroup) {
-      return 'Todos atentos por acá 👀 ¡buen punto!';
-    }
-    return '¡Recibido! 👍 Te respondo enseguida.';
-  };
-
   const handleSendRichMessage = (payload: RichMessagePayload) => {
     const newMsg: ChatMessage = {
       id: `msg-${Date.now()}`,
@@ -847,6 +628,7 @@ export default function App() {
     if (activeContext.type === 'server' && activeServer && selectedChannelId) {
       const targetServerId = activeServer.id;
       const targetChannelId = selectedChannelId;
+      setTypingMap((prev) => ({ ...prev, [targetChannelId]: null }));
       setServers((prev) =>
         prev.map((s) =>
           s.id === targetServerId
@@ -859,138 +641,13 @@ export default function App() {
             : s
         )
       );
-
-      const lower = payload.content.toLowerCase();
-      if (lower.includes('@bumper') || lower.includes('/bump')) {
-        setTypingMap((prev) => ({ ...prev, [targetChannelId]: 'Bumper está escribiendo...' }));
-        setTimeout(() => {
-          setTypingMap((prev) => ({ ...prev, [targetChannelId]: null }));
-          const replyMsg: ChatMessage = {
-            id: `ch-reply-${Date.now()}`,
-            authorId: 'bumper',
-            authorName: 'Bumper',
-            authorAvatar: 'bumper',
-            authorIsBot: true,
-            timestamp: 'Ahora',
-            content: '🤖 ¡Servidor bumpeado! +1 visibilidad en el directorio.',
-            reactions: [],
-          };
-          setServers((prev) =>
-            prev.map((s) =>
-              s.id === targetServerId
-                ? {
-                    ...s,
-                    channels: s.channels.map((c) =>
-                      c.id === targetChannelId ? { ...c, messages: [...c.messages, replyMsg] } : c
-                    ),
-                  }
-                : s
-            )
-          );
-        }, 950);
-      } else {
-        const responder = COMMUNITY_HUMANS[Math.floor(Math.random() * COMMUNITY_HUMANS.length)];
-        const secondResponder = COMMUNITY_HUMANS.find((m) => m.id !== responder.id);
-        setTypingMap((prev) => ({
-          ...prev,
-          [targetChannelId]: `${responder.name} está escribiendo...`,
-        }));
-        setTimeout(() => {
-          setTypingMap((prev) => ({ ...prev, [targetChannelId]: null }));
-          const replyText = buildServerHumanReply(payload.content, user.displayName, responder);
-          const replyMsg: ChatMessage = {
-            id: `ch-reply-${Date.now()}`,
-            authorId: responder.id,
-            authorName: responder.name,
-            authorAvatar: responder.avatar,
-            authorTag: responder.tag,
-            timestamp: 'Ahora',
-            replyTo: {
-              authorName: user.displayName,
-              content: payload.content.slice(0, 90) || 'Mensaje',
-            },
-            content: replyText,
-            reactions: [],
-          };
-          setServers((prev) =>
-            prev.map((s) =>
-              s.id === targetServerId
-                ? {
-                    ...s,
-                    channels: s.channels.map((c) => {
-                      if (c.id !== targetChannelId) return c;
-                      const updatedMsgs = c.messages.map((m) =>
-                        m.id === newMsg.id && Math.random() < 0.7
-                          ? {
-                              ...m,
-                              reactions: [
-                                ...(m.reactions || []),
-                                {
-                                  emoji: ['🔥', '👍', '❤️', '😂'][Math.floor(Math.random() * 4)],
-                                  count: 1,
-                                  reacted: false,
-                                },
-                              ],
-                            }
-                          : m
-                      );
-                      return { ...c, messages: [...updatedMsgs, replyMsg] };
-                    }),
-                  }
-                : s
-            )
-          );
-
-          if (secondResponder && Math.random() < 0.45) {
-            setTimeout(() => {
-              setTypingMap((prev) => ({
-                ...prev,
-                [targetChannelId]: `${secondResponder.name} está escribiendo...`,
-              }));
-              setTimeout(() => {
-                setTypingMap((prev) => ({ ...prev, [targetChannelId]: null }));
-                const followUps = [
-                  'literal jajajaj 💯',
-                  'confirmo eso 👀',
-                  'yo también me apunto 🔥',
-                  `eso mismo iba a decir @${user.displayName} 😂`,
-                ];
-                const followMsg: ChatMessage = {
-                  id: `ch-reply2-${Date.now()}`,
-                  authorId: secondResponder.id,
-                  authorName: secondResponder.name,
-                  authorAvatar: secondResponder.avatar,
-                  authorTag: secondResponder.tag,
-                  timestamp: 'Ahora',
-                  content: followUps[Math.floor(Math.random() * followUps.length)],
-                  reactions: [],
-                };
-                setServers((prev) =>
-                  prev.map((s) =>
-                    s.id === targetServerId
-                      ? {
-                          ...s,
-                          channels: s.channels.map((c) =>
-                            c.id === targetChannelId
-                              ? { ...c, messages: [...c.messages, followMsg] }
-                              : c
-                          ),
-                        }
-                      : s
-                  )
-                );
-              }, 1100);
-            }, 900);
-          }
-        }, 1250);
-      }
       return;
     }
 
     if (activeDm) {
-      const targetDm = activeDm;
-      const targetId = targetDm.id;
+      const targetId = activeDm.id;
       const preview = formatMessagePreview(payload);
+      setTypingMap((prev) => ({ ...prev, [targetId]: null }));
       setDms((prev) =>
         prev.map((d) =>
           d.id === targetId
@@ -1005,38 +662,6 @@ export default function App() {
             : d
         )
       );
-
-      setTypingMap((prev) => ({ ...prev, [targetId]: `${targetDm.name} está escribiendo...` }));
-      setTimeout(() => {
-        setTypingMap((prev) => ({ ...prev, [targetId]: null }));
-        const replyText = buildSmartReply(targetDm, payload);
-        const botReply: ChatMessage = {
-          id: `reply-${Date.now()}`,
-          authorId: targetDm.id,
-          authorName: targetDm.name,
-          authorAvatar: targetDm.avatar,
-          authorIsBot: targetDm.isBot,
-          authorTag: targetDm.serverTag,
-          timestamp: 'Ahora',
-          content: replyText,
-          reactions: [],
-        };
-
-        setDms((prev) =>
-          prev.map((d) => {
-            if (d.id !== targetId) return d;
-            const isCurrentlyOpen = selectedDmId === targetId && activeContext.type === 'dm';
-            return {
-              ...d,
-              lastMessagePreview: `${targetDm.name}: ${replyText}`,
-              lastTimestamp: 'Ahora',
-              unread: !isCurrentlyOpen,
-              unreadCount: isCurrentlyOpen ? 0 : (d.unreadCount ?? 0) + 1,
-              messages: [...d.messages, botReply],
-            };
-          })
-        );
-      }, 950);
     }
   };
 
@@ -1855,7 +1480,7 @@ export default function App() {
             accentColor: '#5865F2',
             chatTheme: 'black',
             chatMessageStyle: 'classic',
-            includeBots: true,
+            includeBots: false,
             includeStarterRoles: true,
             includeVoiceChannels: true,
           }
@@ -1913,30 +1538,17 @@ export default function App() {
       .toUpperCase();
 
     const now = Date.now();
-    const welcomeMessages: ChatMessage[] = config.includeBots
-      ? [
-          {
-            id: `welcome-${now}`,
-            authorId: 'welcomer',
-            authorName: 'Welcomer',
-            authorAvatar: 'welcomer',
-            authorIsBot: true,
-            timestamp: 'Ahora',
-            content: `¡Bienvenido a tu nuevo servidor **${name}**! Usa \`/bump\` o crea encuestas para empezar.`,
-            reactions: [{ emoji: '🎉', count: 1, reacted: true }],
-          },
-        ]
-      : [
-          {
-            id: `welcome-${now}`,
-            authorId: 'me',
-            authorName: user.displayName,
-            authorAvatar: user.avatar,
-            timestamp: 'Ahora',
-            content: `¡Servidor **${name}** creado!`,
-            reactions: [],
-          },
-        ];
+    const welcomeMessages: ChatMessage[] = [
+      {
+        id: `welcome-${now}`,
+        authorId: 'me',
+        authorName: user.displayName,
+        authorAvatar: user.avatar,
+        timestamp: 'Ahora',
+        content: `¡Servidor **${name}** creado!`,
+        reactions: [],
+      },
+    ];
 
     const makeTextChannel = (chName: string, topic: string, type: Channel['type'] = 'text'): Channel => ({
       id: `ch-${now}-${chName}`,
@@ -2011,53 +1623,62 @@ export default function App() {
         }))
       : [];
 
-    const roles: ServerRole[] = config.includeStarterRoles
-      ? [
-          {
-            id: 'role-owner',
-            name: '👑 Owner',
-            color: '#f59e0b',
-            hoist: true,
-            permissions: ['Administrador'],
-          },
-          {
-            id: 'role-mod',
-            name: '🛡️ Moderador',
-            color: '#38bdf8',
-            hoist: true,
-            permissions: ['Gestionar mensajes', 'Fijar mensajes'],
-          },
-          {
-            id: 'role-member',
-            name: '🎮 Miembro',
-            color: '#4ade80',
-            hoist: false,
-            permissions: ['Leer canales', 'Enviar mensajes'],
-          },
-          {
-            id: 'role-everyone',
-            name: '@everyone',
-            color: '#b5bac1',
-            hoist: false,
-            permissions: ['Leer canales', 'Enviar mensajes'],
-          },
-        ]
-      : [
-          {
-            id: 'role-owner',
-            name: '👑 Owner',
-            color: '#f59e0b',
-            hoist: true,
-            permissions: ['Administrador'],
-          },
-          {
-            id: 'role-everyone',
-            name: '@everyone',
-            color: '#b5bac1',
-            hoist: false,
-            permissions: ['Leer canales', 'Enviar mensajes'],
-          },
-        ];
+    const roles: ServerRole[] =
+      config.starterRoles && config.starterRoles.length > 0
+        ? config.starterRoles
+        : config.includeStarterRoles
+        ? [
+            {
+              id: 'role-owner',
+              name: '👑 Owner',
+              color: '#f59e0b',
+              hoist: true,
+              permissions: ['Administrador'],
+            },
+            {
+              id: 'role-mod',
+              name: '🛡️ Moderador',
+              color: '#38bdf8',
+              hoist: true,
+              permissions: ['Gestionar mensajes', 'Fijar mensajes'],
+            },
+            {
+              id: 'role-member',
+              name: '🎮 Miembro',
+              color: '#4ade80',
+              hoist: false,
+              permissions: ['Leer canales', 'Enviar mensajes'],
+            },
+            {
+              id: 'role-everyone',
+              name: '@everyone',
+              color: '#b5bac1',
+              hoist: false,
+              permissions: ['Leer canales', 'Enviar mensajes'],
+            },
+          ]
+        : [
+            {
+              id: 'role-owner',
+              name: '👑 Owner',
+              color: '#f59e0b',
+              hoist: true,
+              permissions: ['Administrador'],
+            },
+            {
+              id: 'role-everyone',
+              name: '@everyone',
+              color: '#b5bac1',
+              hoist: false,
+              permissions: ['Leer canales', 'Enviar mensajes'],
+            },
+          ];
+
+    const ownerRoleId =
+      roles.find((r) => r.id === 'role-owner')?.id ||
+      roles.find((r) => r.id !== 'role-everyone')?.id ||
+      roles[0]?.id ||
+      'role-owner';
 
     const isSquadDevName =
       name.trim().toLowerCase() === 'squad dev' ||
@@ -2074,9 +1695,9 @@ export default function App() {
       accentColor: communityVisual.accentColor,
       bannerColor: '#09090b',
       bannerImage: communityVisual.bannerImage,
-      memberCount: isSquadDevName ? SQUAD_DEV_MEMBER_COUNT : config.includeBots ? 3 : 1,
+      memberCount: isSquadDevName ? SQUAD_DEV_MEMBER_COUNT : 1,
       ...(isSquadDevName ? { memberCountDisplay: SQUAD_DEV_MEMBER_DISPLAY } : {}),
-      onlineCount: config.includeBots ? 3 : 1,
+      onlineCount: 1,
       boostLevel: 0,
       boostCount: 0,
       unlockedPerkIds: [],
@@ -2089,7 +1710,7 @@ export default function App() {
         ? ['', 'CANALES DE TEXTO', 'CANALES DE VOZ']
         : ['', 'CANALES DE TEXTO'],
       roles,
-      memberRoleIds: { me: ['role-owner'] },
+      memberRoleIds: { me: [ownerRoleId] },
       customEmojis: [],
       stickers: [],
       channels: [...templateTextChannels, ...voiceChannels],
@@ -2868,32 +2489,36 @@ export default function App() {
 
       {showNewGroupDm && (
         <div
-          onClick={() => setShowNewGroupDm(false)}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowNewGroupDm(false);
+          }}
           className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
         >
-          <input
-            ref={groupIconFileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                  if (typeof reader.result === 'string') {
-                    setGroupCustomIconUrl(reader.result);
-                  }
-                };
-                reader.readAsDataURL(f);
-              }
-              e.target.value = '';
-            }}
-          />
           <div
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md rounded-3xl bg-[var(--dc-bg-sheet)] border border-[var(--dc-border)] p-5 space-y-3.5 max-h-[90vh] overflow-y-auto shadow-2xl"
           >
+            <input
+              ref={groupIconFileRef}
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => {
+                e.stopPropagation();
+                const f = e.target.files?.[0];
+                if (f) {
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    if (typeof reader.result === 'string') {
+                      setGroupCustomIconUrl(reader.result);
+                    }
+                  };
+                  reader.readAsDataURL(f);
+                }
+                e.target.value = '';
+              }}
+            />
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-display font-bold text-lg text-[var(--dc-text-primary)]">

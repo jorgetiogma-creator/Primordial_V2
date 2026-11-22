@@ -378,30 +378,18 @@ export const ChatView: React.FC<ChatViewProps> = ({
   const chatStyleMode = mode === 'channel' && server ? server.chatMessageStyle || 'classic' : 'classic';
   const accentColor = mode === 'channel' && server?.chatAccentColor ? server.chatAccentColor : '#5865f2';
 
-  // Mention & emoji autocomplete candidates
+  // Mention & emoji autocomplete candidates (real users only)
   const mentionCandidates = useMemo(() => {
     const base: { id: string; name: string; avatar: AvatarKey; isBot: boolean }[] = [
-      { id: 'snuf', name: 'snuf', avatar: 'snuf', isBot: false },
-      { id: 'alex', name: '-/alex_rawr\\-', avatar: 'alex', isBot: false },
-      { id: 'jorge', name: 'Jorge', avatar: 'jorge', isBot: false },
-      { id: 'dev', name: 'Dev', avatar: 'dev', isBot: false },
-      { id: 'joawasa', name: 'Joawasa', avatar: 'joawasa', isBot: false },
-      { id: 'carioca', name: 'Carioca', avatar: 'carioca', isBot: false },
-      { id: 'alirito', name: 'Alirito', avatar: 'alirito', isBot: false },
-      { id: 'phibi', name: 'Phibi', avatar: 'phibi', isBot: false },
-      { id: 'locke', name: 'LockE', avatar: 'locke', isBot: false },
-      { id: 'dragon', name: '𒅒龙的传人𒅒', avatar: 'dragon', isBot: false },
-      { id: 'bumper', name: 'Bumper', avatar: 'bumper', isBot: true },
-      { id: 'welcomer', name: 'Welcomer', avatar: 'welcomer', isBot: true },
-      { id: 'yourbot', name: 'YourBot', avatar: 'yourbot', isBot: true },
+      { id: 'me', name: currentUser.displayName, avatar: currentUser.avatar, isBot: false },
     ];
     for (const d of dms) {
-      if (!d.isGroup && !base.some((b) => b.name.toLowerCase() === d.name.toLowerCase())) {
-        base.push({ id: d.id, name: d.name, avatar: d.avatar, isBot: Boolean(d.isBot) });
+      if (!d.isGroup && !d.isBot && !base.some((b) => b.name.toLowerCase() === d.name.toLowerCase())) {
+        base.push({ id: d.id, name: d.name, avatar: d.avatar, isBot: false });
       }
     }
     return base;
-  }, [dms]);
+  }, [dms, currentUser.displayName, currentUser.avatar]);
 
   const mentionMatch = input.match(/(?:^|\s)@([^\s@]{0,20})$/);
   const filteredMentions = useMemo(() => {
@@ -1170,7 +1158,9 @@ export const ChatView: React.FC<ChatViewProps> = ({
                           </button>
                           <div className="flex-1 flex items-center gap-0.5 h-7">
                             {msg.audioNote.waveform.map((h, i) => {
-                              const pct = (currentAudioPos / Math.max(1, msg.audioNote!.durationSec)) * msg.audioNote!.waveform.length;
+                              const dur = Math.max(1, msg.audioNote?.durationSec ?? 1);
+                              const len = Math.max(1, msg.audioNote?.waveform.length ?? 1);
+                              const pct = (currentAudioPos / dur) * len;
                               const activeBar = isPlayingThis ? i <= pct : false;
                               return (
                                 <span
@@ -1932,83 +1922,25 @@ export const ChatView: React.FC<ChatViewProps> = ({
                   customAvatarUrl: currentUser.customAvatarUrl,
                   status: currentUser.status,
                   tag: currentUser.serverTag,
+                  activity: undefined as string | undefined,
                 },
-                {
-                  id: 'snuf',
-                  name: 'snuf',
-                  avatar: 'snuf' as const,
-                  status: 'online' as const,
-                  activity: 'En Sala Dev 🔊',
-                },
-                {
-                  id: 'alex',
-                  name: '-/alex_rawr\\-',
-                  avatar: 'alex' as const,
-                  status: 'online' as const,
-                  tag: '⚡ 培根',
-                  activity: 'Editando en VS Code',
-                },
-                {
-                  id: 'jorge',
-                  name: 'Jorge',
-                  avatar: 'jorge' as const,
-                  status: 'online' as const,
-                  activity: 'Jugando a Aldea Roleplay',
-                },
-                {
-                  id: 'dev',
-                  name: 'Dev',
-                  avatar: 'dev' as const,
-                  status: 'online' as const,
-                  activity: 'Probando builds v2',
-                },
-                {
-                  id: 'locke',
-                  name: 'LockE',
-                  avatar: 'locke' as const,
-                  status: 'online' as const,
-                  activity: 'En GitHub',
-                },
-                {
-                  id: 'carioca',
-                  name: 'Carioca',
-                  avatar: 'carioca' as const,
-                  status: 'dnd' as const,
-                  activity: 'Escuchando Spotify',
-                },
-                {
-                  id: 'joawasa',
-                  name: 'Joawasa',
-                  avatar: 'joawasa' as const,
-                  status: 'online' as const,
-                  activity: 'En Sala Dev 🔊',
-                },
-                {
-                  id: 'phibi',
-                  name: 'Phibi',
-                  avatar: 'phibi' as const,
-                  status: 'online' as const,
-                  activity: 'Tomando café ☕',
-                },
-                {
-                  id: 'alirito',
-                  name: 'Alirito',
-                  avatar: 'alirito' as const,
-                  status: 'idle' as const,
-                  activity: 'Jugando a Valorant',
-                },
-                {
-                  id: 'dragon',
-                  name: '𒅒龙的传人𒅒',
-                  avatar: 'dragon' as const,
-                  status: 'online' as const,
-                },
+                ...dms
+                  .filter((d) => !d.isGroup && !d.isBot)
+                  .map((d) => ({
+                    id: d.id.replace(/^dm-/, ''),
+                    name: d.name,
+                    avatar: d.avatar,
+                    customAvatarUrl: undefined as string | undefined,
+                    status: d.status,
+                    tag: d.serverTag,
+                    activity: undefined as string | undefined,
+                  })),
               ].map((m, idx) => {
               const role = getHighestRole(m.id);
               const isSelfRow = idx === 0 && currentUser.nameplate && currentUser.nameplate !== 'none';
               return (
                 <div
-                  key={idx}
+                  key={m.id}
                   onClick={() =>
                     onInspectUser?.(
                       m.id,
@@ -2088,39 +2020,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 </div>
               );
             })}
-          </div>
-
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--dc-text-muted)] mt-5 mb-2">
-            Bots — 3
-          </p>
-          <div className="space-y-1.5">
-            {[
-              { id: 'bumper', name: 'Bumper', avatar: 'bumper' as const },
-              { id: 'welcomer', name: 'Welcomer', avatar: 'welcomer' as const },
-              { id: 'yourbot', name: 'YourBot', avatar: 'yourbot' as const },
-            ].map((b) => (
-              <div
-                key={b.id}
-                onClick={() =>
-                  onInspectUser?.(b.id, {
-                    displayName: b.name,
-                    avatar: b.avatar,
-                    status: 'online',
-                    isBot: true,
-                  })
-                }
-                className="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-white/5 cursor-pointer"
-              >
-                <UserAvatar avatar={b.avatar} status="online" size="sm" borderColor="var(--dc-bg-sidebar)" />
-                <span className="text-sm font-medium text-[var(--dc-text-primary)] truncate">
-                  {b.name}
-                </span>
-                <span className="px-1 py-[1px] rounded bg-[var(--dc-blurple)] text-[9px] font-bold text-white uppercase">
-                  APP
-                </span>
-              </div>
-            ))}
-          </div>
+            </div>
           </aside>
         </>
       )}

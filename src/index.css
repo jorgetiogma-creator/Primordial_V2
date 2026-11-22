@@ -284,6 +284,26 @@
   }
 }
 
+@keyframes dc-twinkle {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.85) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18) rotate(22deg);
+  }
+}
+
+@keyframes dc-holo-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.55)) brightness(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.78)) brightness(1.09);
+  }
+}
+
 .anim-spin-slow {
   animation: dc-spin-slow 7s linear infinite;
 }
@@ -311,6 +331,16 @@
 
 .anim-ghost {
   animation: dc-ghost-drift 3.2s ease-in-out infinite;
+}
+
+.anim-twinkle {
+  animation: dc-twinkle 2.8s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center center;
+}
+
+.anim-holo-glow {
+  animation: dc-holo-glow 3.4s ease-in-out infinite;
 }
 
 .anim-shimmer::after {
@@ -350,6 +380,8 @@
   .anim-sway,
   .anim-ember,
   .anim-ghost,
+  .anim-twinkle,
+  .anim-holo-glow,
   .anim-slash,
   .anim-petal,
   .anim-eye-blink,

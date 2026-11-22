@@ -730,5 +730,6 @@ export interface CreateServerPayload {
   includeBots: boolean;
   includeStarterRoles: boolean;
   includeVoiceChannels: boolean;
+  starterRoles?: ServerRole[];
 }
 

@@ -5,6 +5,7 @@ import {
   Check,
   ChevronDown,
   ChevronRight,
+  ChevronUp,
   Clock,
   Crown,
   FileText,
@@ -297,6 +298,215 @@ const AVATAR_PRESETS: { id: AvatarKey; label: string }[] = [
   { id: 'dragon', label: 'Cumbre' },
   { id: 'coffee', label: 'Café' },
 ];
+
+const ProfileInventoryCard: React.FC<{
+  user: UserProfile;
+  ownedBundles: ShopBundle[];
+  ownedBanners: { id: string; name: string; bannerUrl: string }[];
+  onNavigate: (screen: MainScreen) => void;
+  onUpdateUser: (patch: Partial<UserProfile>) => void;
+}> = ({ user, ownedBundles, ownedBanners, onNavigate, onUpdateUser }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const equippedCount = ownedBundles.filter((bundle) => {
+    const deco = bundle.items.find((i) => i.decorationId)?.decorationId;
+    const plate = bundle.items.find((i) => i.nameplateId)?.nameplateId;
+    const effect = bundle.items.find((i) => i.profileEffectId)?.profileEffectId;
+    const frame = bundle.items.find((i) => i.profileFrameId)?.profileFrameId;
+    const banner = bundle.items.find((i) => i.bannerUrl)?.bannerUrl;
+    return Boolean(
+      (deco && user.decoration === deco) ||
+        (plate && user.nameplate === plate) ||
+        (effect && user.profileEffect === effect) ||
+        (frame && user.profileFrame === frame) ||
+        (banner && user.bannerImage === banner)
+    );
+  }).length;
+
+  return (
+    <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] p-4 space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="flex items-center gap-2.5 min-w-0 flex-1 text-left cursor-pointer group"
+        >
+          <div className="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center shrink-0">
+            <ShoppingBag className="w-4.5 h-4.5" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[14px] font-semibold text-[var(--dc-text-primary)] truncate">
+              Objetos de Tienda ({ownedBundles.length})
+            </p>
+            <p className="text-xs text-[var(--dc-text-muted)] truncate">
+              {ownedBundles.length === 0
+                ? 'Aún no tienes artículos comprados'
+                : expanded
+                ? `${equippedCount} equipado(s) · Toca para ocultar`
+                : `${equippedCount} equipado(s) · Oculto · Toca para mostrar`}
+            </p>
+          </div>
+        </button>
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          {ownedBundles.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full dc-btn-secondary text-xs font-semibold cursor-pointer"
+            >
+              <span>{expanded ? 'Ocultar' : 'Mostrar'}</span>
+              {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => onNavigate('tienda')}
+            className="px-3 py-1.5 rounded-full dc-btn-primary text-xs font-bold whitespace-nowrap cursor-pointer"
+          >
+            Tienda
+          </button>
+        </div>
+      </div>
+
+      {ownedBundles.length === 0 ? (
+        <div className="rounded-xl bg-[var(--dc-bg-input)] border border-[var(--dc-border)] px-3.5 py-3 text-xs text-[var(--dc-text-muted)]">
+          Aún no has comprado lotes en la Tienda. Visita la Tienda para adquirir decoraciones, placas, efectos y banners y dejarlos en tu perfil.
+        </div>
+      ) : (
+        expanded && (
+          <div className="space-y-2.5 pt-1 border-t border-[var(--dc-border)]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-80 overflow-y-auto pr-0.5">
+              {ownedBundles.map((bundle) => {
+                const deco = bundle.items.find((i) => i.decorationId)?.decorationId;
+                const plate = bundle.items.find((i) => i.nameplateId)?.nameplateId;
+                const effect = bundle.items.find((i) => i.profileEffectId)?.profileEffectId;
+                const frame = bundle.items.find((i) => i.profileFrameId)?.profileFrameId;
+                const banner = bundle.items.find((i) => i.bannerUrl)?.bannerUrl;
+                const isEquipped =
+                  (deco && user.decoration === deco) ||
+                  (plate && user.nameplate === plate) ||
+                  (effect && user.profileEffect === effect) ||
+                  (frame && user.profileFrame === frame) ||
+                  (banner && user.bannerImage === banner);
+
+                return (
+                  <div
+                    key={bundle.id}
+                    className={`rounded-xl p-2.5 border flex items-center justify-between gap-2.5 ${
+                      isEquipped
+                        ? 'bg-[#5865F2]/12 border-[#5865F2]/50'
+                        : 'bg-[var(--dc-bg-input)] border-[var(--dc-border)]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      {!deco && frame ? (
+                        <div className="relative w-8 h-8 rounded-lg bg-[#1a1c24] border border-white/15 shrink-0 flex items-center justify-center overflow-visible">
+                          <ProfileFrameArtwork frame={frame} />
+                        </div>
+                      ) : (
+                        <UserAvatar
+                          avatar={user.avatar}
+                          customAvatarUrl={user.customAvatarUrl}
+                          decoration={deco || 'none'}
+                          size="sm"
+                          showStatus={false}
+                        />
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[var(--dc-text-primary)] truncate">
+                          {bundle.title}
+                        </p>
+                        <p className="text-[11px] text-[var(--dc-text-muted)] truncate">
+                          {bundle.items.map((i) => i.kind.split(' ')[0]).join(' · ')}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isEquipped) {
+                          onUpdateUser({
+                            ...(deco && user.decoration === deco ? { decoration: 'none' } : {}),
+                            ...(plate && user.nameplate === plate ? { nameplate: 'none' } : {}),
+                            ...(effect && user.profileEffect === effect ? { profileEffect: 'none' } : {}),
+                            ...(frame && user.profileFrame === frame ? { profileFrame: 'none' } : {}),
+                            ...(banner && user.bannerImage === banner ? { bannerImage: undefined } : {}),
+                          });
+                        } else {
+                          onUpdateUser({
+                            ...(deco ? { decoration: deco } : {}),
+                            ...(plate ? { nameplate: plate } : {}),
+                            ...(effect ? { profileEffect: effect } : {}),
+                            ...(frame ? { profileFrame: frame } : {}),
+                            ...(banner ? { bannerImage: banner } : {}),
+                          });
+                        }
+                      }}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold shrink-0 cursor-pointer ${
+                        isEquipped ? 'dc-btn-secondary' : 'dc-btn-success'
+                      }`}
+                    >
+                      {isEquipped ? 'Quitar' : 'Equipar'}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {ownedBanners.length > 0 && (
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
+                <button
+                  type="button"
+                  onClick={() => onUpdateUser({ bannerImage: undefined })}
+                  className={`h-11 px-3 rounded-xl border text-xs font-semibold shrink-0 cursor-pointer transition-all ${
+                    !user.bannerImage
+                      ? 'ring-2 ring-[#5865F2] border-transparent bg-[var(--dc-bg-elevated)] text-[var(--dc-text-primary)]'
+                      : 'border-[var(--dc-border)] bg-[var(--dc-bg-input)] text-[var(--dc-text-secondary)]'
+                  }`}
+                >
+                  Color sólido
+                </button>
+                {ownedBanners.map((b) => {
+                  const equipped = user.bannerImage === b.bannerUrl;
+                  return (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => onUpdateUser({ bannerImage: b.bannerUrl })}
+                      className={`relative w-24 h-11 rounded-xl overflow-hidden shrink-0 border cursor-pointer transition-all ${
+                        equipped
+                          ? 'ring-2 ring-[#23a55a] border-transparent shadow-md'
+                          : 'border-[var(--dc-border)] opacity-80 hover:opacity-100'
+                      }`}
+                      title={b.name}
+                    >
+                      <img
+                        src={b.bannerUrl}
+                        alt={b.name}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                      <span className="absolute bottom-1 left-1.5 right-1.5 text-[10px] font-bold text-white truncate text-left">
+                        {b.name}
+                      </span>
+                      {equipped && (
+                        <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#23a55a] text-white flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5" />
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )
+      )}
+    </div>
+  );
+};
 
 const ProfileEffectOverlay: React.FC<{ effect?: ProfileEffectId }> = ({ effect }) => {
   if (!effect || effect === 'none') return null;
@@ -964,162 +1174,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </div>
               </button>
 
-              {/* Purchased Shop Inventory Card */}
-              <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] p-4 space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center shrink-0">
-                      <ShoppingBag className="w-4.5 h-4.5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[14px] font-semibold text-[var(--dc-text-primary)] truncate">
-                        Objetos de Tienda en tu perfil ({ownedBundles.length})
-                      </p>
-                      <p className="text-xs text-[var(--dc-text-muted)]">
-                        Solo puedes equipar artículos que hayas comprado
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => onNavigate('tienda')}
-                    className="px-3.5 py-1.5 rounded-full dc-btn-primary text-xs font-bold whitespace-nowrap shrink-0 cursor-pointer"
-                  >
-                    Ir a Tienda
-                  </button>
-                </div>
-
-                {ownedBundles.length === 0 ? (
-                  <div className="rounded-xl bg-[var(--dc-bg-input)] border border-[var(--dc-border)] px-3.5 py-3 text-xs text-[var(--dc-text-muted)]">
-                    Aún no has comprado lotes en la Tienda. Visita la Tienda para adquirir decoraciones, placas, efectos y banners y dejarlos en tu perfil.
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {ownedBundles.map((bundle) => {
-                        const deco = bundle.items.find((i) => i.decorationId)?.decorationId;
-                        const plate = bundle.items.find((i) => i.nameplateId)?.nameplateId;
-                        const effect = bundle.items.find((i) => i.profileEffectId)?.profileEffectId;
-                        const frame = bundle.items.find((i) => i.profileFrameId)?.profileFrameId;
-                        const banner = bundle.items.find((i) => i.bannerUrl)?.bannerUrl;
-                        const isEquipped =
-                          (deco && user.decoration === deco) ||
-                          (plate && user.nameplate === plate) ||
-                          (effect && user.profileEffect === effect) ||
-                          (frame && user.profileFrame === frame) ||
-                          (banner && user.bannerImage === banner);
-
-                        return (
-                          <div
-                            key={bundle.id}
-                            className={`rounded-xl p-2.5 border flex items-center justify-between gap-2.5 ${
-                              isEquipped
-                                ? 'bg-[#5865F2]/12 border-[#5865F2]/50'
-                                : 'bg-[var(--dc-bg-input)] border-[var(--dc-border)]'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              {!deco && frame ? (
-                                <div className="relative w-8 h-8 rounded-lg bg-[#1a1c24] border border-white/15 shrink-0 flex items-center justify-center overflow-visible">
-                                  <ProfileFrameArtwork frame={frame} />
-                                </div>
-                              ) : (
-                                <UserAvatar
-                                  avatar={user.avatar}
-                                  customAvatarUrl={user.customAvatarUrl}
-                                  decoration={deco || 'none'}
-                                  size="sm"
-                                  showStatus={false}
-                                />
-                              )}
-                              <div className="min-w-0">
-                                <p className="text-xs font-bold text-[var(--dc-text-primary)] truncate">
-                                  {bundle.title}
-                                </p>
-                                <p className="text-[11px] text-[var(--dc-text-muted)] truncate">
-                                  {bundle.items.map((i) => i.kind.split(' ')[0]).join(' · ')}
-                                </p>
-                              </div>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (isEquipped) {
-                                  onUpdateUser({
-                                    ...(deco && user.decoration === deco ? { decoration: 'none' } : {}),
-                                    ...(plate && user.nameplate === plate ? { nameplate: 'none' } : {}),
-                                    ...(effect && user.profileEffect === effect ? { profileEffect: 'none' } : {}),
-                                    ...(frame && user.profileFrame === frame ? { profileFrame: 'none' } : {}),
-                                    ...(banner && user.bannerImage === banner ? { bannerImage: undefined } : {}),
-                                  });
-                                } else {
-                                  onUpdateUser({
-                                    ...(deco ? { decoration: deco } : {}),
-                                    ...(plate ? { nameplate: plate } : {}),
-                                    ...(effect ? { profileEffect: effect } : {}),
-                                    ...(frame ? { profileFrame: frame } : {}),
-                                    ...(banner ? { bannerImage: banner } : {}),
-                                  });
-                                }
-                              }}
-                              className={`px-2.5 py-1 rounded-full text-[11px] font-bold shrink-0 cursor-pointer ${
-                                isEquipped ? 'dc-btn-secondary' : 'dc-btn-success'
-                              }`}
-                            >
-                              {isEquipped ? 'Quitar' : 'Equipar'}
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {ownedBanners.length > 0 && (
-                      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
-                        <button
-                          onClick={() => onUpdateUser({ bannerImage: undefined })}
-                          className={`h-11 px-3 rounded-xl border text-xs font-semibold shrink-0 cursor-pointer transition-all ${
-                            !user.bannerImage
-                              ? 'ring-2 ring-[#5865F2] border-transparent bg-[var(--dc-bg-elevated)] text-[var(--dc-text-primary)]'
-                              : 'border-[var(--dc-border)] bg-[var(--dc-bg-input)] text-[var(--dc-text-secondary)]'
-                          }`}
-                        >
-                          Color sólido
-                        </button>
-                        {ownedBanners.map((b) => {
-                          const equipped = user.bannerImage === b.bannerUrl;
-                          return (
-                            <button
-                              key={b.id}
-                              onClick={() => onUpdateUser({ bannerImage: b.bannerUrl })}
-                              className={`relative w-24 h-11 rounded-xl overflow-hidden shrink-0 border cursor-pointer transition-all ${
-                                equipped
-                                  ? 'ring-2 ring-[#23a55a] border-transparent shadow-md'
-                                  : 'border-[var(--dc-border)] opacity-80 hover:opacity-100'
-                              }`}
-                              title={b.name}
-                            >
-                              <img
-                                src={b.bannerUrl}
-                                alt={b.name}
-                                referrerPolicy="no-referrer"
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                              <span className="absolute bottom-1 left-1.5 right-1.5 text-[10px] font-bold text-white truncate text-left">
-                                {b.name}
-                              </span>
-                              {equipped && (
-                                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#23a55a] text-white flex items-center justify-center">
-                                  <Check className="w-2.5 h-2.5" />
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              {/* Purchased Shop Inventory Card (Collapsible) */}
+              <ProfileInventoryCard
+                user={user}
+                ownedBundles={ownedBundles}
+                ownedBanners={ownedBanners}
+                onNavigate={onNavigate}
+                onUpdateUser={onUpdateUser}
+              />
 
               <button
                 onClick={() => onNavigate('misiones')}

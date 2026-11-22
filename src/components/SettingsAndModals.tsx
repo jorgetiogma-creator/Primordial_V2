@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { AtSign, Award, ArrowLeft, Bell, Check, CheckCheck, ChevronRight, Clapperboard, Clock, Gamepad2, Globe, Headphones, HeadphoneOff, HelpCircle, Info, Link2, LogOut, MessageSquare, MessageSquareMore, Mic, MicOff, Monitor, Palette, PhoneCall, PhoneOff, QrCode, Search, Settings, Shield, Smartphone, Sparkles, Store, Upload, User, UserCheck, UserPlus, Users, Video, VideoOff, X } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowUp, AtSign, Award, Bell, Check, CheckCheck, ChevronRight, Clapperboard, Clock, Gamepad2, Globe, Headphones, HeadphoneOff, HelpCircle, Info, Link2, LogOut, MessageSquare, MessageSquareMore, Mic, MicOff, Monitor, Palette, PhoneCall, PhoneOff, Plus, QrCode, Search, Settings, Shield, Smartphone, Sparkles, Store, Trash2, Upload, User, UserCheck, UserPlus, Users, Video, VideoOff, X } from 'lucide-react';
 import {
   CreateServerPayload,
   DirectMessageThread,
   NotificationItem,
   PublicUserProfile,
+  ServerRole,
   ServerTemplateId,
   ThemeMode,
   UserProfile,
@@ -1102,6 +1103,80 @@ const SERVER_ICON_COLORS = [
 
 const SERVER_ICON_EMOJIS = ['', '🚀', '🎮', '⚡', '💻', '🔥', '👑', '🎧'];
 
+const DEFAULT_STARTER_ROLES: ServerRole[] = [
+  {
+    id: 'role-owner',
+    name: '👑 Owner',
+    color: '#f59e0b',
+    hoist: true,
+    permissions: ['Administrador'],
+  },
+  {
+    id: 'role-mod',
+    name: '🛡️ Moderador',
+    color: '#38bdf8',
+    hoist: true,
+    permissions: ['Gestionar mensajes', 'Fijar mensajes'],
+  },
+  {
+    id: 'role-member',
+    name: '🎮 Miembro',
+    color: '#4ade80',
+    hoist: false,
+    permissions: ['Leer canales', 'Enviar mensajes'],
+  },
+  {
+    id: 'role-everyone',
+    name: '@everyone',
+    color: '#b5bac1',
+    hoist: false,
+    permissions: ['Leer canales', 'Enviar mensajes'],
+  },
+];
+
+const ROLE_SWATCH_COLORS = ['#f59e0b', '#38bdf8', '#4ade80', '#f472b6', '#a855f7', '#ef4444'];
+
+const downscaleIconFile = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('read_error'));
+    reader.onload = () => {
+      const raw = typeof reader.result === 'string' ? reader.result : '';
+      if (!raw) {
+        reject(new Error('empty'));
+        return;
+      }
+      if (file.type === 'image/gif' || file.type === 'image/svg+xml' || raw.length < 180000) {
+        resolve(raw);
+        return;
+      }
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const maxSide = 256;
+          const scale = Math.min(1, maxSide / Math.max(img.width || maxSide, img.height || maxSide));
+          const w = Math.max(1, Math.round(img.width * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(raw);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/png', 0.9));
+        } catch {
+          resolve(raw);
+        }
+      };
+      img.onerror = () => resolve(raw);
+      img.src = raw;
+    };
+    reader.readAsDataURL(file);
+  });
+
 /* ---------------- CREATE SERVER MODAL ---------------- */
 export const CreateServerModal: React.FC<{
   open: boolean;
@@ -1116,7 +1191,12 @@ export const CreateServerModal: React.FC<{
   const [accentColor, setAccentColor] = useState('#5865F2');
   const [customEmoji, setCustomEmoji] = useState('🚀');
   const [customIconUrl, setCustomIconUrl] = useState<string | undefined>(undefined);
+  const [rolesDraft, setRolesDraft] = useState<ServerRole[]>(DEFAULT_STARTER_ROLES);
+  const [newRoleName, setNewRoleName] = useState('');
+  const [newRoleColor, setNewRoleColor] = useState('#a855f7');
+  const [iconError, setIconError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const backdropDownRef = useRef(false);
 
   useEffect(() => {
     if (!open) return;
@@ -1125,6 +1205,10 @@ export const CreateServerModal: React.FC<{
     setAccentColor(initialTemplate === 'gaming' ? '#23a55a' : '#5865F2');
     setCustomEmoji(initialTemplate === 'gaming' ? '🎮' : '🚀');
     setCustomIconUrl(undefined);
+    setRolesDraft(DEFAULT_STARTER_ROLES.map((r) => ({ ...r, permissions: [...r.permissions] })));
+    setNewRoleName('');
+    setNewRoleColor('#a855f7');
+    setIconError(null);
   }, [open, initialTemplate]);
 
   if (!open) return null;
@@ -1137,14 +1221,45 @@ export const CreateServerModal: React.FC<{
     .slice(0, 3)
     .toUpperCase();
 
-  const handleIconFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setCustomIconUrl(reader.result);
-      }
+  const handleIconFile = async (file: File) => {
+    setIconError(null);
+    try {
+      const dataUrl = await downscaleIconFile(file);
+      setCustomIconUrl(dataUrl);
+    } catch {
+      setIconError('No se pudo cargar esa imagen. Prueba con PNG o JPG.');
+    }
+  };
+
+  const moveRole = (idx: number, dir: -1 | 1) => {
+    const target = idx + dir;
+    if (target < 0 || target >= rolesDraft.length) return;
+    setRolesDraft((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(idx, 1);
+      next.splice(target, 0, item);
+      return next;
+    });
+  };
+
+  const addDraftRole = () => {
+    const trimmed = newRoleName.trim();
+    if (!trimmed) return;
+    const newRole: ServerRole = {
+      id: `role-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
+      name: trimmed,
+      color: newRoleColor,
+      hoist: true,
+      permissions: ['Leer canales', 'Enviar mensajes'],
     };
-    reader.readAsDataURL(file);
+    setRolesDraft((prev) => {
+      const everyoneIdx = prev.findIndex((r) => r.id === 'role-everyone');
+      if (everyoneIdx === -1) return [...prev, newRole];
+      const next = [...prev];
+      next.splice(everyoneIdx, 0, newRole);
+      return next;
+    });
+    setNewRoleName('');
   };
 
   const submit = (e: React.FormEvent) => {
@@ -1159,9 +1274,10 @@ export const CreateServerModal: React.FC<{
       customEmoji: customIconUrl ? undefined : customEmoji || undefined,
       chatTheme: 'black',
       chatMessageStyle: 'classic',
-      includeBots: true,
+      includeBots: false,
       includeStarterRoles: true,
       includeVoiceChannels: true,
+      starterRoles: rolesDraft,
     });
     setName('');
     onClose();
@@ -1169,188 +1285,341 @@ export const CreateServerModal: React.FC<{
 
   return (
     <div
-      onClick={onClose}
+      onMouseDown={(e) => {
+        backdropDownRef.current = e.target === e.currentTarget;
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && backdropDownRef.current) {
+          onClose();
+        }
+        backdropDownRef.current = false;
+      }}
       className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
     >
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) handleIconFile(f);
-          e.target.value = '';
-        }}
-      />
       <form
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
         onSubmit={submit}
-        className="w-full max-w-md rounded-3xl bg-[var(--dc-bg-sheet)] border border-[var(--dc-border)] p-5 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto"
+        className="w-full max-w-md rounded-3xl bg-[var(--dc-bg-sheet)] border border-[var(--dc-border)] shadow-2xl max-h-[90dvh] flex flex-col overflow-hidden"
       >
-        <div className="flex items-start justify-between gap-2">
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => {
+            e.stopPropagation();
+            const f = e.target.files?.[0];
+            if (f) void handleIconFile(f);
+            e.target.value = '';
+          }}
+        />
+
+        {/* Sticky Modal Header */}
+        <div className="px-5 pt-5 pb-3.5 flex items-start justify-between gap-2 border-b border-[var(--dc-border)] shrink-0">
           <div>
             <h3 className="font-display font-bold text-lg text-[var(--dc-text-primary)]">
               Crea tu servidor
             </h3>
             <p className="text-xs text-[var(--dc-text-secondary)] mt-0.5 leading-snug">
-              Elige plantilla, nombre y un icono personalizado para tu servidor.
+              Personaliza icono, plantilla, nombre y orden de roles.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
+            aria-label="Cerrar"
             className="w-8 h-8 rounded-full dc-btn-icon flex items-center justify-center shrink-0 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Custom Server Icon Preview & Picker */}
-        <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] p-3.5 space-y-3">
-          <div className="flex items-center gap-3.5">
-            <div
-              className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center font-display font-extrabold text-white text-xl shrink-0 border border-white/15 shadow-lg relative"
-              style={
-                customIconUrl
-                  ? undefined
-                  : { background: `linear-gradient(135deg, ${accentColor} 0%, #11121a 100%)` }
-              }
-            >
-              {customIconUrl ? (
-                <img src={customIconUrl} alt="Icono" className="w-full h-full object-cover" />
-              ) : (
-                <span className={customEmoji ? 'text-2xl' : 'text-lg'}>
-                  {customEmoji || previewShortCode}
-                </span>
-              )}
-            </div>
+        {/* Scrollable Modal Body */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-4">
+          {/* Custom Server Icon Preview & Picker */}
+          <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] p-3.5 space-y-3">
+            <div className="flex items-center gap-3.5">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileRef.current?.click();
+                }}
+                aria-label="Seleccionar foto para el servidor"
+                className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center font-display font-extrabold text-white text-xl shrink-0 border border-white/15 shadow-lg relative cursor-pointer hover:ring-2 hover:ring-[#5865F2] transition-all"
+                style={
+                  customIconUrl
+                    ? undefined
+                    : { background: `linear-gradient(135deg, ${accentColor} 0%, #11121a 100%)` }
+                }
+              >
+                {customIconUrl ? (
+                  <img src={customIconUrl} alt="Icono" className="w-full h-full object-cover" />
+                ) : (
+                  <span className={customEmoji ? 'text-2xl' : 'text-lg'}>
+                    {customEmoji || previewShortCode}
+                  </span>
+                )}
+              </button>
 
-            <div className="flex-1 min-w-0 space-y-1.5">
-              <p className="text-xs font-bold text-[var(--dc-text-primary)]">
-                Icono del servidor
-              </p>
-              <div className="flex flex-wrap items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full dc-btn-primary text-[11px] font-bold cursor-pointer"
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>{customIconUrl ? 'Cambiar foto' : 'Subir icono'}</span>
-                </button>
-                {customIconUrl && (
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <p className="text-xs font-bold text-[var(--dc-text-primary)]">
+                  Icono del servidor
+                </p>
+                <div className="flex flex-wrap items-center gap-1.5">
                   <button
                     type="button"
-                    onClick={() => setCustomIconUrl(undefined)}
-                    className="px-2.5 py-1.5 rounded-full dc-btn-secondary text-[11px] font-semibold cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileRef.current?.click();
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full dc-btn-primary text-[11px] font-bold cursor-pointer"
                   >
-                    Usar icono
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{customIconUrl ? 'Cambiar foto' : 'Subir icono'}</span>
                   </button>
-                )}
+                  {customIconUrl && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCustomIconUrl(undefined);
+                      }}
+                      className="px-2.5 py-1.5 rounded-full dc-btn-secondary text-[11px] font-semibold cursor-pointer"
+                    >
+                      Quitar foto
+                    </button>
+                  )}
+                </div>
+                {iconError && <p className="text-[11px] text-rose-400">{iconError}</p>}
               </div>
             </div>
+
+            {!customIconUrl && (
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {SERVER_ICON_COLORS.map((col) => (
+                    <button
+                      key={col}
+                      type="button"
+                      onClick={() => setAccentColor(col)}
+                      aria-label={`Color ${col}`}
+                      className={`w-6 h-6 rounded-full cursor-pointer transition-transform ${
+                        accentColor === col ? 'ring-2 ring-white scale-110' : 'opacity-80 hover:opacity-100'
+                      }`}
+                      style={{ backgroundColor: col }}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {SERVER_ICON_EMOJIS.map((em) => (
+                    <button
+                      key={em || 'initials'}
+                      type="button"
+                      onClick={() => setCustomEmoji(em)}
+                      className={`px-2 h-7 rounded-lg text-xs font-bold flex items-center justify-center cursor-pointer transition-colors ${
+                        customEmoji === em
+                          ? 'bg-[#5865F2] text-white'
+                          : 'bg-[var(--dc-bg-input)] text-[var(--dc-text-secondary)] hover:text-white'
+                      }`}
+                    >
+                      {em || previewShortCode}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {!customIconUrl && (
-            <div className="space-y-2 pt-1">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {SERVER_ICON_COLORS.map((col) => (
+          {/* Template Selector */}
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => setTemplateId('friends')}
+              className={`w-full p-3 rounded-2xl border flex items-center gap-3 text-left transition-colors cursor-pointer ${
+                templateId === 'friends'
+                  ? 'border-[#5865F2] bg-[#5865F2]/15'
+                  : 'border-[var(--dc-border)] bg-[var(--dc-bg-card)] hover:bg-[var(--dc-bg-elevated)]'
+              }`}
+            >
+              <span className="w-9 h-9 rounded-xl bg-[#5865F2] text-white flex items-center justify-center shrink-0">
+                <Users className="w-4 h-4" />
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold text-sm text-[var(--dc-text-primary)]">
+                  Solo para pasar el rato
+                </p>
+                <p className="text-[11.5px] text-[var(--dc-text-muted)]">
+                  Para mis amigos y para mí
+                </p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[var(--dc-text-muted)] shrink-0" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTemplateId('gaming')}
+              className={`w-full p-3 rounded-2xl border flex items-center gap-3 text-left transition-colors cursor-pointer ${
+                templateId === 'gaming'
+                  ? 'border-[#5865F2] bg-[#5865F2]/15'
+                  : 'border-[var(--dc-border)] bg-[var(--dc-bg-card)] hover:bg-[var(--dc-bg-elevated)]'
+              }`}
+            >
+              <span className="w-9 h-9 rounded-xl bg-[#23a55a] text-white flex items-center justify-center shrink-0">
+                <Gamepad2 className="w-4 h-4" />
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold text-sm text-[var(--dc-text-primary)]">
+                  Para juegos
+                </p>
+                <p className="text-[11.5px] text-[var(--dc-text-muted)]">
+                  Para un club o comunidad
+                </p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[var(--dc-text-muted)] shrink-0" />
+            </button>
+          </div>
+
+          {/* Server Name */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--dc-text-muted)] block">
+              Nombre del servidor
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={placeholder}
+              className="w-full bg-[var(--dc-bg-input)] border border-[var(--dc-border)] rounded-xl px-3 py-2.5 text-sm text-[var(--dc-text-primary)] focus:outline-none focus:border-[#5865F2]"
+            />
+          </div>
+
+          {/* Role Hierarchy Ordering */}
+          <div className="rounded-2xl bg-[var(--dc-bg-card)] border border-[var(--dc-border)] p-3.5 space-y-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-[#8b95ff]" />
+                <p className="text-xs font-bold text-[var(--dc-text-primary)]">
+                  Ordenar roles ({rolesDraft.length})
+                </p>
+              </div>
+              <span className="text-[10.5px] text-[var(--dc-text-muted)]">
+                Mayor prioridad arriba
+              </span>
+            </div>
+
+            <div className="divide-y divide-white/[0.06] rounded-xl bg-[var(--dc-bg-input)] border border-[var(--dc-border)] overflow-hidden">
+              {rolesDraft.map((role, idx) => (
+                <div
+                  key={role.id}
+                  className="px-2.5 py-2 flex items-center justify-between gap-2"
+                >
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="text-[10.5px] font-bold text-[var(--dc-text-muted)] tabular-nums w-5 shrink-0">
+                      #{idx + 1}
+                    </span>
+                    <span
+                      className="w-3 h-3 rounded-full shrink-0"
+                      style={{ backgroundColor: role.color }}
+                    />
+                    <input
+                      type="text"
+                      value={role.name}
+                      disabled={role.id === 'role-everyone'}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setRolesDraft((prev) =>
+                          prev.map((item) =>
+                            item.id === role.id ? { ...item, name: val } : item
+                          )
+                        );
+                      }}
+                      className="min-w-0 flex-1 bg-transparent text-xs font-semibold focus:outline-none disabled:opacity-75"
+                      style={{ color: role.color }}
+                    />
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => moveRole(idx, -1)}
+                      aria-label={`Subir ${role.name}`}
+                      className="w-7 h-7 rounded-lg bg-white/[0.06] hover:bg-white/12 disabled:opacity-25 flex items-center justify-center text-zinc-200 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      <ArrowUp className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === rolesDraft.length - 1}
+                      onClick={() => moveRole(idx, 1)}
+                      aria-label={`Bajar ${role.name}`}
+                      className="w-7 h-7 rounded-lg bg-white/[0.06] hover:bg-white/12 disabled:opacity-25 flex items-center justify-center text-zinc-200 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      <ArrowDown className="w-3.5 h-3.5" />
+                    </button>
+                    {role.id !== 'role-owner' && role.id !== 'role-everyone' && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setRolesDraft((prev) => prev.filter((item) => item.id !== role.id))
+                        }
+                        aria-label={`Eliminar ${role.name}`}
+                        className="w-7 h-7 rounded-lg bg-rose-500/12 hover:bg-rose-500/25 flex items-center justify-center text-rose-400 cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Quick Add Role */}
+            <div className="flex items-center gap-1.5 pt-0.5">
+              <input
+                type="text"
+                value={newRoleName}
+                onChange={(e) => setNewRoleName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addDraftRole();
+                  }
+                }}
+                placeholder="Añadir rol nuevo..."
+                className="flex-1 min-w-0 bg-[var(--dc-bg-input)] border border-[var(--dc-border)] rounded-xl px-2.5 py-1.5 text-xs text-[var(--dc-text-primary)] focus:outline-none focus:border-[#5865F2]"
+              />
+              <div className="flex items-center gap-1 shrink-0">
+                {ROLE_SWATCH_COLORS.slice(0, 4).map((c) => (
                   <button
-                    key={col}
+                    key={c}
                     type="button"
-                    onClick={() => setAccentColor(col)}
-                    aria-label={`Color ${col}`}
-                    className={`w-6 h-6 rounded-full cursor-pointer transition-transform ${
-                      accentColor === col ? 'ring-2 ring-white scale-110' : 'opacity-80 hover:opacity-100'
+                    onClick={() => setNewRoleColor(c)}
+                    className={`w-4.5 h-4.5 rounded-full cursor-pointer ${
+                      newRoleColor === c ? 'ring-2 ring-white scale-110' : 'opacity-75'
                     }`}
-                    style={{ backgroundColor: col }}
+                    style={{ backgroundColor: c }}
+                    aria-label={`Color rol ${c}`}
                   />
                 ))}
               </div>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {SERVER_ICON_EMOJIS.map((em) => (
-                  <button
-                    key={em || 'initials'}
-                    type="button"
-                    onClick={() => setCustomEmoji(em)}
-                    className={`px-2 h-7 rounded-lg text-xs font-bold flex items-center justify-center cursor-pointer transition-colors ${
-                      customEmoji === em
-                        ? 'bg-[#5865F2] text-white'
-                        : 'bg-[var(--dc-bg-input)] text-[var(--dc-text-secondary)] hover:text-white'
-                    }`}
-                  >
-                    {em || previewShortCode}
-                  </button>
-                ))}
-              </div>
+              <button
+                type="button"
+                onClick={addDraftRole}
+                disabled={!newRoleName.trim()}
+                className="px-2.5 py-1.5 rounded-xl dc-btn-secondary text-xs font-bold inline-flex items-center gap-1 cursor-pointer disabled:opacity-40"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Rol</span>
+              </button>
             </div>
-          )}
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <button
-            type="button"
-            onClick={() => setTemplateId('friends')}
-            className={`w-full p-3 rounded-2xl border flex items-center gap-3 text-left transition-colors cursor-pointer ${
-              templateId === 'friends'
-                ? 'border-[#5865F2] bg-[#5865F2]/15'
-                : 'border-[var(--dc-border)] bg-[var(--dc-bg-card)] hover:bg-[var(--dc-bg-elevated)]'
-            }`}
-          >
-            <span className="w-9 h-9 rounded-xl bg-[#5865F2] text-white flex items-center justify-center shrink-0">
-              <Users className="w-4 h-4" />
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="font-display font-bold text-sm text-[var(--dc-text-primary)]">
-                Solo para pasar el rato
-              </p>
-              <p className="text-[11.5px] text-[var(--dc-text-muted)]">
-                Para mis amigos y para mí
-              </p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-[var(--dc-text-muted)] shrink-0" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setTemplateId('gaming')}
-            className={`w-full p-3 rounded-2xl border flex items-center gap-3 text-left transition-colors cursor-pointer ${
-              templateId === 'gaming'
-                ? 'border-[#5865F2] bg-[#5865F2]/15'
-                : 'border-[var(--dc-border)] bg-[var(--dc-bg-card)] hover:bg-[var(--dc-bg-elevated)]'
-            }`}
-          >
-            <span className="w-9 h-9 rounded-xl bg-[#23a55a] text-white flex items-center justify-center shrink-0">
-              <Gamepad2 className="w-4 h-4" />
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="font-display font-bold text-sm text-[var(--dc-text-primary)]">
-                Para juegos
-              </p>
-              <p className="text-[11.5px] text-[var(--dc-text-muted)]">
-                Para un club o comunidad
-              </p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-[var(--dc-text-muted)] shrink-0" />
-          </button>
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--dc-text-muted)] block">
-            Nombre del servidor
-          </label>
-          <input
-            type="text"
-            autoFocus
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={placeholder}
-            className="w-full bg-[var(--dc-bg-input)] border border-[var(--dc-border)] rounded-xl px-3 py-2.5 text-sm text-[var(--dc-text-primary)] focus:outline-none focus:border-[#5865F2]"
-          />
-        </div>
-
-        <div className="flex justify-end gap-2 pt-1">
+        {/* Sticky Modal Footer */}
+        <div className="px-5 py-3.5 border-t border-[var(--dc-border)] flex justify-end gap-2 bg-[var(--dc-bg-sheet)] shrink-0">
           <button
             type="button"
             onClick={onClose}

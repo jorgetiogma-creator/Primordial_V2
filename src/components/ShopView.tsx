@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   ArrowLeft,
@@ -596,7 +596,7 @@ const ThematicBundleArtwork: React.FC<{
   );
 };
 
-/* Museum-Grade Collectible Stage Renderer for Shop Cards (exact match to official screenshots) */
+/* Museum-Grade Collectible Stage Renderer for Shop Cards */
 const CollectibleCardStage: React.FC<{
   bundle: ShopBundle;
   activeSwatch?: string;
@@ -607,6 +607,7 @@ const CollectibleCardStage: React.FC<{
   const nameplateItem = bundle.items.find((i) => i.nameplateId);
   const frameItem = bundle.items.find((i) => i.profileFrameId);
   const effectItem = bundle.items.find((i) => i.profileEffectId);
+  const glowColor = activeSwatch ? `${activeSwatch}66` : theme.glow;
 
   /* 1. Standalone Profile Banner Stage */
   if (bundle.category === 'banners' && artUrl) {
@@ -616,18 +617,20 @@ const CollectibleCardStage: React.FC<{
           src={artUrl}
           alt={bundle.title}
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
+          className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-106"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#090a0f] via-black/20 to-black/15" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
         <div className="absolute bottom-2.5 left-3 right-3 flex items-center gap-2.5 z-10">
-          <div className="w-9 h-9 rounded-full bg-[#0c0d12] p-0.5 border border-white/25 shadow-xl shrink-0">
-            <div className="w-full h-full rounded-full bg-[#5865F2] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-[#0c0d12] p-0.5 border border-white/30 shadow-[0_8px_18px_rgba(0,0,0,0.8)] shrink-0 relative">
+            <div className="w-full h-full rounded-full bg-gradient-to-br from-[#5865F2] to-[#3b47c9] flex items-center justify-center">
               <DiscordLogo className="w-4.5 h-4.5 text-white" />
             </div>
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#23a55a] border-2 border-[#0c0d12]" />
           </div>
           <div className="min-w-0">
-            <div className="h-2 w-16 rounded-full bg-white/85" />
-            <div className="h-1.5 w-10 rounded-full bg-white/45 mt-1" />
+            <div className="h-2 w-18 rounded-full bg-white/90 shadow-xs" />
+            <div className="h-1.5 w-11 rounded-full bg-white/50 mt-1" />
           </div>
         </div>
       </div>
@@ -642,53 +645,61 @@ const CollectibleCardStage: React.FC<{
           src={GENERATED_ASSETS.shopPatoArt}
           alt={bundle.title}
           fallbackGradient={theme.gradient}
-          className="absolute inset-0 w-full h-full object-cover object-right transition-transform duration-500 ease-out group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover object-right transition-transform duration-500 ease-out group-hover:scale-106"
         />
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'linear-gradient(90deg, rgba(14,116,144,0.82) 0%, rgba(56,189,248,0.28) 42%, transparent 72%)',
+              'linear-gradient(90deg, rgba(14,116,144,0.85) 0%, rgba(56,189,248,0.3) 45%, transparent 75%)',
           }}
         />
-        <div className="absolute left-4 bottom-4 z-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-          <div className="absolute -inset-3 rounded-full border border-sky-100/50 animate-ping opacity-30" />
-          <div className="absolute -inset-1.5 rounded-full border-2 border-sky-200/75" />
-          <div className="w-[70px] h-[70px] rounded-full bg-sky-900/45 border border-white/45 backdrop-blur-xs flex items-center justify-center shadow-xl">
-            <DiscordLogo className="w-9 h-9 text-white/95 drop-shadow" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-200/45 to-transparent pointer-events-none" />
+        <div className="absolute left-4 bottom-4 z-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-108">
+          <div className="absolute -inset-3 rounded-full border border-sky-100/55 animate-ping opacity-35" />
+          <div className="absolute -inset-1.5 rounded-full border-2 border-sky-200/80 shadow-[0_0_16px_rgba(125,211,252,0.5)]" />
+          <div className="w-[70px] h-[70px] rounded-full bg-sky-900/55 border border-white/50 backdrop-blur-xs flex items-center justify-center shadow-2xl">
+            <DiscordLogo className="w-9 h-9 text-white drop-shadow" />
           </div>
         </div>
       </div>
     );
   }
 
-  /* 3. Standalone Profile Frame ("Marco de perfil") Stage — Mini Card Wrapped & Breaking Perimeter */
+  /* 3. Standalone Profile Frame ("Marco de perfil") Stage — Collector Mini Card */
   if (bundle.items.length === 1 && frameItem?.profileFrameId) {
     return (
       <div
-        className={`relative w-full aspect-[4/3] overflow-hidden bg-gradient-to-br ${theme.gradient} flex items-end justify-center px-4 pt-6 pb-2`}
+        className={`relative w-full aspect-[4/3] overflow-hidden bg-gradient-to-br ${theme.gradient} flex items-end justify-center px-4 pt-6 pb-2.5`}
       >
         <div
-          className="absolute inset-0 pointer-events-none opacity-85"
+          className="absolute inset-0 pointer-events-none opacity-90 transition-opacity duration-300 group-hover:opacity-100"
           style={{
-            background: `radial-gradient(circle at 50% 42%, ${
-              activeSwatch ? `${activeSwatch}44` : theme.glow
-            } 0%, rgba(12,13,18,0.72) 55%, rgba(6,7,10,0.96) 100%)`,
+            background: `radial-gradient(circle at 50% 40%, ${glowColor} 0%, rgba(12,13,18,0.72) 55%, rgba(6,7,10,0.96) 100%)`,
           }}
         />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
 
         {/* Mini Discord Profile Card Wrapped by Ornate Profile Frame */}
-        <div className="relative w-[78%] h-[82%] rounded-xl bg-[#181920] border border-white/10 shadow-[0_14px_30px_rgba(0,0,0,0.85)] transition-transform duration-300 group-hover:scale-[1.03]">
-          <div className="h-[40%] w-full rounded-t-xl bg-[#272933] border-b border-white/5" />
+        <div className="relative w-[78%] h-[82%] rounded-xl bg-gradient-to-b from-[#1c1e27] to-[#13141b] border border-white/15 shadow-[0_16px_34px_rgba(0,0,0,0.88)] transition-transform duration-300 group-hover:scale-[1.04]">
+          <div className="h-[40%] w-full rounded-t-xl bg-gradient-to-r from-[#282b37] via-[#2f3344] to-[#232632] border-b border-white/10 relative overflow-hidden">
+            <div
+              className="absolute inset-0 opacity-40"
+              style={{
+                background: `radial-gradient(circle at 80% 25%, ${glowColor}, transparent 65%)`,
+              }}
+            />
+          </div>
           <div className="px-2.5 -mt-4 relative z-10 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#363945] border-2 border-[#181920] flex items-center justify-center shadow">
-              <DiscordLogo className="w-4.5 h-4.5 text-zinc-400" />
+            <div className="w-8 h-8 rounded-full bg-[#363945] border-2 border-[#181920] flex items-center justify-center shadow-md relative">
+              <DiscordLogo className="w-4.5 h-4.5 text-zinc-200" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#23a55a] border-2 border-[#181920]" />
             </div>
           </div>
           <div className="px-2.5 pt-1.5 space-y-1.5">
-            <div className="h-2 w-14 rounded-full bg-white/20" />
-            <div className="h-1.5 w-20 rounded-full bg-white/10" />
-            <div className="h-1.5 w-16 rounded-full bg-white/10" />
+            <div className="h-2 w-14 rounded-full bg-white/25" />
+            <div className="h-1.5 w-20 rounded-full bg-white/12" />
+            <div className="h-1.5 w-15 rounded-full bg-white/10" />
           </div>
           <ProfileFrameArtwork frame={frameItem.profileFrameId} accentColor={activeSwatch} />
         </div>
@@ -703,31 +714,33 @@ const CollectibleCardStage: React.FC<{
     return (
       <div
         className="relative w-full aspect-[4/3] overflow-hidden p-3 flex flex-col justify-center gap-2.5"
-        style={{ backgroundColor: '#14151a' }}
+        style={{ backgroundColor: '#111218' }}
       >
         <div
-          className="absolute inset-0 pointer-events-none opacity-65 transition-opacity duration-300 group-hover:opacity-95"
+          className="absolute inset-0 pointer-events-none opacity-75 transition-opacity duration-300 group-hover:opacity-100"
           style={{
-            background: `radial-gradient(circle at 60% 50%, ${activeSwatch || theme.glow}, transparent 72%)`,
+            background: `radial-gradient(circle at 60% 50%, ${glowColor}, transparent 70%)`,
           }}
         />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
 
         {/* Top muted member skeleton row */}
-        <div className="relative z-10 flex items-center gap-2 opacity-40 px-2">
+        <div className="relative z-10 flex items-center gap-2 opacity-35 px-2">
           <div className="w-5 h-5 rounded-full bg-zinc-600/80 shrink-0" />
           <span className="h-2 w-16 rounded-full bg-white/35" />
         </div>
 
         {/* Highlighted Nameplate Bar */}
-        <div className="relative z-10 h-13 rounded-xl overflow-hidden border border-white/20 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.7)] flex items-center justify-between px-2.5 bg-[#191a23] anim-shimmer group-hover:scale-[1.025] transition-transform duration-300">
+        <div className="relative z-10 h-13.5 rounded-xl overflow-hidden border border-white/25 shadow-[0_12px_28px_-6px_rgba(0,0,0,0.8)] flex items-center justify-between px-2.5 bg-[#191a23] anim-shimmer group-hover:scale-[1.03] transition-transform duration-300">
           <NameplateStripBackground nameplate={plateId} accentColor={activeSwatch} />
           <div className="relative z-10 flex items-center gap-2 min-w-0">
-            <span className="w-6.5 h-6.5 rounded-full bg-black/50 border border-white/35 flex items-center justify-center shrink-0">
-              <DiscordLogo className="w-3.5 h-3.5 text-white/90" />
+            <span className="w-6.5 h-6.5 rounded-full bg-black/55 border border-white/40 flex items-center justify-center shrink-0 relative">
+              <DiscordLogo className="w-3.5 h-3.5 text-white/95" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#23a55a] border border-black" />
             </span>
             <span
               className={`h-2 w-14 rounded-full ${
-                isLightPlate ? 'bg-zinc-900/50' : 'bg-white/45'
+                isLightPlate ? 'bg-zinc-900/60' : 'bg-white/60'
               }`}
             />
           </div>
@@ -735,7 +748,7 @@ const CollectibleCardStage: React.FC<{
         </div>
 
         {/* Bottom muted member skeleton row */}
-        <div className="relative z-10 flex items-center gap-2 opacity-40 px-2">
+        <div className="relative z-10 flex items-center gap-2 opacity-35 px-2">
           <div className="w-5 h-5 rounded-full bg-zinc-600/80 shrink-0" />
           <span className="h-2 w-12 rounded-full bg-white/30" />
         </div>
@@ -745,30 +758,40 @@ const CollectibleCardStage: React.FC<{
 
   /* 5. Centered Studio Avatar Decoration Pedestal Stage */
   if (bundle.items.length === 1 && firstDeco) {
-    const spotlightColor = activeSwatch ? `${activeSwatch}55` : theme.glow;
     return (
       <div
         className={`relative w-full aspect-[4/3] overflow-hidden bg-gradient-to-br ${theme.gradient} flex items-center justify-center`}
       >
         <div
-          className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-85 group-hover:opacity-100"
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-90 group-hover:opacity-100"
           style={{
-            background: `radial-gradient(circle at 50% 48%, ${spotlightColor} 0%, rgba(10,11,16,0.68) 56%, rgba(5,5,8,0.96) 100%)`,
+            background: `radial-gradient(circle at 50% 46%, ${glowColor} 0%, rgba(10,11,16,0.7) 56%, rgba(5,5,8,0.97) 100%)`,
           }}
         />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
+        {/* Concentric Orbital Studio Pedestal Rings */}
+        <div className="absolute w-32 h-32 rounded-full border border-white/[0.06] pointer-events-none transition-transform duration-500 group-hover:scale-110" />
+        <div className="absolute w-44 h-44 rounded-full border border-white/[0.035] pointer-events-none" />
         <div
-          className="absolute w-36 h-36 rounded-full blur-2xl opacity-45 transition-all duration-300 group-hover:scale-110 group-hover:opacity-65"
+          className="absolute w-36 h-36 rounded-full blur-2xl opacity-50 transition-all duration-300 group-hover:scale-115 group-hover:opacity-75 pointer-events-none"
           style={{ backgroundColor: activeSwatch || theme.glow }}
         />
+        {/* Subtle Twinkle Accents */}
+        <span className="absolute top-3.5 left-4 w-1 h-1 rounded-full bg-white/65 anim-twinkle pointer-events-none" />
+        <span
+          className="absolute bottom-4 right-5 w-1.5 h-1.5 rounded-full bg-white/50 anim-twinkle pointer-events-none"
+          style={{ animationDelay: '0.8s' }}
+        />
 
-        <div className="relative z-10 flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-108">
+        <div className="relative z-10 flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-110">
           <div
-            className="w-[74px] h-[74px] rounded-full border border-white/20 flex items-center justify-center shadow-[0_12px_30px_rgba(0,0,0,0.85)] overflow-hidden relative"
+            className="w-[74px] h-[74px] rounded-full border border-white/25 flex items-center justify-center shadow-[0_14px_34px_rgba(0,0,0,0.9)] overflow-hidden relative"
             style={{
-              backgroundColor: activeSwatch ? `${activeSwatch}22` : '#262831',
+              backgroundColor: activeSwatch ? `${activeSwatch}26` : '#232530',
             }}
           >
-            <DiscordLogo className="w-9 h-9 text-white/65 drop-shadow" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+            <DiscordLogo className="w-9 h-9 text-white/75 drop-shadow relative z-10" />
           </div>
           <AvatarDecorationRing decoration={firstDeco} accentColor={activeSwatch} />
         </div>
@@ -776,7 +799,7 @@ const CollectibleCardStage: React.FC<{
     );
   }
 
-  /* 6. Single Profile Effect Showcase Stage (Full Artwork + Mini Profile Card Skeleton Overlay) */
+  /* 6. Single Profile Effect Showcase Stage (Full Artwork + Mini Profile Card Glass Overlay) */
   if (bundle.items.length === 1 && effectItem) {
     const isCrimsonMoon =
       effectItem.profileEffectId === 'cuervos-luna' && activeSwatch === '#ef4444';
@@ -786,7 +809,7 @@ const CollectibleCardStage: React.FC<{
     return (
       <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#0a0a0e]">
         <div
-          className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-105"
+          className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-106"
           style={{
             filter: isCrimsonMoon
               ? 'hue-rotate(105deg) saturate(1.5)'
@@ -797,43 +820,53 @@ const CollectibleCardStage: React.FC<{
         >
           <ThematicBundleArtwork variant={bundle.artVariant} />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/15" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#090a0f] via-black/25 to-black/15" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+        <div
+          className="absolute inset-0 pointer-events-none opacity-45 group-hover:opacity-75 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle at 75% 22%, ${glowColor}, transparent 60%)`,
+          }}
+        />
 
         {/* Subtle Translucent Discord Profile Card Silhouette Overlay */}
-        <div className="absolute inset-x-3 bottom-3 top-7 rounded-xl border border-white/10 bg-black/25 backdrop-blur-[1px] pointer-events-none flex flex-col justify-end p-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#1e1f27]/85 border border-white/25 flex items-center justify-center shadow-lg mb-1.5">
-            <DiscordLogo className="w-4.5 h-4.5 text-white/60" />
+        <div className="absolute inset-x-3 bottom-3 top-7 rounded-xl border border-white/15 bg-black/30 backdrop-blur-[1.5px] pointer-events-none flex flex-col justify-end p-2.5 shadow-inner">
+          <div className="w-8 h-8 rounded-full bg-[#1e1f27]/90 border border-white/30 flex items-center justify-center shadow-lg mb-1.5 relative">
+            <DiscordLogo className="w-4.5 h-4.5 text-white/75" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#23a55a] border-2 border-[#1e1f27]" />
           </div>
-          <div className="h-1.5 w-14 rounded-full bg-white/25" />
-          <div className="h-1 w-20 rounded-full bg-white/15 mt-1" />
+          <div className="h-1.5 w-16 rounded-full bg-white/35" />
+          <div className="h-1 w-22 rounded-full bg-white/18 mt-1" />
         </div>
       </div>
     );
   }
 
-  /* 7. Multi-Item Collector Bundle Collage (Tilted Profile Effect / Frame Card + Nameplate Strip + Top-Left Deco) */
+  /* 7. Multi-Item Collector Bundle Collage (Tilted Profile Card + Nameplate Strip + Floating Hero Deco) */
   return (
     <div
       className={`relative w-full aspect-[4/3] overflow-hidden bg-gradient-to-br ${theme.gradient}`}
     >
       <div
-        className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-85 group-hover:opacity-100"
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-90 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(circle at 28% 34%, ${theme.glow} 0%, transparent 58%), radial-gradient(circle at 75% 65%, rgba(255,255,255,0.08) 0%, transparent 60%)`,
+          background: `radial-gradient(circle at 26% 32%, ${glowColor} 0%, transparent 58%), radial-gradient(circle at 78% 68%, rgba(255,255,255,0.11) 0%, transparent 60%)`,
         }}
       />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+      <span className="absolute top-2.5 right-3 w-1 h-1 rounded-full bg-white/60 anim-twinkle pointer-events-none" />
 
       {/* Right / Center Tilted Profile Card with Effect Artwork & Optional Profile Frame */}
-      <div className="absolute right-2.5 top-3 bottom-2.5 w-[56%] rounded-xl border border-white/25 shadow-[0_14px_28px_-6px_rgba(0,0,0,0.85)] transform rotate-3 group-hover:rotate-1 group-hover:translate-x-0.5 transition-transform duration-300 ease-out bg-[#121319]">
+      <div className="absolute right-2.5 top-3 bottom-2.5 w-[57%] rounded-xl border border-white/25 shadow-[0_16px_32px_-6px_rgba(0,0,0,0.9)] transform rotate-3 group-hover:rotate-1 group-hover:translate-x-0.5 transition-transform duration-300 ease-out bg-[#121319]">
         <div className="w-full h-full rounded-xl overflow-hidden relative">
           <ThematicBundleArtwork variant={bundle.artVariant} />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/20" />
-          <div className="absolute top-2.5 left-2.5 w-7 h-7 rounded-full bg-[#1d1e27]/85 border border-white/30 flex items-center justify-center shadow">
-            <DiscordLogo className="w-4 h-4 text-white/80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/15" />
+          <div className="absolute top-2.5 left-2.5 w-7 h-7 rounded-full bg-[#1d1e27]/90 border border-white/35 flex items-center justify-center shadow">
+            <DiscordLogo className="w-4 h-4 text-white/85" />
           </div>
           <div className="absolute bottom-2.5 left-2.5 right-2.5 space-y-1">
-            <div className="h-1.5 w-12 rounded-full bg-white/75" />
-            <div className="h-1 w-16 rounded-full bg-white/35" />
+            <div className="h-1.5 w-14 rounded-full bg-white/80" />
+            <div className="h-1 w-18 rounded-full bg-white/40" />
           </div>
         </div>
         {frameItem?.profileFrameId && (
@@ -843,27 +876,27 @@ const CollectibleCardStage: React.FC<{
 
       {/* Slanted Bottom-Left Nameplate Strip */}
       {nameplateItem ? (
-        <div className="absolute left-2 bottom-3 w-[62%] h-7.5 rounded-lg bg-[#14151c] border border-white/25 shadow-[0_8px_18px_rgba(0,0,0,0.75)] transform -rotate-5 group-hover:-rotate-3 transition-transform duration-300 flex items-center justify-between px-2 z-10 overflow-hidden">
+        <div className="absolute left-2 bottom-3 w-[63%] h-7.5 rounded-lg bg-[#14151c] border border-white/30 shadow-[0_10px_22px_rgba(0,0,0,0.82)] transform -rotate-5 group-hover:-rotate-3 transition-transform duration-300 flex items-center justify-between px-2 z-10 overflow-hidden">
           <NameplateStripBackground nameplate={nameplateItem.nameplateId || 'none'} accentColor={activeSwatch} />
-          <span className="relative z-10 w-4.5 h-4.5 rounded-full bg-black/50 border border-white/40 flex items-center justify-center shrink-0">
-            <DiscordLogo className="w-2.5 h-2.5 text-white/85" />
+          <span className="relative z-10 w-4.5 h-4.5 rounded-full bg-black/55 border border-white/45 flex items-center justify-center shrink-0">
+            <DiscordLogo className="w-2.5 h-2.5 text-white/90" />
           </span>
           <NameplateRowDecor nameplate={nameplateItem.nameplateId || 'none'} />
         </div>
       ) : (
-        <div className="absolute left-2.5 bottom-3 w-[54%] h-7 rounded-lg bg-[#14151c]/90 border border-white/20 shadow-lg transform -rotate-4 flex items-center gap-2 px-2 z-10">
-          <span className="w-4 h-4 rounded-full overflow-hidden border border-white/30 shrink-0">
+        <div className="absolute left-2.5 bottom-3 w-[54%] h-7 rounded-lg bg-[#14151c]/95 border border-white/25 shadow-lg transform -rotate-4 group-hover:-rotate-2 transition-transform duration-300 flex items-center gap-2 px-2 z-10">
+          <span className="w-4 h-4 rounded-full overflow-hidden border border-white/35 shrink-0">
             <AvatarArtwork avatar="madara" />
           </span>
-          <span className="h-1.5 w-14 rounded-full bg-white/45" />
+          <span className="h-1.5 w-14 rounded-full bg-white/50" />
         </div>
       )}
 
       {/* Floating Top-Left Hero Avatar Decoration */}
       {firstDeco && (
-        <div className="absolute top-3.5 left-3.5 z-20 w-14 h-14 flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-0.5">
-          <div className="w-11 h-11 rounded-full bg-[#20222b] border border-white/25 flex items-center justify-center shadow-[0_10px_24px_rgba(0,0,0,0.9)]">
-            <DiscordLogo className="w-5.5 h-5.5 text-white/85" />
+        <div className="absolute top-3.5 left-3.5 z-20 w-14 h-14 flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-112 group-hover:-translate-y-0.5">
+          <div className="w-11 h-11 rounded-full bg-[#20222b] border border-white/30 flex items-center justify-center shadow-[0_12px_26px_rgba(0,0,0,0.92)]">
+            <DiscordLogo className="w-5.5 h-5.5 text-white/90" />
           </div>
           <AvatarDecorationRing decoration={firstDeco} accentColor={activeSwatch} />
         </div>
@@ -878,9 +911,14 @@ const ProfileFrameShowcase: React.FC<{
   user: UserProfile;
   accentColor?: string;
 }> = ({ frameId, bundle, user, accentColor }) => {
+  const theme = getBundleTheme(bundle.artVariant);
   return (
-    <div className="my-4 mx-auto w-[300px] rounded-2xl border border-white/15 bg-[#0e0f14] shadow-2xl relative">
-      <div className="h-24 w-full rounded-t-2xl overflow-hidden relative" style={{ backgroundColor: user.bannerColor }}>
+    <div className="my-4 mx-auto w-[304px] rounded-2xl border border-white/20 bg-gradient-to-b from-[#13151d] to-[#0b0c11] shadow-[0_24px_56px_-12px_rgba(0,0,0,0.9)] relative">
+      <div
+        className="absolute -inset-3 rounded-3xl blur-2xl opacity-35 pointer-events-none"
+        style={{ backgroundColor: accentColor || theme.glow }}
+      />
+      <div className="h-24 w-full rounded-t-2xl overflow-hidden relative z-10" style={{ backgroundColor: user.bannerColor }}>
         {user.bannerImage ? (
           <img
             src={user.bannerImage}
@@ -891,7 +929,7 @@ const ProfileFrameShowcase: React.FC<{
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-[#232530] via-[#161820] to-[#0e0f14]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
 
       <div className="px-4 pb-5 -mt-10 relative z-10">
@@ -908,7 +946,7 @@ const ProfileFrameShowcase: React.FC<{
           {user.displayName}
         </p>
         <p className="text-xs text-zinc-400">{user.username}</p>
-        <p className="text-[11px] text-[#8b95ff] font-semibold mt-2.5">
+        <p className="text-[11px] text-[#959eff] font-semibold mt-2.5">
           Marco de perfil exclusivo · Sobresale de la tarjeta
         </p>
       </div>
@@ -928,10 +966,15 @@ const ProfileEffectShowcase: React.FC<{
   const decoId = bundle.items.find((i) => i.decorationId)?.decorationId || (showFullBundle ? user.decoration : 'none');
   const nameplateId = bundle.items.find((i) => i.nameplateId)?.nameplateId || 'none';
   const frameId = showFullBundle ? bundle.items.find((i) => i.profileFrameId)?.profileFrameId : undefined;
+  const theme = getBundleTheme(bundle.artVariant);
 
   return (
-    <div className="my-3 mx-auto w-[304px] rounded-2xl border border-white/15 bg-[#0e0f14] shadow-2xl relative">
-      <div className="overflow-hidden rounded-2xl relative">
+    <div className="my-3 mx-auto w-[304px] rounded-2xl border border-white/20 bg-gradient-to-b from-[#13151d] to-[#0b0c11] shadow-[0_24px_56px_-12px_rgba(0,0,0,0.9)] relative">
+      <div
+        className="absolute -inset-3 rounded-3xl blur-2xl opacity-35 pointer-events-none"
+        style={{ backgroundColor: theme.glow }}
+      />
+      <div className="overflow-hidden rounded-2xl relative z-10">
         <div className="h-24 w-full relative overflow-hidden" style={{ backgroundColor: user.bannerColor }}>
           {user.bannerImage && (
             <img
@@ -941,7 +984,7 @@ const ProfileEffectShowcase: React.FC<{
               className="w-full h-full object-cover"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
 
         <div className="px-4 pb-5 -mt-10 relative z-10">
@@ -960,7 +1003,7 @@ const ProfileEffectShowcase: React.FC<{
           <p className="text-xs text-zinc-400">{user.username}</p>
 
           {nameplateId !== 'none' && (
-            <div className="mt-2.5 h-9 rounded-xl overflow-hidden border border-white/15 relative flex items-center px-2.5 bg-[#15161e]">
+            <div className="mt-2.5 h-9 rounded-xl overflow-hidden border border-white/20 relative flex items-center px-2.5 bg-[#15161e] shadow-md">
               <NameplateStripBackground nameplate={nameplateId} />
               <span className="relative z-10 text-xs font-display font-bold text-white drop-shadow">
                 {user.displayName}
@@ -995,10 +1038,15 @@ const BannerProfilePreview: React.FC<{
   const frameId = showFullBundle
     ? bundle.items.find((i) => i.profileFrameId)?.profileFrameId
     : undefined;
+  const theme = getBundleTheme(bundle.artVariant);
 
   return (
-    <div className="my-3 mx-auto w-[304px] rounded-2xl border border-white/15 bg-[#0e0f14] shadow-2xl relative">
-      <div className="overflow-hidden rounded-2xl relative">
+    <div className="my-3 mx-auto w-[304px] rounded-2xl border border-white/20 bg-gradient-to-b from-[#13151d] to-[#0b0c11] shadow-[0_24px_56px_-12px_rgba(0,0,0,0.9)] relative">
+      <div
+        className="absolute -inset-3 rounded-3xl blur-2xl opacity-35 pointer-events-none"
+        style={{ backgroundColor: theme.glow }}
+      />
+      <div className="overflow-hidden rounded-2xl relative z-10">
         <div className="h-28 w-full relative overflow-hidden anim-shimmer">
           <img
             src={bannerUrl}
@@ -1006,7 +1054,7 @@ const BannerProfilePreview: React.FC<{
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
         </div>
         <div className="px-4 pb-4 -mt-10 relative z-10">
           <div className="inline-block p-1 rounded-full bg-[#0e0f14] shadow-lg">
@@ -1022,7 +1070,7 @@ const BannerProfilePreview: React.FC<{
             {user.displayName}
           </p>
           <p className="text-xs text-zinc-400">{user.username}</p>
-          <p className="text-[11px] text-[#8b95ff] font-semibold mt-2">
+          <p className="text-[11px] text-[#959eff] font-semibold mt-2">
             {showFullBundle
               ? 'Vista previa completa del lote equipado'
               : 'Así lucirá este banner en tu perfil'}
@@ -1066,30 +1114,30 @@ const BundleCard: React.FC<{
 
   return (
     <motion.div
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -3 }}
       whileTap={{ scale: 0.985 }}
-      transition={{ duration: 0.14, ease: 'easeOut' }}
+      transition={{ duration: 0.16, ease: 'easeOut' }}
       onClick={() => onSelect(selectedSwatch)}
-      className="group rounded-2xl bg-[#101117] hover:bg-[#171922] border border-white/[0.08] hover:border-white/[0.2] overflow-hidden relative cursor-pointer transition-colors shadow-[0_8px_24px_-8px_rgba(0,0,0,0.65)] flex flex-col"
+      className="group rounded-2xl bg-gradient-to-b from-[#13151d] to-[#0b0c12] border border-white/[0.09] hover:border-white/[0.26] overflow-hidden relative cursor-pointer transition-all shadow-[0_10px_28px_-10px_rgba(0,0,0,0.75)] hover:shadow-[0_16px_36px_-10px_rgba(88,101,242,0.28)] flex flex-col"
     >
       <button
         type="button"
         onClick={onToggleWishlist}
         aria-label="Añadir a lista de deseos"
-        className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/60 hover:bg-black/85 border border-white/15 backdrop-blur-xs flex items-center justify-center z-20 cursor-pointer transition-transform active:scale-90"
+        className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/65 hover:bg-black/90 border border-white/20 backdrop-blur-xs flex items-center justify-center z-20 cursor-pointer transition-transform active:scale-90 shadow-md"
       >
         <Heart
           className={`w-4 h-4 transition-transform ${
-            wishlisted ? 'text-red-500 fill-red-500 scale-110' : 'text-white'
+            wishlisted ? 'text-red-500 fill-red-500 scale-110' : 'text-white/90'
           }`}
         />
       </button>
 
       <CollectibleCardStage bundle={bundle} activeSwatch={selectedSwatch} />
 
-      <div className="p-3 flex-1 flex flex-col justify-between gap-2 bg-[#111218]">
+      <div className="p-3 flex-1 flex flex-col justify-between gap-2 bg-gradient-to-b from-[#111219] to-[#0d0e14] border-t border-white/[0.06]">
         <div>
-          <p className="text-[11px] font-medium text-zinc-400 truncate">
+          <p className="text-[11px] font-semibold text-zinc-400 truncate tracking-wide">
             {singleKindLabel}
           </p>
           <h3 className="font-display font-bold text-[13.5px] sm:text-[14.5px] text-white truncate leading-snug mt-0.5">
@@ -1102,8 +1150,8 @@ const BundleCard: React.FC<{
           <span
             className={`inline-flex items-center gap-1 text-[12px] font-bold tabular-nums px-2 py-0.5 rounded-md ${
               owned
-                ? 'bg-[#23a55a]/15 text-[#23a55a]'
-                : 'bg-white/[0.06] text-zinc-100'
+                ? 'bg-[#23a55a]/18 text-[#36d077] border border-[#23a55a]/25'
+                : 'bg-white/[0.07] text-zinc-100 border border-white/[0.06]'
             }`}
           >
             {owned ? (
@@ -1145,7 +1193,7 @@ const BundleCard: React.FC<{
               )}
             </div>
           ) : (
-            <span className="text-[11px] font-medium text-zinc-500 tabular-nums">
+            <span className="text-[11px] font-medium text-zinc-400 tabular-nums">
               {bundle.priceUsd}
             </span>
           )}
@@ -1155,7 +1203,7 @@ const BundleCard: React.FC<{
   );
 };
 
-/* Clickable Collection Banner Card Matching Screenshots */
+/* Clickable Collection Banner Card */
 const CollectionPromoBanner: React.FC<{
   title: string;
   subtitle?: string;
@@ -1178,29 +1226,30 @@ const CollectionPromoBanner: React.FC<{
     whileHover={{ y: -2 }}
     whileTap={{ scale: 0.985 }}
     onClick={onClick}
-    className="w-full h-28 sm:h-32 rounded-2xl overflow-hidden relative text-left border border-white/15 px-4 py-3.5 flex items-center justify-between gap-3 cursor-pointer group shadow-xl anim-shimmer"
+    className="w-full h-28 sm:h-32 rounded-2xl overflow-hidden relative text-left border border-white/15 hover:border-white/30 px-4 py-3.5 flex items-center justify-between gap-3 cursor-pointer group shadow-[0_14px_34px_-12px_rgba(0,0,0,0.85)] anim-shimmer transition-colors"
   >
     <img
       src={imageUrl}
       alt={title}
       referrerPolicy="no-referrer"
-      className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+      className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-106"
     />
     <div className={`absolute inset-0 bg-gradient-to-r ${gradientClass}`} />
+    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent pointer-events-none" />
 
     <div className="relative z-10 min-w-0">
       {badgeText && (
-        <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/15 text-white/95 backdrop-blur-xs mb-1">
+        <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider text-white/85 mb-1 drop-shadow">
           {badgeText}
         </span>
       )}
       <div className={`${titleClass} truncate leading-tight`}>{title}</div>
       {subtitle && (
-        <p className="text-xs text-zinc-200/90 mt-0.5 line-clamp-1">{subtitle}</p>
+        <p className="text-xs text-zinc-200/95 mt-0.5 line-clamp-1">{subtitle}</p>
       )}
     </div>
 
-    <div className="relative z-10 w-9 h-9 rounded-full bg-black/55 group-hover:bg-black/80 border border-white/25 backdrop-blur-xs flex items-center justify-center shrink-0 transition-transform group-hover:translate-x-0.5">
+    <div className="relative z-10 w-9 h-9 rounded-full bg-black/60 group-hover:bg-black/85 border border-white/30 backdrop-blur-xs flex items-center justify-center shrink-0 transition-transform group-hover:translate-x-0.5 shadow-lg">
       <ChevronRight className="w-5 h-5 text-white" />
     </div>
   </motion.button>
@@ -1249,6 +1298,15 @@ export const ShopView: React.FC<ShopViewProps> = ({
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [previewKey, setPreviewKey] = useState(1);
   const [fullPreviewMode, setFullPreviewMode] = useState(false);
+  const boughtTimerRef = useRef<number | null>(null);
+  const giftTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (boughtTimerRef.current !== null) window.clearTimeout(boughtTimerRef.current);
+      if (giftTimerRef.current !== null) window.clearTimeout(giftTimerRef.current);
+    };
+  }, []);
 
   const openBundleModal = (bundle: ShopBundle, swatch?: string) => {
     setSelectedItemIndex(0);
@@ -1296,7 +1354,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
     (b) => b.category === 'anime' || b.category === 'fantasia' || b.id === 'bundle-grabado' || b.id === 'bundle-vader' || b.id === 'bundle-condenacion'
   );
   const bannerBundles = bundles.filter((b) => b.category === 'banners');
-  const deadpoolBundle = bundles.find((b) => b.id === 'bundle-deadpool')!;
+  const deadpoolBundle = bundles.find((b) => b.id === 'bundle-deadpool');
 
   const activeCollectionMeta = activeCollection ? COLLECTION_META[activeCollection] : null;
   const collectionItems = activeCollection
@@ -1418,12 +1476,9 @@ export const ShopView: React.FC<ShopViewProps> = ({
               <button
                 onClick={onBack}
                 aria-label="Cerrar tienda"
-                className="relative w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white cursor-pointer"
+                className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
-                <span className="absolute -bottom-0.5 -right-0.5 px-1.5 py-[1px] rounded-full bg-[#da373c] text-white text-[10px] font-bold tabular-nums leading-tight border-2 border-[#09090d]">
-                  99
-                </span>
               </button>
               <Store className="w-5 h-5 text-white ml-1" />
               <h1 className="font-display font-bold text-[19px] text-white">Tienda</h1>
@@ -1786,14 +1841,16 @@ export const ShopView: React.FC<ShopViewProps> = ({
                       </button>
                     </div>
 
-                    <CollectionPromoBanner
-                      title="DEADPOOL / WOLVERINE"
-                      subtitle={`Marvel · ${deadpoolBundle.items.length} artículos · ◈ ${deadpoolBundle.priceOrbs} Orbs`}
-                      imageUrl={GENERATED_ASSETS.deadpoolBanner}
-                      titleClass="font-display font-black italic text-xl text-white"
-                      gradientClass="from-black/90 via-black/45 to-transparent"
-                      onClick={() => openBundleModal(deadpoolBundle)}
-                    />
+                    {deadpoolBundle && (
+                      <CollectionPromoBanner
+                        title="DEADPOOL / WOLVERINE"
+                        subtitle={`Marvel · ${deadpoolBundle.items.length} artículos · ◈ ${deadpoolBundle.priceOrbs} Orbs`}
+                        imageUrl={GENERATED_ASSETS.deadpoolBanner}
+                        titleClass="font-display font-black italic text-xl text-white"
+                        gradientClass="from-black/90 via-black/45 to-transparent"
+                        onClick={() => openBundleModal(deadpoolBundle)}
+                      />
+                    )}
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {zzzBundles.map((b) => (
@@ -2312,7 +2369,8 @@ export const ShopView: React.FC<ShopViewProps> = ({
                       onClick={() => {
                         onBuyBundle(selectedBundle, user.orbs >= selectedBundle.priceOrbs);
                         setJustBoughtId(selectedBundle.id);
-                        setTimeout(() => setJustBoughtId(null), 1600);
+                        if (boughtTimerRef.current !== null) window.clearTimeout(boughtTimerRef.current);
+                        boughtTimerRef.current = window.setTimeout(() => setJustBoughtId(null), 1600);
                       }}
                       className="flex-1 h-12 rounded-full dc-btn-primary font-bold text-[15px] cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
                     >
@@ -2380,16 +2438,26 @@ export const ShopView: React.FC<ShopViewProps> = ({
               </p>
 
               <div className="space-y-1.5 max-h-60 overflow-y-auto">
-                {dms
-                  .filter((d) => !d.isGroup && !d.isBot)
-                  .map((friend) => (
+                {(() => {
+                  const giftableFriends = dms.filter(
+                    (d) => !d.isGroup && !d.isBot
+                  );
+                  if (giftableFriends.length === 0) {
+                    return (
+                      <div className="p-4 rounded-2xl bg-[#14151b] border border-white/10 text-center text-xs text-zinc-400">
+                        No hay amigos disponibles en tus mensajes directos para enviar este regalo.
+                      </div>
+                    );
+                  }
+                  return giftableFriends.map((friend) => (
                     <button
                       key={friend.id}
                       onClick={() => {
                         onGiftBundle(selectedBundle, friend.id, friend.name);
                         setShowGiftModal(false);
                         setGiftSentToast(`¡Regalo enviado a ${friend.name}! 🎁`);
-                        setTimeout(() => setGiftSentToast(null), 2800);
+                        if (giftTimerRef.current !== null) window.clearTimeout(giftTimerRef.current);
+                        giftTimerRef.current = window.setTimeout(() => setGiftSentToast(null), 2800);
                       }}
                       className="w-full p-2.5 rounded-2xl bg-[#14151b] hover:bg-[#1c1e26] border border-white/10 flex items-center justify-between gap-3 cursor-pointer transition-colors"
                     >
@@ -2408,7 +2476,8 @@ export const ShopView: React.FC<ShopViewProps> = ({
                         Regalar
                       </span>
                     </button>
-                  ))}
+                  ));
+                })()}
               </div>
             </motion.div>
           </motion.div>

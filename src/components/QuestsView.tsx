@@ -194,12 +194,10 @@ export const QuestsView: React.FC<QuestsViewProps> = ({
         <div className="flex items-center gap-2.5">
           <button
             onClick={onBack}
+            aria-label="Volver"
             className="relative w-9 h-9 rounded-full dc-btn-icon flex items-center justify-center cursor-pointer"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="absolute -bottom-1 -right-1 px-1.5 py-[1px] rounded-full bg-[#da373c] text-white text-[10px] font-bold tabular-nums leading-tight border-2 border-[var(--dc-bg-chat)]">
-              99
-            </span>
           </button>
           <LaurelQuestIcon className="w-5 h-5 text-[var(--dc-text-primary)] ml-1" />
           <h1 className="font-display font-bold text-[19px]">Misiones</h1>
