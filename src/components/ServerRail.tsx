@@ -1,7 +1,7 @@
 import React from 'react';
-import { CalendarDays, Compass, Plus, Star } from 'lucide-react';
+import { CalendarDays, Compass, MessageCircle, Plus, Star } from 'lucide-react';
 import { Server } from '../types/discord';
-import { PrimordialAppIcon, ServerIconArt } from './DiscordArt';
+import { ServerIconArt } from './DiscordArt';
 
 interface ServerRailProps {
   servers: Server[];
@@ -44,13 +44,13 @@ export const ServerRail: React.FC<ServerRailProps> = ({
         <button
           onClick={onSelectDm}
           title="Mensajes directos"
-          className={`w-12 h-12 overflow-hidden flex items-center justify-center transition-all duration-200 cursor-pointer ${
+          className={`w-12 h-12 flex items-center justify-center transition-all duration-200 cursor-pointer ${
             isDmActive
-              ? 'rounded-2xl ring-2 ring-white/80 shadow-lg'
-              : 'rounded-full hover:rounded-2xl opacity-90 hover:opacity-100'
+              ? 'bg-[#5865F2] text-white rounded-2xl shadow-lg'
+              : 'bg-[var(--dc-bg-card)] text-[var(--dc-text-secondary)] rounded-full hover:rounded-2xl hover:bg-[var(--dc-bg-elevated)] hover:text-[var(--dc-text-primary)]'
           }`}
         >
-          <PrimordialAppIcon className="w-full h-full object-cover" />
+          <MessageCircle className="w-6 h-6 fill-current" />
         </button>
       </div>
 

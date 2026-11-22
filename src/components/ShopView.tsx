@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
+  ArrowLeft,
   Check,
   ChevronRight,
   Eye,
@@ -15,7 +16,14 @@ import {
   Store,
   X,
 } from 'lucide-react';
-import { DirectMessageThread, NameplateId, ShopBundle, UserProfile } from '../types/discord';
+import {
+  DirectMessageThread,
+  NameplateId,
+  ProfileFrameId,
+  ShopBundle,
+  ShopCollectionId,
+  UserProfile,
+} from '../types/discord';
 import {
   AvatarArtwork,
   AvatarDecorationRing,
@@ -25,6 +33,7 @@ import {
   NameplateStripBackground,
   OrbsCrystalIcon,
   ProfileEffectAnimationOverlay,
+  ProfileFrameArtwork,
   SafeImage,
   UserAvatar,
 } from './DiscordArt';
@@ -56,17 +65,23 @@ const getBundleArtUrl = (variant: ShopBundle['artVariant']): string | null => {
     case 'wolverine':
       return GENERATED_ASSETS.deadpoolBanner;
     case 'dbd':
+    case 'marcas-aranazos':
       return GENERATED_ASSETS.dbdBanner;
     case 'plantas':
+    case 'trebol':
       return GENERATED_ASSETS.shopLofiPlants;
     case 'gato':
       return GENERATED_ASSETS.shopCozyCat;
     case 'almas':
       return GENERATED_ASSETS.shopTrappedSouls;
     case 'observador':
+    case 'observador-marco':
       return GENERATED_ASSETS.shopObserverEyes;
     case 'pesadilla':
+    case 'tentempie':
       return GENERATED_ASSETS.shopPesadillaArt;
+    case 'acechador':
+      return GENERATED_ASSETS.shopWaterStalkerArt;
     case 'pato':
       return GENERATED_ASSETS.shopPatoArt;
     case 'vader':
@@ -84,23 +99,73 @@ const getBundleArtUrl = (variant: ShopBundle['artVariant']): string | null => {
     case 'rama':
       return GENERATED_ASSETS.shopRamaEnFlor;
     case 'condenacion':
+    case 'marea-lluvia':
       return GENERATED_ASSETS.shopCondenacionEterna;
     case 'jugar':
       return GENERATED_ASSETS.shopVamosAJugar;
     case 'espectro':
+    case 'espectro-marco':
+    case 'ramas-desnudas':
       return GENERATED_ASSETS.shopEspectroArt;
     case 'grabado':
       return GENERATED_ASSETS.shopGrabadoJapones;
     case 'lobo':
+    case 'luna-oscura':
+    case 'luna-oscura-marco':
+    case 'cuervos-luna':
       return GENERATED_ASSETS.shopLoboLuna;
     case 'vice-city':
       return GENERATED_ASSETS.viceCityBanner;
     case 'dune':
       return GENERATED_ASSETS.duneBanner;
     case 'croma':
+    case 'saqueo-arcoiris':
       return GENERATED_ASSETS.shopCromaArt;
     case 'orejas':
       return GENERATED_ASSETS.shopOrejasGato;
+    case 'hombre-polilla':
+    case 'polilla':
+      return GENERATED_ASSETS.shopMothmanArt;
+    case 'flores-luna':
+    case 'flores-luna-marco':
+    case 'jackalope':
+      return GENERATED_ASSETS.shopMoonflowersArt;
+    case 'cuernos':
+    case 'diablo-jersey':
+    case 'diablo-jersey-marco':
+      return GENERATED_ASSETS.shopJerseyDevilArt;
+    case 'fuegos-fatuos':
+    case 'llorona':
+      return GENERATED_ASSETS.shopLloronaArt;
+    case 'el-ente':
+    case 'el-ente-marco':
+    case 'gancho':
+    case 'calabazas':
+      return GENERATED_ASSETS.shopDbdHookArt;
+    case 'red-sangre':
+      return GENERATED_ASSETS.shopDbdBloodwebArt;
+    case 'hazlo-brillante':
+    case 'luces-camara':
+      return GENERATED_ASSETS.shopCerberoArt;
+    case 'onda-cosmica':
+      return GENERATED_ASSETS.shopLloronaArt;
+    case 'conejito-fresero':
+      return GENERATED_ASSETS.shopStrawberryBunnyArt;
+    case 'mas-alla-boveda':
+    case 'claptrap':
+      return GENERATED_ASSETS.shopBannerBorderlands;
+    case 'luna-mistica':
+    case 'estrella-nocturna':
+    case 'flores-lunares':
+      return GENERATED_ASSETS.shopCelestialMoonArt;
+    case 'jardin-secreto':
+    case 'lirio':
+      return GENERATED_ASSETS.shopBannerSecretGarden;
+    case 'adorable':
+      return GENERATED_ASSETS.shopBannerRawrXd;
+    case 'random-xd':
+    case 'scene-xd':
+      return GENERATED_ASSETS.shopRawrSceneArt;
     default:
       return null;
   }
@@ -133,12 +198,16 @@ const getBundleTheme = (variant: ShopBundle['artVariant']): BundleThemeMeta => {
         stageBg: '#110a07',
       };
     case 'plantas':
+    case 'trebol':
+    case 'jardin-secreto':
+    case 'lirio':
       return {
         gradient: 'from-[#0b1f15] via-[#0a1714] to-[#121310]',
-        glow: 'rgba(132, 204, 22, 0.3)',
+        glow: 'rgba(74, 222, 128, 0.34)',
         stageBg: '#09110d',
       };
     case 'croma':
+    case 'saqueo-arcoiris':
       return {
         gradient: 'from-[#160b24] via-[#0d1024] to-[#081b24]',
         glow: 'rgba(192, 132, 252, 0.42)',
@@ -153,12 +222,104 @@ const getBundleTheme = (variant: ShopBundle['artVariant']): BundleThemeMeta => {
     case 'almas':
     case 'pesadilla':
     case 'espectro':
+    case 'espectro-marco':
     case 'jugar':
     case 'observador':
+    case 'observador-marco':
+    case 'tentempie':
+    case 'acechador':
       return {
-        gradient: 'from-[#141418] via-[#0c0c10] to-[#050507]',
-        glow: 'rgba(228, 228, 231, 0.22)',
+        gradient: 'from-[#151519] via-[#0c0c10] to-[#050507]',
+        glow: 'rgba(228, 228, 231, 0.24)',
         stageBg: '#08080b',
+      };
+    case 'hombre-polilla':
+    case 'polilla':
+    case 'ramas-desnudas':
+      return {
+        gradient: 'from-[#17191f] via-[#0f1116] to-[#07080a]',
+        glow: 'rgba(239, 68, 68, 0.28)',
+        stageBg: '#0a0b0e',
+      };
+    case 'flores-luna':
+    case 'flores-luna-marco':
+    case 'jackalope':
+      return {
+        gradient: 'from-[#111e14] via-[#0c140e] to-[#070a08]',
+        glow: 'rgba(163, 230, 53, 0.34)',
+        stageBg: '#09100b',
+      };
+    case 'cuernos':
+    case 'diablo-jersey':
+    case 'diablo-jersey-marco':
+      return {
+        gradient: 'from-[#161c24] via-[#0d1218] to-[#07090d]',
+        glow: 'rgba(148, 163, 184, 0.32)',
+        stageBg: '#090c10',
+      };
+    case 'fuegos-fatuos':
+    case 'llorona':
+    case 'onda-cosmica':
+      return {
+        gradient: 'from-[#082220] via-[#0a1617] to-[#06090b]',
+        glow: 'rgba(45, 212, 191, 0.42)',
+        stageBg: '#071111',
+      };
+    case 'el-ente':
+    case 'el-ente-marco':
+    case 'gancho':
+    case 'calabazas':
+    case 'dbd':
+      return {
+        gradient: 'from-[#281107] via-[#150b07] to-[#080504]',
+        glow: 'rgba(249, 115, 22, 0.42)',
+        stageBg: '#120805',
+      };
+    case 'red-sangre':
+    case 'marcas-aranazos':
+      return {
+        gradient: 'from-[#2a080c] via-[#170609] to-[#070305]',
+        glow: 'rgba(239, 68, 68, 0.45)',
+        stageBg: '#110406',
+      };
+    case 'luna-oscura':
+    case 'luna-oscura-marco':
+    case 'cuervos-luna':
+      return {
+        gradient: 'from-[#161b24] via-[#0d1016] to-[#06070a]',
+        glow: 'rgba(226, 232, 240, 0.28)',
+        stageBg: '#090b0f',
+      };
+    case 'hazlo-brillante':
+    case 'luces-camara':
+    case 'mas-alla-boveda':
+    case 'claptrap':
+      return {
+        gradient: 'from-[#261607] via-[#170f0b] to-[#0b080e]',
+        glow: 'rgba(251, 191, 36, 0.42)',
+        stageBg: '#110b08',
+      };
+    case 'conejito-fresero':
+      return {
+        gradient: 'from-[#2c101d] via-[#180c14] to-[#0b070b]',
+        glow: 'rgba(244, 114, 182, 0.42)',
+        stageBg: '#140810',
+      };
+    case 'luna-mistica':
+    case 'estrella-nocturna':
+    case 'flores-lunares':
+      return {
+        gradient: 'from-[#121633] via-[#18102c] to-[#080914]',
+        glow: 'rgba(139, 92, 246, 0.42)',
+        stageBg: '#090b1a',
+      };
+    case 'adorable':
+    case 'random-xd':
+    case 'scene-xd':
+      return {
+        gradient: 'from-[#250a28] via-[#150c20] to-[#09120b]',
+        glow: 'rgba(236, 72, 153, 0.42)',
+        stageBg: '#120816',
       };
     case 'gojo':
       return {
@@ -216,6 +377,7 @@ const getBundleTheme = (variant: ShopBundle['artVariant']): BundleThemeMeta => {
         stageBg: '#110b0e',
       };
     case 'condenacion':
+    case 'marea-lluvia':
       return {
         gradient: 'from-[#081d24] via-[#0a131a] to-[#06090d]',
         glow: 'rgba(34, 211, 238, 0.36)',
@@ -253,7 +415,9 @@ const getCategoryLabel = (category: ShopBundle['category']): string => {
     case 'anime':
       return 'Anime';
     case 'horror':
-      return 'Terror';
+      return 'Night Terrors';
+    case 'folklore':
+      return 'Dark Folklore';
     case 'fantasia':
       return 'Fantasía';
     case 'lofi':
@@ -266,11 +430,145 @@ const getCategoryLabel = (category: ShopBundle['category']): string => {
       return 'Marvel';
     case 'dbd':
       return 'Dead by Daylight';
+    case 'bonanza':
+      return 'Nameplate Bonanza';
+    case 'borderlands':
+      return 'Borderlands 4';
+    case 'celestial':
+      return 'Celestial';
+    case 'garden':
+      return 'Secret Garden';
+    case 'rawr':
+      return 'Rawr xD';
     case 'banners':
       return 'Banner';
     default:
       return 'Colección';
   }
+};
+
+interface CollectionMeta {
+  id: ShopCollectionId;
+  title: string;
+  subtitle: string;
+  backdropUrl: string;
+  accentGradient: string;
+  titleStyleClass: string;
+}
+
+const COLLECTION_META: Record<ShopCollectionId, CollectionMeta> = {
+  'night-terrors': {
+    id: 'night-terrors',
+    title: 'NIGHT TERRORS',
+    subtitle: 'Pesadillas en blanco y negro, ojos abisales y marcos espectrales',
+    backdropUrl: GENERATED_ASSETS.shopObserverEyes,
+    accentGradient: 'from-zinc-950/95 via-zinc-900/75 to-black/95',
+    titleStyleClass: 'font-display font-black italic tracking-tighter uppercase text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.35)]',
+  },
+  'dark-folklore': {
+    id: 'dark-folklore',
+    title: 'DARK FOLKLORE',
+    subtitle: 'Leyendas del bosque nocturno, flores de luna y criaturas crípticas',
+    backdropUrl: GENERATED_ASSETS.shopMoonflowersArt,
+    accentGradient: 'from-[#0d1c17]/95 via-[#0a1312]/80 to-[#060908]/95',
+    titleStyleClass: 'font-display font-extrabold tracking-[0.14em] uppercase text-emerald-100 drop-shadow-[0_2px_12px_rgba(110,231,183,0.35)]',
+  },
+  dbd: {
+    id: 'dbd',
+    title: 'DEAD BY DAYLIGHT',
+    subtitle: 'Colección oficial de El Ente, Red de sangre y Luna oscura',
+    backdropUrl: GENERATED_ASSETS.dbdBanner,
+    accentGradient: 'from-[#280b07]/95 via-[#180a08]/80 to-[#090505]/95',
+    titleStyleClass: 'font-display font-black tracking-tight uppercase text-orange-100 drop-shadow-[0_2px_14px_rgba(249,115,22,0.45)]',
+  },
+  stardust: {
+    id: 'stardust',
+    title: 'Stardust',
+    subtitle: 'Aros de polvo estelar dorado, neón esmeralda y destellos cósmicos',
+    backdropUrl: GENERATED_ASSETS.shopCerberoArt,
+    accentGradient: 'from-[#231407]/95 via-[#0f1713]/80 to-[#08090d]/95',
+    titleStyleClass: 'font-display font-black italic tracking-wide text-amber-200 drop-shadow-[0_2px_12px_rgba(251,191,36,0.45)]',
+  },
+  'nameplate-bonanza': {
+    id: 'nameplate-bonanza',
+    title: 'NAMEPLATE BONANZA!',
+    subtitle: 'Placas vibrantes animadas para destacar en cualquier servidor',
+    backdropUrl: GENERATED_ASSETS.shopBannerBonanza,
+    accentGradient: 'from-fuchsia-950/90 via-purple-950/80 to-[#0b0814]/95',
+    titleStyleClass: 'font-display font-black italic tracking-tight uppercase text-fuchsia-200 drop-shadow-[0_2px_14px_rgba(217,70,239,0.55)]',
+  },
+  borderlands: {
+    id: 'borderlands',
+    title: 'BORDERLANDS 4',
+    subtitle: 'Saqueo legendario, portales de la Cámara y Claptrap en acción',
+    backdropUrl: GENERATED_ASSETS.shopBannerBorderlands,
+    accentGradient: 'from-[#261408]/90 via-[#151125]/80 to-[#08090f]/95',
+    titleStyleClass: 'font-display font-black italic tracking-tight uppercase text-yellow-300 drop-shadow-[0_2px_12px_rgba(250,204,21,0.45)]',
+  },
+  celestial: {
+    id: 'celestial',
+    title: 'Celestial & Nocturno',
+    subtitle: 'Constelaciones violetas, lunas místicas y flores nocturnas',
+    backdropUrl: GENERATED_ASSETS.shopCelestialMoonArt,
+    accentGradient: 'from-[#161233]/95 via-[#130f26]/80 to-[#070812]/95',
+    titleStyleClass: 'font-display font-black tracking-wide text-indigo-100 drop-shadow-[0_2px_12px_rgba(129,140,248,0.45)]',
+  },
+  'secret-garden': {
+    id: 'secret-garden',
+    title: 'Secret Garden',
+    subtitle: 'Estanques tranquilos, lirios del valle y tréboles de la suerte',
+    backdropUrl: GENERATED_ASSETS.shopBannerSecretGarden,
+    accentGradient: 'from-[#0d2219]/95 via-[#091815]/80 to-[#060c0a]/95',
+    titleStyleClass: 'font-display font-extrabold tracking-tight text-lime-200 drop-shadow-[0_2px_12px_rgba(163,230,53,0.38)]',
+  },
+  'rawr-xd': {
+    id: 'rawr-xd',
+    title: 'Rawr xD',
+    subtitle: 'Estética scene, neón fucsia, calaveras punk y nostalgia 2008',
+    backdropUrl: GENERATED_ASSETS.shopBannerRawrXd,
+    accentGradient: 'from-[#2a0b2c]/90 via-[#140e1c]/80 to-[#08120a]/95',
+    titleStyleClass: 'font-display font-black italic tracking-tight text-pink-200 drop-shadow-[0_2px_14px_rgba(244,114,182,0.5)]',
+  },
+  anime: {
+    id: 'anime',
+    title: 'Anime & Shonen',
+    subtitle: 'Jujutsu Kaisen, grabado sumi-e y técnicas malditas',
+    backdropUrl: GENERATED_ASSETS.shopGojoArt,
+    accentGradient: 'from-[#0a182d]/95 via-[#1c0c18]/80 to-[#07080d]/95',
+    titleStyleClass: 'font-display font-black tracking-tight uppercase text-sky-200',
+  },
+  lofi: {
+    id: 'lofi',
+    title: 'Vibras lofi',
+    subtitle: 'Plantas de invernadero, gatitos cómodos, pato zen y ondas cromáticas',
+    backdropUrl: GENERATED_ASSETS.shopLofiPlants,
+    accentGradient: 'from-[#0d2116]/95 via-[#131116]/80 to-[#090a0d]/95',
+    titleStyleClass: 'font-display font-bold tracking-tight text-emerald-100',
+  },
+  zzz: {
+    id: 'zzz',
+    title: 'Zenless Zone Zero',
+    subtitle: 'Agentes de New Eridu: Hoshimi Miyabi, Ellen Joe y Burnice White',
+    backdropUrl: GENERATED_ASSETS.zzzEllenBanner,
+    accentGradient: 'from-[#081d24]/95 via-[#180d14]/80 to-[#08090d]/95',
+    titleStyleClass: 'font-display font-black tracking-tight uppercase text-teal-200',
+  },
+  marvel: {
+    id: 'marvel',
+    title: 'Marvel Studios',
+    subtitle: 'Colección especial Deadpool & Wolverine',
+    backdropUrl: GENERATED_ASSETS.deadpoolBanner,
+    accentGradient: 'from-[#2b090b]/95 via-[#1b1408]/80 to-[#09090b]/95',
+    titleStyleClass: 'font-display font-black italic uppercase text-red-200',
+  },
+  banners: {
+    id: 'banners',
+    title: 'Banners de perfil',
+    subtitle: 'Fondos panorámicos de alta definición para la cabecera de tu perfil',
+    backdropUrl: GENERATED_ASSETS.viceCityBanner,
+    accentGradient: 'from-[#1f0a22]/95 via-[#17100b]/80 to-[#08090d]/95',
+    titleStyleClass: 'font-display font-black tracking-tight text-white',
+  },
 };
 
 const ThematicBundleArtwork: React.FC<{
@@ -298,7 +596,7 @@ const ThematicBundleArtwork: React.FC<{
   );
 };
 
-/* Museum-Grade Collectible Stage Renderer for Shop Cards */
+/* Museum-Grade Collectible Stage Renderer for Shop Cards (exact match to official screenshots) */
 const CollectibleCardStage: React.FC<{
   bundle: ShopBundle;
   activeSwatch?: string;
@@ -307,6 +605,8 @@ const CollectibleCardStage: React.FC<{
   const theme = getBundleTheme(bundle.artVariant);
   const firstDeco = bundle.items.find((i) => i.decorationId)?.decorationId;
   const nameplateItem = bundle.items.find((i) => i.nameplateId);
+  const frameItem = bundle.items.find((i) => i.profileFrameId);
+  const effectItem = bundle.items.find((i) => i.profileEffectId);
 
   /* 1. Standalone Profile Banner Stage */
   if (bundle.category === 'banners' && artUrl) {
@@ -319,7 +619,6 @@ const CollectibleCardStage: React.FC<{
           className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
-        {/* Profile Collar Hint */}
         <div className="absolute bottom-2.5 left-3 right-3 flex items-center gap-2.5 z-10">
           <div className="w-9 h-9 rounded-full bg-[#0c0d12] p-0.5 border border-white/25 shadow-xl shrink-0">
             <div className="w-full h-full rounded-full bg-[#5865F2] flex items-center justify-center">
@@ -335,8 +634,8 @@ const CollectibleCardStage: React.FC<{
     );
   }
 
-  /* 2. Signature Full-Scene Pond Stage for "el mismo pato" */
-  if (bundle.artVariant === 'pato') {
+  /* 2. Signature Full-Scene Pond Stage for Avatar Deco "el mismo pato" */
+  if (bundle.id === 'bundle-pato') {
     return (
       <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#0c4a6e]">
         <SafeImage
@@ -352,7 +651,6 @@ const CollectibleCardStage: React.FC<{
               'linear-gradient(90deg, rgba(14,116,144,0.82) 0%, rgba(56,189,248,0.28) 42%, transparent 72%)',
           }}
         />
-        {/* Submerged Discord Avatar in the Pond Water */}
         <div className="absolute left-4 bottom-4 z-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
           <div className="absolute -inset-3 rounded-full border border-sky-100/50 animate-ping opacity-30" />
           <div className="absolute -inset-1.5 rounded-full border-2 border-sky-200/75" />
@@ -364,20 +662,49 @@ const CollectibleCardStage: React.FC<{
     );
   }
 
-  /* 3. Authentic Discord Member-List Nameplate Stage */
-  if (
-    (bundle.items.length === 1 && bundle.items[0]?.kind === 'Placa de identificación') ||
-    bundle.artVariant === 'observador' ||
-    bundle.artVariant === 'almas'
-  ) {
-    const plateId: NameplateId = nameplateItem?.nameplateId || 'observador';
+  /* 3. Standalone Profile Frame ("Marco de perfil") Stage — Mini Card Wrapped & Breaking Perimeter */
+  if (bundle.items.length === 1 && frameItem?.profileFrameId) {
+    return (
+      <div
+        className={`relative w-full aspect-[4/3] overflow-hidden bg-gradient-to-br ${theme.gradient} flex items-end justify-center px-4 pt-6 pb-2`}
+      >
+        <div
+          className="absolute inset-0 pointer-events-none opacity-85"
+          style={{
+            background: `radial-gradient(circle at 50% 42%, ${
+              activeSwatch ? `${activeSwatch}44` : theme.glow
+            } 0%, rgba(12,13,18,0.72) 55%, rgba(6,7,10,0.96) 100%)`,
+          }}
+        />
+
+        {/* Mini Discord Profile Card Wrapped by Ornate Profile Frame */}
+        <div className="relative w-[78%] h-[82%] rounded-xl bg-[#181920] border border-white/10 shadow-[0_14px_30px_rgba(0,0,0,0.85)] transition-transform duration-300 group-hover:scale-[1.03]">
+          <div className="h-[40%] w-full rounded-t-xl bg-[#272933] border-b border-white/5" />
+          <div className="px-2.5 -mt-4 relative z-10 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[#363945] border-2 border-[#181920] flex items-center justify-center shadow">
+              <DiscordLogo className="w-4.5 h-4.5 text-zinc-400" />
+            </div>
+          </div>
+          <div className="px-2.5 pt-1.5 space-y-1.5">
+            <div className="h-2 w-14 rounded-full bg-white/20" />
+            <div className="h-1.5 w-20 rounded-full bg-white/10" />
+            <div className="h-1.5 w-16 rounded-full bg-white/10" />
+          </div>
+          <ProfileFrameArtwork frame={frameItem.profileFrameId} accentColor={activeSwatch} />
+        </div>
+      </div>
+    );
+  }
+
+  /* 4. Authentic Discord Member-List Nameplate Stage */
+  if (bundle.items.length === 1 && nameplateItem?.nameplateId) {
+    const plateId: NameplateId = nameplateItem.nameplateId;
     const isLightPlate = plateId === 'rama';
     return (
       <div
         className="relative w-full aspect-[4/3] overflow-hidden p-3 flex flex-col justify-center gap-2.5"
-        style={{ backgroundColor: '#111218' }}
+        style={{ backgroundColor: '#14151a' }}
       >
-        {/* Subtle studio radial glow behind the active member strip */}
         <div
           className="absolute inset-0 pointer-events-none opacity-65 transition-opacity duration-300 group-hover:opacity-95"
           style={{
@@ -385,57 +712,48 @@ const CollectibleCardStage: React.FC<{
           }}
         />
 
-        {/* Top muted member row */}
-        <div className="relative z-10 flex items-center gap-2 opacity-45 px-2">
-          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/15 shrink-0">
-            <AvatarArtwork avatar="phibi" />
-          </div>
+        {/* Top muted member skeleton row */}
+        <div className="relative z-10 flex items-center gap-2 opacity-40 px-2">
+          <div className="w-5 h-5 rounded-full bg-zinc-600/80 shrink-0" />
           <span className="h-2 w-16 rounded-full bg-white/35" />
         </div>
 
         {/* Highlighted Nameplate Bar */}
-        <div className="relative z-10 h-14 rounded-xl overflow-hidden border border-white/25 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.7)] flex items-center justify-between px-2.5 bg-[#191a23] anim-shimmer group-hover:scale-[1.025] transition-transform duration-300">
+        <div className="relative z-10 h-13 rounded-xl overflow-hidden border border-white/20 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.7)] flex items-center justify-between px-2.5 bg-[#191a23] anim-shimmer group-hover:scale-[1.025] transition-transform duration-300">
           <NameplateStripBackground nameplate={plateId} accentColor={activeSwatch} />
           <div className="relative z-10 flex items-center gap-2 min-w-0">
-            <span className="w-7 h-7 rounded-full overflow-hidden border border-white/50 shadow-md shrink-0">
-              <AvatarArtwork avatar="madara" />
+            <span className="w-6.5 h-6.5 rounded-full bg-black/50 border border-white/35 flex items-center justify-center shrink-0">
+              <DiscordLogo className="w-3.5 h-3.5 text-white/90" />
             </span>
             <span
-              className={`text-[11.5px] font-display font-extrabold truncate ${
-                isLightPlate
-                  ? 'text-zinc-900 drop-shadow-[0_1px_2px_rgba(255,255,255,0.85)]'
-                  : 'text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]'
+              className={`h-2 w-14 rounded-full ${
+                isLightPlate ? 'bg-zinc-900/50' : 'bg-white/45'
               }`}
-            >
-              {bundle.shortTitle || bundle.title}
-            </span>
+            />
           </div>
           <NameplateRowDecor nameplate={plateId} />
         </div>
 
-        {/* Bottom muted member row */}
-        <div className="relative z-10 flex items-center gap-2 opacity-45 px-2">
-          <div className="w-5 h-5 rounded-full overflow-hidden border border-white/15 shrink-0">
-            <AvatarArtwork avatar="locke" />
-          </div>
+        {/* Bottom muted member skeleton row */}
+        <div className="relative z-10 flex items-center gap-2 opacity-40 px-2">
+          <div className="w-5 h-5 rounded-full bg-zinc-600/80 shrink-0" />
           <span className="h-2 w-12 rounded-full bg-white/30" />
         </div>
       </div>
     );
   }
 
-  /* 4. Centered Studio Avatar Decoration Pedestal Stage (Llama infernal, Orejas de gato, Espectro, Onda cromática) */
+  /* 5. Centered Studio Avatar Decoration Pedestal Stage */
   if (bundle.items.length === 1 && firstDeco) {
     const spotlightColor = activeSwatch ? `${activeSwatch}55` : theme.glow;
     return (
       <div
         className={`relative w-full aspect-[4/3] overflow-hidden bg-gradient-to-br ${theme.gradient} flex items-center justify-center`}
       >
-        {/* Clean studio radial spotlight — keeps intricate ring art crisp without muddy photo noise */}
         <div
           className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-85 group-hover:opacity-100"
           style={{
-            background: `radial-gradient(circle at 50% 48%, ${spotlightColor} 0%, rgba(10,11,16,0.65) 55%, rgba(5,5,8,0.96) 100%)`,
+            background: `radial-gradient(circle at 50% 48%, ${spotlightColor} 0%, rgba(10,11,16,0.68) 56%, rgba(5,5,8,0.96) 100%)`,
           }}
         />
         <div
@@ -445,12 +763,12 @@ const CollectibleCardStage: React.FC<{
 
         <div className="relative z-10 flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-108">
           <div
-            className="w-[74px] h-[74px] rounded-full border border-white/25 flex items-center justify-center shadow-[0_12px_30px_rgba(0,0,0,0.85)] overflow-hidden relative"
+            className="w-[74px] h-[74px] rounded-full border border-white/20 flex items-center justify-center shadow-[0_12px_30px_rgba(0,0,0,0.85)] overflow-hidden relative"
             style={{
-              backgroundColor: activeSwatch ? `${activeSwatch}22` : '#171822',
+              backgroundColor: activeSwatch ? `${activeSwatch}22` : '#262831',
             }}
           >
-            <DiscordLogo className="w-9 h-9 text-white/90 drop-shadow" />
+            <DiscordLogo className="w-9 h-9 text-white/65 drop-shadow" />
           </div>
           <AvatarDecorationRing decoration={firstDeco} accentColor={activeSwatch} />
         </div>
@@ -458,80 +776,94 @@ const CollectibleCardStage: React.FC<{
     );
   }
 
-  /* 5. Single Profile Effect Showcase Stage (Vamos a jugar) */
-  if (bundle.items.length === 1 && bundle.items[0]?.kind === 'Efecto de perfil') {
+  /* 6. Single Profile Effect Showcase Stage (Full Artwork + Mini Profile Card Skeleton Overlay) */
+  if (bundle.items.length === 1 && effectItem) {
+    const isCrimsonMoon =
+      effectItem.profileEffectId === 'cuervos-luna' && activeSwatch === '#ef4444';
+    const isGreenMoonflowers =
+      effectItem.profileEffectId === 'flores-luna' && activeSwatch === '#4ade80';
+
     return (
       <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#0a0a0e]">
-        <div className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-105">
+        <div
+          className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-105"
+          style={{
+            filter: isCrimsonMoon
+              ? 'hue-rotate(105deg) saturate(1.5)'
+              : isGreenMoonflowers
+              ? 'hue-rotate(30deg) saturate(1.3)'
+              : undefined,
+          }}
+        >
           <ThematicBundleArtwork variant={bundle.artVariant} />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
-        {/* Mini Profile Frame Overlay Hint */}
-        <div className="absolute inset-x-3 bottom-2.5 flex items-center justify-between gap-2 z-10">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-[#111218] border border-white/30 flex items-center justify-center shadow-lg">
-              <DiscordLogo className="w-3.5 h-3.5 text-white" />
-            </div>
-            <div className="space-y-1">
-              <div className="h-1.5 w-12 rounded-full bg-white/80" />
-              <div className="h-1 w-8 rounded-full bg-white/45" />
-            </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/15" />
+
+        {/* Subtle Translucent Discord Profile Card Silhouette Overlay */}
+        <div className="absolute inset-x-3 bottom-3 top-7 rounded-xl border border-white/10 bg-black/25 backdrop-blur-[1px] pointer-events-none flex flex-col justify-end p-2.5">
+          <div className="w-8 h-8 rounded-full bg-[#1e1f27]/85 border border-white/25 flex items-center justify-center shadow-lg mb-1.5">
+            <DiscordLogo className="w-4.5 h-4.5 text-white/60" />
           </div>
-          <Sparkles className="w-4 h-4 text-white/80" />
+          <div className="h-1.5 w-14 rounded-full bg-white/25" />
+          <div className="h-1 w-20 rounded-full bg-white/15 mt-1" />
         </div>
       </div>
     );
   }
 
-  /* 6. Multi-Item Collector Bundle Collage (Avatar Deco + Nameplate Strip + Tilted Profile Effect Card) */
+  /* 7. Multi-Item Collector Bundle Collage (Tilted Profile Effect / Frame Card + Nameplate Strip + Top-Left Deco) */
   return (
     <div
       className={`relative w-full aspect-[4/3] overflow-hidden bg-gradient-to-br ${theme.gradient}`}
     >
-      {/* Calibrated Ambient Studio Glow */}
       <div
-        className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-80 group-hover:opacity-100"
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-85 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(circle at 28% 34%, ${theme.glow} 0%, transparent 56%), radial-gradient(circle at 75% 65%, rgba(255,255,255,0.08) 0%, transparent 60%)`,
+          background: `radial-gradient(circle at 28% 34%, ${theme.glow} 0%, transparent 58%), radial-gradient(circle at 75% 65%, rgba(255,255,255,0.08) 0%, transparent 60%)`,
         }}
       />
 
-      {/* Right Tilted Profile Effect Card with High-Craft Artwork */}
-      <div className="absolute right-2.5 top-2.5 bottom-2.5 w-[58%] rounded-xl overflow-hidden border border-white/25 shadow-[0_14px_28px_-6px_rgba(0,0,0,0.85)] transform rotate-3 group-hover:rotate-1 group-hover:translate-x-0.5 transition-transform duration-300 ease-out bg-[#0d0e13]">
-        <ThematicBundleArtwork variant={bundle.artVariant} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/20" />
-        <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-black/60 border border-white/35 flex items-center justify-center backdrop-blur-xs shadow">
-          <DiscordLogo className="w-3.5 h-3.5 text-white" />
+      {/* Right / Center Tilted Profile Card with Effect Artwork & Optional Profile Frame */}
+      <div className="absolute right-2.5 top-3 bottom-2.5 w-[56%] rounded-xl border border-white/25 shadow-[0_14px_28px_-6px_rgba(0,0,0,0.85)] transform rotate-3 group-hover:rotate-1 group-hover:translate-x-0.5 transition-transform duration-300 ease-out bg-[#121319]">
+        <div className="w-full h-full rounded-xl overflow-hidden relative">
+          <ThematicBundleArtwork variant={bundle.artVariant} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/20" />
+          <div className="absolute top-2.5 left-2.5 w-7 h-7 rounded-full bg-[#1d1e27]/85 border border-white/30 flex items-center justify-center shadow">
+            <DiscordLogo className="w-4 h-4 text-white/80" />
+          </div>
+          <div className="absolute bottom-2.5 left-2.5 right-2.5 space-y-1">
+            <div className="h-1.5 w-12 rounded-full bg-white/75" />
+            <div className="h-1 w-16 rounded-full bg-white/35" />
+          </div>
         </div>
-        <div className="absolute bottom-2.5 left-2.5 right-2.5 space-y-1">
-          <div className="h-1.5 w-12 rounded-full bg-white/75" />
-          <div className="h-1 w-16 rounded-full bg-white/40" />
-        </div>
+        {frameItem?.profileFrameId && (
+          <ProfileFrameArtwork frame={frameItem.profileFrameId} accentColor={activeSwatch} />
+        )}
       </div>
 
       {/* Slanted Bottom-Left Nameplate Strip */}
       {nameplateItem ? (
-        <div className="absolute left-2 bottom-3 w-[68%] h-8 rounded-lg bg-[#14151c] border border-white/25 shadow-[0_8px_18px_rgba(0,0,0,0.75)] transform -rotate-5 group-hover:-rotate-3 transition-transform duration-300 flex items-center justify-between px-2 z-10 overflow-hidden">
-          <NameplateStripBackground nameplate={nameplateItem.nameplateId || 'none'} />
-          <span className="relative z-10 w-4.5 h-4.5 rounded-full overflow-hidden border border-white/45 shrink-0">
-            <AvatarArtwork avatar="madara" />
+        <div className="absolute left-2 bottom-3 w-[62%] h-7.5 rounded-lg bg-[#14151c] border border-white/25 shadow-[0_8px_18px_rgba(0,0,0,0.75)] transform -rotate-5 group-hover:-rotate-3 transition-transform duration-300 flex items-center justify-between px-2 z-10 overflow-hidden">
+          <NameplateStripBackground nameplate={nameplateItem.nameplateId || 'none'} accentColor={activeSwatch} />
+          <span className="relative z-10 w-4.5 h-4.5 rounded-full bg-black/50 border border-white/40 flex items-center justify-center shrink-0">
+            <DiscordLogo className="w-2.5 h-2.5 text-white/85" />
           </span>
           <NameplateRowDecor nameplate={nameplateItem.nameplateId || 'none'} />
         </div>
       ) : (
-        <div className="absolute left-2.5 bottom-3 w-[56%] h-7 rounded-lg bg-[#14151c]/90 border border-white/20 shadow-lg transform -rotate-4 flex items-center gap-2 px-2 z-10">
+        <div className="absolute left-2.5 bottom-3 w-[54%] h-7 rounded-lg bg-[#14151c]/90 border border-white/20 shadow-lg transform -rotate-4 flex items-center gap-2 px-2 z-10">
           <span className="w-4 h-4 rounded-full overflow-hidden border border-white/30 shrink-0">
             <AvatarArtwork avatar="madara" />
           </span>
-          <span className="h-1.5 w-14 rounded-full bg-white/50" />
+          <span className="h-1.5 w-14 rounded-full bg-white/45" />
         </div>
       )}
 
       {/* Floating Top-Left Hero Avatar Decoration */}
       {firstDeco && (
         <div className="absolute top-3.5 left-3.5 z-20 w-14 h-14 flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-0.5">
-          <div className="w-11 h-11 rounded-full bg-[#171923] border border-white/30 flex items-center justify-center shadow-[0_10px_24px_rgba(0,0,0,0.9)]">
-            <DiscordLogo className="w-5.5 h-5.5 text-white/95" />
+          <div className="w-11 h-11 rounded-full bg-[#20222b] border border-white/25 flex items-center justify-center shadow-[0_10px_24px_rgba(0,0,0,0.9)]">
+            <DiscordLogo className="w-5.5 h-5.5 text-white/85" />
           </div>
           <AvatarDecorationRing decoration={firstDeco} accentColor={activeSwatch} />
         </div>
@@ -540,25 +872,24 @@ const CollectibleCardStage: React.FC<{
   );
 };
 
-const ProfileEffectShowcase: React.FC<{
+const ProfileFrameShowcase: React.FC<{
+  frameId: ProfileFrameId;
   bundle: ShopBundle;
   user: UserProfile;
-  playKey: number;
-}> = ({ bundle, user, playKey }) => {
-  const effectId = bundle.items.find((i) => i.profileEffectId)?.profileEffectId;
-  const decoId = bundle.items.find((i) => i.decorationId)?.decorationId || 'none';
-  const nameplateId = bundle.items.find((i) => i.nameplateId)?.nameplateId || 'none';
-
+  accentColor?: string;
+}> = ({ frameId, bundle, user, accentColor }) => {
   return (
-    <div className="my-2 mx-auto w-[304px] rounded-2xl overflow-hidden border border-white/15 bg-[#0e0f14] shadow-2xl relative">
-      <div className="h-24 w-full relative overflow-hidden" style={{ backgroundColor: user.bannerColor }}>
-        {user.bannerImage && (
+    <div className="my-4 mx-auto w-[300px] rounded-2xl border border-white/15 bg-[#0e0f14] shadow-2xl relative">
+      <div className="h-24 w-full rounded-t-2xl overflow-hidden relative" style={{ backgroundColor: user.bannerColor }}>
+        {user.bannerImage ? (
           <img
             src={user.bannerImage}
             alt=""
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover"
           />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-[#232530] via-[#161820] to-[#0e0f14]" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
       </div>
@@ -568,7 +899,7 @@ const ProfileEffectShowcase: React.FC<{
           <UserAvatar
             avatar={user.avatar}
             customAvatarUrl={user.customAvatarUrl}
-            decoration={decoId}
+            decoration={bundle.items.find((i) => i.decorationId)?.decorationId || user.decoration}
             size="lg"
             showStatus={false}
           />
@@ -577,23 +908,74 @@ const ProfileEffectShowcase: React.FC<{
           {user.displayName}
         </p>
         <p className="text-xs text-zinc-400">{user.username}</p>
-
-        {nameplateId !== 'none' && (
-          <div className="mt-2.5 h-9 rounded-xl overflow-hidden border border-white/15 relative flex items-center px-2.5 bg-[#15161e]">
-            <NameplateStripBackground nameplate={nameplateId} />
-            <span className="relative z-10 text-xs font-display font-bold text-white drop-shadow">
-              {user.displayName}
-            </span>
-          </div>
-        )}
-
-        <p className="text-[11px] text-zinc-400 mt-3 tabular-nums">
-          Miembro desde · {user.memberSince}
+        <p className="text-[11px] text-[#8b95ff] font-semibold mt-2.5">
+          Marco de perfil exclusivo · Sobresale de la tarjeta
         </p>
       </div>
 
-      {/* Live Kinetic Profile Effect Overlay */}
-      <ProfileEffectAnimationOverlay effect={effectId} playKey={playKey} />
+      <ProfileFrameArtwork frame={frameId} accentColor={accentColor} />
+    </div>
+  );
+};
+
+const ProfileEffectShowcase: React.FC<{
+  bundle: ShopBundle;
+  user: UserProfile;
+  playKey: number;
+  showFullBundle?: boolean;
+}> = ({ bundle, user, playKey, showFullBundle = false }) => {
+  const effectId = bundle.items.find((i) => i.profileEffectId)?.profileEffectId;
+  const decoId = bundle.items.find((i) => i.decorationId)?.decorationId || (showFullBundle ? user.decoration : 'none');
+  const nameplateId = bundle.items.find((i) => i.nameplateId)?.nameplateId || 'none';
+  const frameId = showFullBundle ? bundle.items.find((i) => i.profileFrameId)?.profileFrameId : undefined;
+
+  return (
+    <div className="my-3 mx-auto w-[304px] rounded-2xl border border-white/15 bg-[#0e0f14] shadow-2xl relative">
+      <div className="overflow-hidden rounded-2xl relative">
+        <div className="h-24 w-full relative overflow-hidden" style={{ backgroundColor: user.bannerColor }}>
+          {user.bannerImage && (
+            <img
+              src={user.bannerImage}
+              alt=""
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+        </div>
+
+        <div className="px-4 pb-5 -mt-10 relative z-10">
+          <div className="inline-block p-1 rounded-full bg-[#0e0f14] shadow-lg">
+            <UserAvatar
+              avatar={user.avatar}
+              customAvatarUrl={user.customAvatarUrl}
+              decoration={decoId}
+              size="lg"
+              showStatus={false}
+            />
+          </div>
+          <p className="font-display font-extrabold text-lg text-white mt-1">
+            {user.displayName}
+          </p>
+          <p className="text-xs text-zinc-400">{user.username}</p>
+
+          {nameplateId !== 'none' && (
+            <div className="mt-2.5 h-9 rounded-xl overflow-hidden border border-white/15 relative flex items-center px-2.5 bg-[#15161e]">
+              <NameplateStripBackground nameplate={nameplateId} />
+              <span className="relative z-10 text-xs font-display font-bold text-white drop-shadow">
+                {user.displayName}
+              </span>
+            </div>
+          )}
+
+          <p className="text-[11px] text-zinc-400 mt-3 tabular-nums">
+            Miembro desde · {user.memberSince}
+          </p>
+        </div>
+
+        <ProfileEffectAnimationOverlay effect={effectId} playKey={playKey} />
+      </div>
+      {frameId && <ProfileFrameArtwork frame={frameId} />}
     </div>
   );
 };
@@ -610,39 +992,45 @@ const BannerProfilePreview: React.FC<{
   const effectId = showFullBundle
     ? bundle.items.find((i) => i.profileEffectId)?.profileEffectId
     : undefined;
+  const frameId = showFullBundle
+    ? bundle.items.find((i) => i.profileFrameId)?.profileFrameId
+    : undefined;
 
   return (
-    <div className="my-2 mx-auto w-[304px] rounded-2xl overflow-hidden border border-white/15 bg-[#0e0f14] shadow-2xl relative">
-      <div className="h-28 w-full relative overflow-hidden anim-shimmer">
-        <img
-          src={bannerUrl}
-          alt={bundle.title}
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-      </div>
-      <div className="px-4 pb-4 -mt-10 relative z-10">
-        <div className="inline-block p-1 rounded-full bg-[#0e0f14] shadow-lg">
-          <UserAvatar
-            avatar={user.avatar}
-            customAvatarUrl={user.customAvatarUrl}
-            decoration={deco}
-            size="lg"
-            showStatus={false}
+    <div className="my-3 mx-auto w-[304px] rounded-2xl border border-white/15 bg-[#0e0f14] shadow-2xl relative">
+      <div className="overflow-hidden rounded-2xl relative">
+        <div className="h-28 w-full relative overflow-hidden anim-shimmer">
+          <img
+            src={bannerUrl}
+            alt={bundle.title}
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         </div>
-        <p className="font-display font-extrabold text-lg text-white mt-1">
-          {user.displayName}
-        </p>
-        <p className="text-xs text-zinc-400">{user.username}</p>
-        <p className="text-[11px] text-[#8b95ff] font-semibold mt-2">
-          {showFullBundle
-            ? 'Vista previa completa del lote equipado'
-            : 'Así lucirá este banner en tu perfil'}
-        </p>
+        <div className="px-4 pb-4 -mt-10 relative z-10">
+          <div className="inline-block p-1 rounded-full bg-[#0e0f14] shadow-lg">
+            <UserAvatar
+              avatar={user.avatar}
+              customAvatarUrl={user.customAvatarUrl}
+              decoration={deco}
+              size="lg"
+              showStatus={false}
+            />
+          </div>
+          <p className="font-display font-extrabold text-lg text-white mt-1">
+            {user.displayName}
+          </p>
+          <p className="text-xs text-zinc-400">{user.username}</p>
+          <p className="text-[11px] text-[#8b95ff] font-semibold mt-2">
+            {showFullBundle
+              ? 'Vista previa completa del lote equipado'
+              : 'Así lucirá este banner en tu perfil'}
+          </p>
+        </div>
+        {effectId && <ProfileEffectAnimationOverlay effect={effectId} playKey={bundle.id} />}
       </div>
-      {effectId && <ProfileEffectAnimationOverlay effect={effectId} playKey={bundle.id} />}
+      {frameId && <ProfileFrameArtwork frame={frameId} />}
     </div>
   );
 };
@@ -658,16 +1046,23 @@ const BundleCard: React.FC<{
     bundle.colorSwatches?.[0]
   );
 
-  const itemSummary =
+  const itemPrefix =
     bundle.items.length > 1
-      ? `${bundle.items.length} artículos`
-      : bundle.items[0]?.kind === 'Decoración de avatar'
-      ? 'Decoración'
-      : bundle.items[0]?.kind === 'Placa de identificación'
-      ? 'Placa'
-      : bundle.items[0]?.kind === 'Efecto de perfil'
-      ? 'Efecto'
-      : 'Banner';
+      ? `${bundle.items.length} ítem(s) `
+      : '';
+
+  const singleKindLabel =
+    bundle.items.length === 1
+      ? bundle.items[0]?.kind === 'Decoración de avatar'
+        ? 'Decoración'
+        : bundle.items[0]?.kind === 'Placa de identificación'
+        ? 'Placa'
+        : bundle.items[0]?.kind === 'Efecto de perfil'
+        ? 'Efecto'
+        : bundle.items[0]?.kind === 'Marco de perfil'
+        ? 'Marco de perfil'
+        : 'Banner'
+      : getCategoryLabel(bundle.category);
 
   return (
     <motion.div
@@ -675,13 +1070,13 @@ const BundleCard: React.FC<{
       whileTap={{ scale: 0.985 }}
       transition={{ duration: 0.14, ease: 'easeOut' }}
       onClick={() => onSelect(selectedSwatch)}
-      className="group rounded-2xl bg-[#0d0e14] hover:bg-[#13151e] border border-white/[0.08] hover:border-white/[0.18] overflow-hidden relative cursor-pointer transition-colors shadow-[0_8px_24px_-8px_rgba(0,0,0,0.65)] flex flex-col"
+      className="group rounded-2xl bg-[#101117] hover:bg-[#171922] border border-white/[0.08] hover:border-white/[0.2] overflow-hidden relative cursor-pointer transition-colors shadow-[0_8px_24px_-8px_rgba(0,0,0,0.65)] flex flex-col"
     >
       <button
         type="button"
         onClick={onToggleWishlist}
         aria-label="Añadir a lista de deseos"
-        className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 border border-white/15 backdrop-blur-xs flex items-center justify-center z-20 cursor-pointer transition-transform active:scale-90"
+        className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/60 hover:bg-black/85 border border-white/15 backdrop-blur-xs flex items-center justify-center z-20 cursor-pointer transition-transform active:scale-90"
       >
         <Heart
           className={`w-4 h-4 transition-transform ${
@@ -692,20 +1087,23 @@ const BundleCard: React.FC<{
 
       <CollectibleCardStage bundle={bundle} activeSwatch={selectedSwatch} />
 
-      <div className="p-3 flex-1 flex flex-col justify-between gap-2">
+      <div className="p-3 flex-1 flex flex-col justify-between gap-2 bg-[#111218]">
         <div>
           <p className="text-[11px] font-medium text-zinc-400 truncate">
-            {itemSummary} · {getCategoryLabel(bundle.category)}
+            {singleKindLabel}
           </p>
-          <h3 className="font-display font-bold text-[14.5px] text-white truncate leading-snug mt-0.5">
+          <h3 className="font-display font-bold text-[13.5px] sm:text-[14.5px] text-white truncate leading-snug mt-0.5">
+            {itemPrefix && <span className="text-zinc-300 font-semibold">{itemPrefix}</span>}
             {bundle.shortTitle || bundle.title}
           </h3>
         </div>
 
         <div className="flex items-center justify-between gap-2 pt-0.5">
           <span
-            className={`inline-flex items-center gap-1 text-[12px] font-bold tabular-nums ${
-              owned ? 'text-[#23a55a]' : 'text-zinc-100'
+            className={`inline-flex items-center gap-1 text-[12px] font-bold tabular-nums px-2 py-0.5 rounded-md ${
+              owned
+                ? 'bg-[#23a55a]/15 text-[#23a55a]'
+                : 'bg-white/[0.06] text-zinc-100'
             }`}
           >
             {owned ? (
@@ -757,16 +1155,71 @@ const BundleCard: React.FC<{
   );
 };
 
+/* Clickable Collection Banner Card Matching Screenshots */
+const CollectionPromoBanner: React.FC<{
+  title: string;
+  subtitle?: string;
+  badgeText?: string;
+  imageUrl: string;
+  titleClass?: string;
+  gradientClass?: string;
+  onClick: () => void;
+}> = ({
+  title,
+  subtitle,
+  badgeText,
+  imageUrl,
+  titleClass = 'font-display font-black text-2xl text-white',
+  gradientClass = 'from-black/85 via-black/45 to-black/15',
+  onClick,
+}) => (
+  <motion.button
+    type="button"
+    whileHover={{ y: -2 }}
+    whileTap={{ scale: 0.985 }}
+    onClick={onClick}
+    className="w-full h-28 sm:h-32 rounded-2xl overflow-hidden relative text-left border border-white/15 px-4 py-3.5 flex items-center justify-between gap-3 cursor-pointer group shadow-xl anim-shimmer"
+  >
+    <img
+      src={imageUrl}
+      alt={title}
+      referrerPolicy="no-referrer"
+      className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+    />
+    <div className={`absolute inset-0 bg-gradient-to-r ${gradientClass}`} />
+
+    <div className="relative z-10 min-w-0">
+      {badgeText && (
+        <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/15 text-white/95 backdrop-blur-xs mb-1">
+          {badgeText}
+        </span>
+      )}
+      <div className={`${titleClass} truncate leading-tight`}>{title}</div>
+      {subtitle && (
+        <p className="text-xs text-zinc-200/90 mt-0.5 line-clamp-1">{subtitle}</p>
+      )}
+    </div>
+
+    <div className="relative z-10 w-9 h-9 rounded-full bg-black/55 group-hover:bg-black/80 border border-white/25 backdrop-blur-xs flex items-center justify-center shrink-0 transition-transform group-hover:translate-x-0.5">
+      <ChevronRight className="w-5 h-5 text-white" />
+    </div>
+  </motion.button>
+);
+
 const CATEGORIES = [
   { id: 'all', label: 'Todo' },
-  { id: 'anime', label: 'Anime y Shonen' },
-  { id: 'horror', label: 'Terror y Sombras' },
-  { id: 'fantasia', label: 'Fantasía y Fuego' },
+  { id: 'horror', label: 'Night Terrors' },
+  { id: 'folklore', label: 'Dark Folklore' },
+  { id: 'dbd', label: 'Dead by Daylight' },
+  { id: 'bonanza', label: 'Nameplate Bonanza' },
+  { id: 'borderlands', label: 'Borderlands 4' },
+  { id: 'celestial', label: 'Celestial' },
+  { id: 'garden', label: 'Secret Garden' },
+  { id: 'rawr', label: 'Rawr xD' },
   { id: 'lofi', label: 'Vibras lofi' },
-  { id: 'estilo', label: 'Encuentra tu estilo' },
+  { id: 'anime', label: 'Anime y Shonen' },
   { id: 'zzz', label: 'Zenless Zone Zero' },
   { id: 'marvel', label: 'Marvel' },
-  { id: 'dbd', label: 'Dead by Daylight' },
   { id: 'banners', label: 'Banners' },
 ];
 
@@ -788,6 +1241,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
   const [modalSwatch, setModalSwatch] = useState<string | undefined>(undefined);
   const [filterWishlistOnly, setFilterWishlistOnly] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [activeCollection, setActiveCollection] = useState<ShopCollectionId | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showMenuSheet, setShowMenuSheet] = useState(false);
   const [giftSentToast, setGiftSentToast] = useState<string | null>(null);
@@ -804,6 +1258,11 @@ export const ShopView: React.FC<ShopViewProps> = ({
     onSelectBundle(bundle);
   };
 
+  const openCollectionPage = (collectionId: ShopCollectionId) => {
+    setActiveCollection(collectionId);
+    setFilterWishlistOnly(false);
+  };
+
   const visibleBundles = bundles.filter((b) => {
     if (filterWishlistOnly && !wishlistIds.includes(b.id)) return false;
     if (activeCategory !== 'all' && b.category !== activeCategory) return false;
@@ -812,6 +1271,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
       if (
         !b.title.toLowerCase().includes(q) &&
         !b.shortTitle.toLowerCase().includes(q) &&
+        !getCategoryLabel(b.category).toLowerCase().includes(q) &&
         !b.items.some((i) => i.name.toLowerCase().includes(q))
       ) {
         return false;
@@ -820,31 +1280,46 @@ export const ShopView: React.FC<ShopViewProps> = ({
     return true;
   });
 
-  const featuredScreenshotGrid = visibleBundles.filter((b) =>
-    [
-      'bundle-pesadilla',
-      'bundle-pato',
-      'bundle-rama',
-      'bundle-vader',
-      'bundle-condenacion',
-      'bundle-cerbero',
-      'bundle-llama',
-      'bundle-jugar',
-      'bundle-gojo',
-      'bundle-orejas',
-      'bundle-grabado',
-      'bundle-almas',
-      'bundle-sukuna',
-      'bundle-espectro',
-      'bundle-lobo',
-      'bundle-yuji',
-    ].includes(b.id)
+  // Collection Groups for Structured Storefront
+  const nightTerrorsBundles = bundles.filter((b) => b.collectionId === 'night-terrors');
+  const darkFolkloreBundles = bundles.filter((b) => b.collectionId === 'dark-folklore');
+  const dbdBundles = bundles.filter((b) => b.collectionId === 'dbd');
+  const stardustBundles = bundles.filter((b) => b.collectionId === 'stardust');
+  const bonanzaBundles = bundles.filter((b) => b.collectionId === 'nameplate-bonanza');
+  const borderlandsBundles = bundles.filter((b) => b.collectionId === 'borderlands');
+  const celestialBundles = bundles.filter((b) => b.collectionId === 'celestial');
+  const gardenBundles = bundles.filter((b) => b.collectionId === 'secret-garden');
+  const rawrBundles = bundles.filter((b) => b.collectionId === 'rawr-xd');
+  const lofiBundles = bundles.filter((b) => b.category === 'lofi');
+  const zzzBundles = bundles.filter((b) => b.category === 'zzz');
+  const animeFantasyBundles = bundles.filter(
+    (b) => b.category === 'anime' || b.category === 'fantasia' || b.id === 'bundle-grabado' || b.id === 'bundle-vader' || b.id === 'bundle-condenacion'
   );
-  const lofiBundles = visibleBundles.filter((b) => b.category === 'lofi');
-  const zzzBundles = visibleBundles.filter((b) => b.category === 'zzz');
-  const bannerBundles = visibleBundles.filter((b) => b.category === 'banners');
+  const bannerBundles = bundles.filter((b) => b.category === 'banners');
   const deadpoolBundle = bundles.find((b) => b.id === 'bundle-deadpool')!;
-  const dbdBundle = bundles.find((b) => b.id === 'bundle-dbd')!;
+
+  const activeCollectionMeta = activeCollection ? COLLECTION_META[activeCollection] : null;
+  const collectionItems = activeCollection
+    ? bundles.filter((b) => b.collectionId === activeCollection)
+    : [];
+
+  // Group collection items neatly by section inside Collection Sub-Pages
+  const colMultiBundles = collectionItems.filter((b) => b.items.length > 1);
+  const colDecos = collectionItems.filter(
+    (b) => b.items.length === 1 && b.items[0]?.kind === 'Decoración de avatar'
+  );
+  const colPlates = collectionItems.filter(
+    (b) => b.items.length === 1 && b.items[0]?.kind === 'Placa de identificación'
+  );
+  const colEffects = collectionItems.filter(
+    (b) => b.items.length === 1 && b.items[0]?.kind === 'Efecto de perfil'
+  );
+  const colFrames = collectionItems.filter(
+    (b) => b.items.length === 1 && b.items[0]?.kind === 'Marco de perfil'
+  );
+  const colBanners = collectionItems.filter(
+    (b) => b.items.length === 1 && b.items[0]?.kind === 'Banner de perfil'
+  );
 
   const activeModalItem = selectedBundle
     ? selectedBundle.items[selectedItemIndex] || selectedBundle.items[0]
@@ -858,336 +1333,553 @@ export const ShopView: React.FC<ShopViewProps> = ({
 
   return (
     <div className="flex-1 flex flex-col h-full bg-[#050507] text-[var(--dc-text-primary)] relative overflow-hidden">
-      {/* Top Header */}
-      <header className="h-14 px-3 md:px-5 flex items-center justify-between gap-2 bg-[#09090d] border-b border-white/[0.08] shrink-0">
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={onBack}
-            aria-label="Cerrar tienda"
-            className="relative w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-            <span className="absolute -bottom-0.5 -right-0.5 px-1.5 py-[1px] rounded-full bg-[#da373c] text-white text-[10px] font-bold tabular-nums leading-tight border-2 border-[#09090d]">
-              99
-            </span>
-          </button>
-          <Store className="w-5 h-5 text-white ml-1" />
-          <h1 className="font-display font-bold text-[19px] text-white">Tienda</h1>
-        </div>
+      {/* Dedicated Collection Sub-Page (Matches Screenshots 084919, 084951, 084843) */}
+      {activeCollection && activeCollectionMeta ? (
+        <div className="flex-1 flex flex-col h-full relative overflow-hidden">
+          {/* Atmospheric Full-Bleed Blurred Backdrop */}
+          <img
+            src={activeCollectionMeta.backdropUrl}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-35 pointer-events-none"
+          />
+          <div
+            className={`absolute inset-0 bg-gradient-to-b ${activeCollectionMeta.accentGradient} pointer-events-none`}
+          />
 
-        <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#13141a] border border-white/10 text-white text-xs sm:text-sm font-bold tabular-nums whitespace-nowrap">
-            <OrbsCrystalIcon className="w-4 h-4 text-indigo-400 shrink-0" />
-            <span>{user.orbs.toLocaleString('es-ES')}</span>
-          </div>
+          {/* Collection Sub-Page Sticky Header */}
+          <header className="relative z-20 h-14 px-3 md:px-5 flex items-center justify-between gap-2 bg-black/45 backdrop-blur-md border-b border-white/10 shrink-0">
+            <button
+              onClick={() => setActiveCollection(null)}
+              aria-label="Volver a tienda"
+              className="w-9 h-9 rounded-full hover:bg-white/15 flex items-center justify-center text-white cursor-pointer"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
 
-          <button
-            onClick={() => setFilterWishlistOnly((w) => !w)}
-            aria-label="Lista de deseos"
-            className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer ${
-              filterWishlistOnly ? 'dc-btn-danger' : 'hover:bg-white/10 text-white'
-            }`}
-          >
-            <Heart className={`w-5 h-5 ${filterWishlistOnly ? 'fill-white text-white' : ''}`} />
-          </button>
+            <h1 className={`${activeCollectionMeta.titleStyleClass} text-base sm:text-xl truncate text-center px-2`}>
+              {activeCollectionMeta.title}
+            </h1>
 
-          <button
-            onClick={() => setShowMenuSheet(true)}
-            aria-label="Categorías de tienda"
-            className="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white cursor-pointer"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-        </div>
-      </header>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/55 border border-white/15 text-white text-xs font-bold tabular-nums shrink-0">
+              <OrbsCrystalIcon className="w-3.5 h-3.5 text-indigo-400" />
+              <span>{user.orbs.toLocaleString('es-ES')}</span>
+            </div>
+          </header>
 
-      {/* Interactive Category Segmented Bar */}
-      <div className="px-3 md:px-5 py-2.5 border-b border-white/[0.06] bg-[#09090d] shrink-0">
-        <div className="max-w-4xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
-          {CATEGORIES.map((cat) => {
-            const active = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  setActiveCategory(cat.id);
-                  setFilterWishlistOnly(false);
-                }}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 cursor-pointer ${
-                  active ? 'dc-btn-primary' : 'dc-btn-secondary'
-                }`}
-              >
-                {cat.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Main Scrollable Storefront */}
-      <div className="flex-1 overflow-y-auto pb-16">
-        <div className="max-w-4xl mx-auto">
-          {filterWishlistOnly || activeCategory !== 'all' || searchQuery.trim() ? (
-            <div className="px-3.5 pt-4 space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <h2 className="font-display font-bold text-lg text-white">
-                  {filterWishlistOnly
-                    ? `Tu lista de deseos (${visibleBundles.length})`
-                    : `${
-                        CATEGORIES.find((c) => c.id === activeCategory)?.label || 'Resultados'
-                      } (${visibleBundles.length})`}
-                </h2>
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="text-xs text-[#7b85ff] font-semibold cursor-pointer"
-                  >
-                    Limpiar búsqueda
-                  </button>
-                )}
+          {/* Collection Scrollable Grid */}
+          <div className="relative z-10 flex-1 overflow-y-auto pb-16">
+            <div className="max-w-4xl mx-auto px-3.5 pt-4 space-y-6">
+              <div className="text-center max-w-lg mx-auto">
+                <p className="text-xs sm:text-sm text-zinc-300">{activeCollectionMeta.subtitle}</p>
               </div>
 
-              {visibleBundles.length === 0 ? (
-                <div className="text-center py-16 px-4 rounded-2xl bg-[#0d0e13] border border-white/10">
-                  <Heart className="w-10 h-10 text-zinc-500 mx-auto mb-2" />
-                  <p className="text-white font-semibold">No se encontraron artículos</p>
+              {[
+                { label: 'Lotes destacados', items: colMultiBundles },
+                { label: 'Decoraciones de avatar', items: colDecos },
+                { label: 'Placas de identificación', items: colPlates },
+                { label: 'Efectos de perfil', items: colEffects },
+                { label: 'Marcos de perfil', items: colFrames },
+                { label: 'Banners de perfil', items: colBanners },
+              ]
+                .filter((group) => group.items.length > 0)
+                .map((group) => (
+                  <section key={group.label} className="space-y-2.5">
+                    <div className="flex items-center justify-between px-0.5">
+                      <h2 className="font-display font-bold text-xs uppercase tracking-wider text-zinc-300">
+                        {group.label} ({group.items.length})
+                      </h2>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {group.items.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Top Header */}
+          <header className="h-14 px-3 md:px-5 flex items-center justify-between gap-2 bg-[#09090d] border-b border-white/[0.08] shrink-0">
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={onBack}
+                aria-label="Cerrar tienda"
+                className="relative w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+                <span className="absolute -bottom-0.5 -right-0.5 px-1.5 py-[1px] rounded-full bg-[#da373c] text-white text-[10px] font-bold tabular-nums leading-tight border-2 border-[#09090d]">
+                  99
+                </span>
+              </button>
+              <Store className="w-5 h-5 text-white ml-1" />
+              <h1 className="font-display font-bold text-[19px] text-white">Tienda</h1>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#13141a] border border-white/10 text-white text-xs sm:text-sm font-bold tabular-nums whitespace-nowrap">
+                <OrbsCrystalIcon className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span>{user.orbs.toLocaleString('es-ES')}</span>
+              </div>
+
+              <button
+                onClick={() => setFilterWishlistOnly((w) => !w)}
+                aria-label="Lista de deseos"
+                className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer ${
+                  filterWishlistOnly ? 'dc-btn-danger' : 'hover:bg-white/10 text-white'
+                }`}
+              >
+                <Heart className={`w-5 h-5 ${filterWishlistOnly ? 'fill-white text-white' : ''}`} />
+              </button>
+
+              <button
+                onClick={() => setShowMenuSheet(true)}
+                aria-label="Categorías de tienda"
+                className="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white cursor-pointer"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            </div>
+          </header>
+
+          {/* Interactive Category Segmented Bar */}
+          <div className="px-3 md:px-5 py-2.5 border-b border-white/[0.06] bg-[#09090d] shrink-0">
+            <div className="max-w-4xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
+              {CATEGORIES.map((cat) => {
+                const active = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      setActiveCategory(cat.id);
+                      setFilterWishlistOnly(false);
+                    }}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 cursor-pointer ${
+                      active ? 'dc-btn-primary' : 'dc-btn-secondary'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Main Scrollable Storefront */}
+          <div className="flex-1 overflow-y-auto pb-16">
+            <div className="max-w-4xl mx-auto">
+              {filterWishlistOnly || activeCategory !== 'all' || searchQuery.trim() ? (
+                <div className="px-3.5 pt-4 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="font-display font-bold text-lg text-white">
+                      {filterWishlistOnly
+                        ? `Tu lista de deseos (${visibleBundles.length})`
+                        : `${
+                            CATEGORIES.find((c) => c.id === activeCategory)?.label || 'Resultados'
+                          } (${visibleBundles.length})`}
+                    </h2>
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="text-xs text-[#7b85ff] font-semibold cursor-pointer"
+                      >
+                        Limpiar búsqueda
+                      </button>
+                    )}
+                  </div>
+
+                  {visibleBundles.length === 0 ? (
+                    <div className="text-center py-16 px-4 rounded-2xl bg-[#0d0e13] border border-white/10">
+                      <Heart className="w-10 h-10 text-zinc-500 mx-auto mb-2" />
+                      <p className="text-white font-semibold">No se encontraron artículos</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
+                      {visibleBundles.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
-                  {visibleBundles.map((b) => (
-                    <BundleCard
-                      key={b.id}
-                      bundle={b}
-                      wishlisted={wishlistIds.includes(b.id)}
-                      owned={ownedBundleIds.includes(b.id)}
-                      onSelect={(swatch) => openBundleModal(b, swatch)}
-                      onToggleWishlist={(e) => {
-                        e.stopPropagation();
-                        onToggleWishlist(b.id);
-                      }}
+                <div className="px-3.5 pt-4 space-y-7">
+                  {/* 1. NIGHT TERRORS SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="NIGHT TERRORS"
+                      subtitle="Lotes, placas, efectos y marcos de perfil abisales"
+                      badgeText={`${nightTerrorsBundles.length} artículos`}
+                      imageUrl={GENERATED_ASSETS.shopObserverEyes}
+                      titleClass="font-display font-black italic text-2xl tracking-tighter text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.4)]"
+                      gradientClass="from-black/90 via-black/55 to-transparent"
+                      onClick={() => openCollectionPage('night-terrors')}
                     />
-                  ))}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {nightTerrorsBundles.slice(0, 4).map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 2. DARK FOLKLORE SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="DARK FOLKLORE"
+                      subtitle="Hombre polilla, Jackalope, Diablo de Jersey y La Llorona"
+                      badgeText={`${darkFolkloreBundles.length} artículos · Incluye Marcos`}
+                      imageUrl={GENERATED_ASSETS.shopMoonflowersArt}
+                      titleClass="font-display font-extrabold text-xl sm:text-2xl tracking-[0.14em] text-emerald-100"
+                      gradientClass="from-[#0a140f]/95 via-[#0b1511]/60 to-transparent"
+                      onClick={() => openCollectionPage('dark-folklore')}
+                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {darkFolkloreBundles.slice(0, 4).map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 3. DEAD BY DAYLIGHT SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="DEAD BY DAYLIGHT"
+                      subtitle="El Ente, Luna oscura, Red de sangre y Calabazas del Vacío"
+                      badgeText={`Behaviour Interactive · ${dbdBundles.length} artículos`}
+                      imageUrl={GENERATED_ASSETS.dbdBanner}
+                      titleClass="font-display font-black text-xl sm:text-2xl tracking-tight text-orange-100"
+                      gradientClass="from-[#230905]/95 via-[#180a07]/55 to-transparent"
+                      onClick={() => openCollectionPage('dbd')}
+                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {dbdBundles.slice(0, 4).map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 4. STARDUST & LUCES SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="Stardust"
+                      subtitle="Aros cósmicos brillantes en oro solar y esmeralda"
+                      imageUrl={GENERATED_ASSETS.shopCerberoArt}
+                      titleClass="font-display font-black italic text-2xl text-amber-200"
+                      gradientClass="from-[#241506]/90 via-[#0e1b13]/60 to-transparent"
+                      onClick={() => openCollectionPage('stardust')}
+                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {stardustBundles.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 5. NAMEPLATE BONANZA! SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="NAMEPLATE BONANZA!"
+                      subtitle="Conejito fresero, El mismo pato y Marea de lluvia"
+                      imageUrl={GENERATED_ASSETS.shopBannerBonanza}
+                      titleClass="font-display font-black italic text-xl sm:text-2xl text-white drop-shadow-[0_2px_10px_rgba(217,70,239,0.8)]"
+                      gradientClass="from-fuchsia-950/70 via-purple-950/35 to-transparent"
+                      onClick={() => openCollectionPage('nameplate-bonanza')}
+                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {bonanzaBundles.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 6. BORDERLANDS 4 SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="BORDERLANDS 4"
+                      subtitle="Más allá de la Cámara, Saqueo arcoíris y Claptrap"
+                      imageUrl={GENERATED_ASSETS.shopBannerBorderlands}
+                      titleClass="font-display font-black italic text-xl sm:text-2xl text-yellow-300"
+                      gradientClass="from-[#1e1007]/85 via-[#130f24]/45 to-transparent"
+                      onClick={() => openCollectionPage('borderlands')}
+                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {borderlandsBundles.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 7. CELESTIAL & NOCTURNO SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="Celestial"
+                      subtitle="Luna mística, Estrella nocturna y Flores lunares"
+                      imageUrl={GENERATED_ASSETS.shopCelestialMoonArt}
+                      titleClass="font-display font-black text-2xl text-indigo-100"
+                      gradientClass="from-[#12102c]/90 via-[#150e2b]/50 to-transparent"
+                      onClick={() => openCollectionPage('celestial')}
+                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {celestialBundles.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 8. SECRET GARDEN SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="Secret Garden"
+                      subtitle="Trébol de la suerte, Jardín secreto y Lirio del valle"
+                      imageUrl={GENERATED_ASSETS.shopBannerSecretGarden}
+                      titleClass="font-display font-extrabold text-2xl text-lime-200"
+                      gradientClass="from-[#0a1d15]/85 via-[#0b1814]/45 to-transparent"
+                      onClick={() => openCollectionPage('secret-garden')}
+                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {gardenBundles.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 9. RAWR XD SECTION */}
+                  <section className="space-y-3">
+                    <CollectionPromoBanner
+                      title="Rawr xD"
+                      subtitle="Lote Adorable, jeje qué random y Lote Scene"
+                      imageUrl={GENERATED_ASSETS.shopBannerRawrXd}
+                      titleClass="font-display font-black italic text-2xl text-pink-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
+                      gradientClass="from-[#29092c]/80 via-[#150c1d]/45 to-transparent"
+                      onClick={() => openCollectionPage('rawr-xd')}
+                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {rawrBundles.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 10. MARVEL & ZENLESS ZONE ZERO */}
+                  <section className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h2 className="font-display font-bold text-[18px] text-white">
+                        Marvel &amp; Zenless Zone Zero
+                      </h2>
+                      <button
+                        onClick={() => setActiveCategory('zzz')}
+                        className="px-3.5 py-1.5 rounded-full dc-btn-secondary text-xs font-semibold cursor-pointer whitespace-nowrap"
+                      >
+                        Mostrar todos
+                      </button>
+                    </div>
+
+                    <CollectionPromoBanner
+                      title="DEADPOOL / WOLVERINE"
+                      subtitle={`Marvel · ${deadpoolBundle.items.length} artículos · ◈ ${deadpoolBundle.priceOrbs} Orbs`}
+                      imageUrl={GENERATED_ASSETS.deadpoolBanner}
+                      titleClass="font-display font-black italic text-xl text-white"
+                      gradientClass="from-black/90 via-black/45 to-transparent"
+                      onClick={() => openBundleModal(deadpoolBundle)}
+                    />
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {zzzBundles.map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 11. ANIME, FANTASÍA & VIBRAS LOFI */}
+                  <section className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="font-display font-bold text-[18px] text-white">
+                          Anime, Fantasía &amp; Vibras Lofi
+                        </h2>
+                        <p className="text-xs text-zinc-400">
+                          Satoru Gojo, Sukuna, Cerbero, Orejas de gato y el mismo pato
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setActiveCategory('anime')}
+                        className="px-3.5 py-1.5 rounded-full dc-btn-primary text-xs font-semibold cursor-pointer whitespace-nowrap"
+                      >
+                        Ver anime
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {[...animeFantasyBundles, ...lofiBundles].map((b) => (
+                        <BundleCard
+                          key={b.id}
+                          bundle={b}
+                          wishlisted={wishlistIds.includes(b.id)}
+                          owned={ownedBundleIds.includes(b.id)}
+                          onSelect={(swatch) => openBundleModal(b, swatch)}
+                          onToggleWishlist={(e) => {
+                            e.stopPropagation();
+                            onToggleWishlist(b.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 12. BANNERS DE PERFIL */}
+                  {bannerBundles.length > 0 && (
+                    <section className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h2 className="font-display font-bold text-[18px] text-white flex items-center gap-2">
+                          <ImageIcon className="w-5 h-5 text-[#5865F2]" />
+                          <span>Banners de perfil</span>
+                        </h2>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {bannerBundles.map((b) => (
+                          <BundleCard
+                            key={b.id}
+                            bundle={b}
+                            wishlisted={wishlistIds.includes(b.id)}
+                            owned={ownedBundleIds.includes(b.id)}
+                            onSelect={(swatch) => openBundleModal(b, swatch)}
+                            onToggleWishlist={(e) => {
+                              e.stopPropagation();
+                              onToggleWishlist(b.id);
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </section>
+                  )}
                 </div>
               )}
             </div>
-          ) : (
-            <>
-              {/* Hero Campaigns: Marvel & Dead by Daylight */}
-              <section className="px-3.5 pt-4 space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                  <motion.button
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.985 }}
-                    onClick={() => openBundleModal(deadpoolBundle)}
-                    className="w-full h-40 rounded-3xl overflow-hidden relative text-left border border-white/15 p-4 flex items-end justify-between cursor-pointer group shadow-lg anim-shimmer"
-                  >
-                    <img
-                      src={GENERATED_ASSETS.deadpoolBanner}
-                      alt="Marvel Deadpool & Wolverine"
-                      referrerPolicy="no-referrer"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/15" />
-                    <div className="z-10">
-                      <span className="text-[11px] font-semibold text-red-400">
-                        Marvel · {deadpoolBundle.items.length} artículos
-                      </span>
-                      <div className="font-display font-black italic text-xl leading-none text-white mt-1">
-                        DEADPOOL / <span className="text-yellow-300">WOLVERINE</span>
-                      </div>
-                      <p className="text-xs text-zinc-200 mt-1 tabular-nums">
-                        ◈ {deadpoolBundle.priceOrbs} Orbs · {deadpoolBundle.priceUsd}
-                      </p>
-                    </div>
-                    <div className="relative z-10 w-14 h-14 flex items-center justify-center shrink-0">
-                      <div className="w-10 h-10 rounded-full bg-black/75 flex items-center justify-center border border-white/25">
-                        <DiscordLogo className="w-5 h-5 text-white" />
-                      </div>
-                      <AvatarDecorationRing decoration="deadpool" />
-                    </div>
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.985 }}
-                    onClick={() => openBundleModal(dbdBundle)}
-                    className="w-full h-40 rounded-3xl overflow-hidden relative text-left border border-orange-500/20 p-4 flex items-end justify-between cursor-pointer group shadow-lg anim-shimmer"
-                  >
-                    <img
-                      src={GENERATED_ASSETS.dbdBanner}
-                      alt="Dead by Daylight"
-                      referrerPolicy="no-referrer"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/15" />
-                    <div className="z-10">
-                      <span className="text-[11px] font-semibold text-orange-400">
-                        Behaviour Interactive · {dbdBundle.items.length} artículos
-                      </span>
-                      <div className="font-display font-black text-xl leading-none text-white mt-1">
-                        DEAD BY DAYLIGHT
-                      </div>
-                      <p className="text-xs text-zinc-200 mt-1 tabular-nums">
-                        ◈ {dbdBundle.priceOrbs} Orbs · {dbdBundle.priceUsd}
-                      </p>
-                    </div>
-                    <div className="relative z-10 w-14 h-14 flex items-center justify-center shrink-0">
-                      <div className="w-10 h-10 rounded-full bg-black/75 flex items-center justify-center border border-white/25">
-                        <DiscordLogo className="w-5 h-5 text-zinc-200" />
-                      </div>
-                      <AvatarDecorationRing decoration="dbd" />
-                    </div>
-                  </motion.button>
-                </div>
-              </section>
-
-              {/* Featured Collector Catalog Grid */}
-              <section className="px-3.5 mt-6 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="font-display font-bold text-[19px] text-white">
-                      Colección Destacada
-                    </h2>
-                    <p className="text-xs text-zinc-400">
-                      Lotes de anime, placas de identificación y decoraciones animadas
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setActiveCategory('anime')}
-                    className="px-3.5 py-1.5 rounded-full dc-btn-primary text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0"
-                  >
-                    Mostrar todos
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
-                  {featuredScreenshotGrid.map((b) => (
-                    <BundleCard
-                      key={b.id}
-                      bundle={b}
-                      wishlisted={wishlistIds.includes(b.id)}
-                      owned={ownedBundleIds.includes(b.id)}
-                      onSelect={(swatch) => openBundleModal(b, swatch)}
-                      onToggleWishlist={(e) => {
-                        e.stopPropagation();
-                        onToggleWishlist(b.id);
-                      }}
-                    />
-                  ))}
-                </div>
-              </section>
-
-              {/* Vibras lofi Section */}
-              <section className="px-3.5 mt-7 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-display font-bold text-[19px] text-white">Vibras lofi</h2>
-                  <button
-                    onClick={() => setActiveCategory('lofi')}
-                    className="px-3.5 py-1.5 rounded-full dc-btn-secondary text-xs font-semibold cursor-pointer whitespace-nowrap shrink-0"
-                  >
-                    Mostrar todos
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
-                  {lofiBundles.map((b) => (
-                    <BundleCard
-                      key={b.id}
-                      bundle={b}
-                      wishlisted={wishlistIds.includes(b.id)}
-                      owned={ownedBundleIds.includes(b.id)}
-                      onSelect={(swatch) => openBundleModal(b, swatch)}
-                      onToggleWishlist={(e) => {
-                        e.stopPropagation();
-                        onToggleWishlist(b.id);
-                      }}
-                    />
-                  ))}
-                </div>
-              </section>
-
-              {/* Hero Campaign: Zenless Zone Zero */}
-              <section className="px-3.5 mt-7 space-y-3">
-                <div className="relative h-48 md:h-56 w-full rounded-3xl overflow-hidden bg-[#13151b] border border-white/10 shadow-xl anim-shimmer">
-                  <img
-                    src={GENERATED_ASSETS.zzzEllenBanner}
-                    alt="Zenless Zone Zero"
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
-                  <div className="absolute left-5 bottom-4 right-5 flex items-end justify-between gap-4 z-10">
-                    <div>
-                      <p className="text-[11px] font-semibold text-teal-300">
-                        Colección oficial · New Eridu
-                      </p>
-                      <h2 className="font-display font-black text-2xl tracking-tight text-white mt-0.5">
-                        ZENLESS <span className="text-teal-300">ZONE ZERO</span>
-                      </h2>
-                    </div>
-                    <button
-                      onClick={() => openBundleModal(bundles[0])}
-                      className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full dc-btn-white font-bold text-xs whitespace-nowrap shrink-0 cursor-pointer"
-                    >
-                      <span>Ver lote Miyabi</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
-                  {zzzBundles.map((b) => (
-                    <BundleCard
-                      key={b.id}
-                      bundle={b}
-                      wishlisted={wishlistIds.includes(b.id)}
-                      owned={ownedBundleIds.includes(b.id)}
-                      onSelect={(swatch) => openBundleModal(b, swatch)}
-                      onToggleWishlist={(e) => {
-                        e.stopPropagation();
-                        onToggleWishlist(b.id);
-                      }}
-                    />
-                  ))}
-                </div>
-              </section>
-
-              {/* Banners de perfil Section */}
-              {bannerBundles.length > 0 && (
-                <section className="px-3.5 mt-7 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="font-display font-bold text-[19px] text-white flex items-center gap-2">
-                        <ImageIcon className="w-5 h-5 text-[#5865F2]" />
-                        <span>Banners de perfil</span>
-                      </h2>
-                      <p className="text-xs text-zinc-400">
-                        Cómpralos y equípalos directamente en la cabecera de tu perfil
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3.5">
-                    {bannerBundles.map((b) => (
-                      <BundleCard
-                        key={b.id}
-                        bundle={b}
-                        wishlisted={wishlistIds.includes(b.id)}
-                        owned={ownedBundleIds.includes(b.id)}
-                        onSelect={(swatch) => openBundleModal(b, swatch)}
-                        onToggleWishlist={(e) => {
-                          e.stopPropagation();
-                          onToggleWishlist(b.id);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
-            </>
-          )}
-        </div>
-      </div>
+          </div>
+        </>
+      )}
 
       {/* Gift Toast Notification */}
       <AnimatePresence>
@@ -1211,7 +1903,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-4 shadow-2xl"
+            className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-4 shadow-2xl max-h-[85vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between">
               <h3 className="font-display font-bold text-base text-white">Explorar tienda</h3>
@@ -1228,8 +1920,11 @@ export const ShopView: React.FC<ShopViewProps> = ({
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar Gojo, Sukuna, Cerbero, Darth Vader, Orejas..."
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setActiveCollection(null);
+                }}
+                placeholder="Buscar Hombre polilla, El Ente, Marcos, Rawr xD..."
                 className="w-full h-11 rounded-xl bg-[#07080a] border border-white/10 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-[#5865F2]"
               />
             </div>
@@ -1240,6 +1935,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                   key={cat.id}
                   onClick={() => {
                     setActiveCategory(cat.id);
+                    setActiveCollection(null);
                     setFilterWishlistOnly(false);
                     setShowMenuSheet(false);
                   }}
@@ -1326,18 +2022,48 @@ export const ShopView: React.FC<ShopViewProps> = ({
               </div>
 
               <AnimatePresence mode="wait">
-                {fullPreviewMode && modalBannerUrl ? (
+                {fullPreviewMode ? (
+                  modalBannerUrl && selectedBundle.items.some((i) => i.bannerUrl) ? (
+                    <motion.div
+                      key={`full-banner-${selectedBundle.id}-${previewKey}`}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                    >
+                      <BannerProfilePreview
+                        bannerUrl={modalBannerUrl}
+                        bundle={selectedBundle}
+                        user={user}
+                        showFullBundle
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key={`full-effect-${selectedBundle.id}-${previewKey}`}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                    >
+                      <ProfileEffectShowcase
+                        bundle={selectedBundle}
+                        user={user}
+                        playKey={previewKey}
+                        showFullBundle
+                      />
+                    </motion.div>
+                  )
+                ) : activeModalItem.kind === 'Marco de perfil' && activeModalItem.profileFrameId ? (
                   <motion.div
-                    key={`full-${selectedBundle.id}-${previewKey}`}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
+                    key={`frame-${selectedBundle.id}-${activeModalItem.id}-${previewKey}`}
+                    initial={{ opacity: 0, scale: 0.94 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.94 }}
                   >
-                    <BannerProfilePreview
-                      bannerUrl={modalBannerUrl}
+                    <ProfileFrameShowcase
+                      frameId={activeModalItem.profileFrameId}
                       bundle={selectedBundle}
                       user={user}
-                      showFullBundle
+                      accentColor={modalSwatch}
                     />
                   </motion.div>
                 ) : activeModalItem.kind === 'Banner de perfil' && activeModalItem.bannerUrl ? (
@@ -1510,6 +2236,16 @@ export const ShopView: React.FC<ShopViewProps> = ({
                               decoration={item.decorationId}
                               accentColor={modalSwatch}
                             />
+                          </div>
+                        ) : item.kind === 'Marco de perfil' && item.profileFrameId ? (
+                          <div className="w-10 h-11 rounded-lg bg-[#22242e] border border-white/25 relative flex items-center justify-center">
+                            <ProfileFrameArtwork
+                              frame={item.profileFrameId}
+                              accentColor={modalSwatch}
+                            />
+                            <span className="relative z-10 text-[9px] font-bold text-white bg-black/75 px-1 py-0.5 rounded">
+                              Marco
+                            </span>
                           </div>
                         ) : item.kind === 'Banner de perfil' && item.bannerUrl ? (
                           <div className="w-full h-full relative flex items-center justify-center bg-zinc-900">

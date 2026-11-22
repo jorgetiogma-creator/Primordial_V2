@@ -115,7 +115,30 @@ export type DecorationId =
   | 'yuji'
   | 'espectro'
   | 'grabado'
-  | 'lobo';
+  | 'lobo'
+  | 'tentempie'
+  | 'polilla'
+  | 'flores-luna'
+  | 'cuernos'
+  | 'fuegos-fatuos'
+  | 'el-ente'
+  | 'luna-oscura'
+  | 'red-sangre'
+  | 'calabazas'
+  | 'luces-camara'
+  | 'onda-cosmica'
+  | 'boveda'
+  | 'claptrap'
+  | 'saqueo'
+  | 'luna-mistica'
+  | 'estrella-nocturna'
+  | 'flores-lunares'
+  | 'trebol'
+  | 'jardin-secreto'
+  | 'lirio'
+  | 'adorable'
+  | 'random-xd'
+  | 'scene-xd';
 
 export type NameplateId =
   | 'none'
@@ -135,7 +158,20 @@ export type NameplateId =
   | 'sukuna'
   | 'yuji'
   | 'almas'
-  | 'lobo';
+  | 'lobo'
+  | 'acechador'
+  | 'diablo-jersey'
+  | 'fuegos-fatuos'
+  | 'polilla'
+  | 'flores-luna'
+  | 'marcas-aranazos'
+  | 'luna-oscura'
+  | 'red-sangre'
+  | 'conejito-fresero'
+  | 'el-mismo-pato'
+  | 'marea-lluvia'
+  | 'jackalope'
+  | 'jardin-secreto';
 
 export type BadgeId =
   | 'hypesquad'
@@ -185,8 +221,40 @@ export type ProfileEffectId =
   | 'grabado'
   | 'sukuna'
   | 'lobo'
-  | 'yuji';
-export type ProfileFrameId = 'none' | 'obsidian' | 'crimson' | 'neon-blue' | 'gold' | 'glitch';
+  | 'yuji'
+  | 'observador'
+  | 'almas'
+  | 'hombre-polilla'
+  | 'flores-luna'
+  | 'diablo-jersey'
+  | 'llorona'
+  | 'jackalope'
+  | 'gancho'
+  | 'cuervos-luna'
+  | 'red-sangre'
+  | 'el-ente'
+  | 'boveda'
+  | 'saqueo'
+  | 'trebol'
+  | 'jardin-secreto'
+  | 'luna-mistica'
+  | 'adorable'
+  | 'scene-xd';
+
+export type ProfileFrameId =
+  | 'none'
+  | 'obsidian'
+  | 'crimson'
+  | 'neon-blue'
+  | 'gold'
+  | 'glitch'
+  | 'espectro'
+  | 'observador'
+  | 'ramas-desnudas'
+  | 'flores-luna'
+  | 'diablo-jersey'
+  | 'el-ente'
+  | 'luna-oscura';
 
 export interface PerServerProfile {
   nickname?: string;
@@ -458,6 +526,22 @@ export interface Quest {
   claimed: boolean;
 }
 
+export type ShopCollectionId =
+  | 'night-terrors'
+  | 'dark-folklore'
+  | 'dbd'
+  | 'nameplate-bonanza'
+  | 'borderlands'
+  | 'secret-garden'
+  | 'rawr-xd'
+  | 'celestial'
+  | 'stardust'
+  | 'anime'
+  | 'lofi'
+  | 'zzz'
+  | 'marvel'
+  | 'banners';
+
 export interface ShopBundleItem {
   id: string;
   name: string;
@@ -465,10 +549,12 @@ export interface ShopBundleItem {
     | 'Decoración de avatar'
     | 'Placa de identificación'
     | 'Efecto de perfil'
+    | 'Marco de perfil'
     | 'Banner de perfil';
   decorationId?: DecorationId;
   nameplateId?: NameplateId;
   profileEffectId?: ProfileEffectId;
+  profileFrameId?: ProfileFrameId;
   bannerUrl?: string;
 }
 
@@ -476,6 +562,7 @@ export interface ShopBundle {
   id: string;
   title: string;
   shortTitle: string;
+  collectionId?: ShopCollectionId;
   category:
     | 'destacado'
     | 'zzz'
@@ -486,7 +573,13 @@ export interface ShopBundle {
     | 'banners'
     | 'anime'
     | 'horror'
-    | 'fantasia';
+    | 'fantasia'
+    | 'folklore'
+    | 'bonanza'
+    | 'borderlands'
+    | 'garden'
+    | 'rawr'
+    | 'celestial';
   priceOrbs: number;
   priceUsd: string;
   colorSwatches?: string[];
@@ -520,7 +613,48 @@ export interface ShopBundle {
     | 'sukuna'
     | 'espectro'
     | 'lobo'
-    | 'yuji';
+    | 'yuji'
+    | 'tentempie'
+    | 'acechador'
+    | 'hombre-polilla'
+    | 'polilla'
+    | 'flores-luna'
+    | 'cuernos'
+    | 'fuegos-fatuos'
+    | 'diablo-jersey'
+    | 'llorona'
+    | 'jackalope'
+    | 'ramas-desnudas'
+    | 'el-ente'
+    | 'luna-oscura'
+    | 'red-sangre'
+    | 'calabazas'
+    | 'marcas-aranazos'
+    | 'gancho'
+    | 'cuervos-luna'
+    | 'hazlo-brillante'
+    | 'onda-cosmica'
+    | 'luces-camara'
+    | 'conejito-fresero'
+    | 'marea-lluvia'
+    | 'mas-alla-boveda'
+    | 'saqueo-arcoiris'
+    | 'claptrap'
+    | 'luna-mistica'
+    | 'estrella-nocturna'
+    | 'flores-lunares'
+    | 'trebol'
+    | 'jardin-secreto'
+    | 'lirio'
+    | 'adorable'
+    | 'random-xd'
+    | 'scene-xd'
+    | 'espectro-marco'
+    | 'observador-marco'
+    | 'flores-luna-marco'
+    | 'diablo-jersey-marco'
+    | 'el-ente-marco'
+    | 'luna-oscura-marco';
 }
 
 export interface NotificationItem {

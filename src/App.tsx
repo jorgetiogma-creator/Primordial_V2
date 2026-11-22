@@ -1590,13 +1590,15 @@ export default function App() {
     const plate = bundle.items.find((i) => i.nameplateId)?.nameplateId;
     const banner = bundle.items.find((i) => i.bannerUrl)?.bannerUrl;
     const effect = bundle.items.find((i) => i.profileEffectId)?.profileEffectId;
-    if (deco || plate || banner || effect) {
+    const frame = bundle.items.find((i) => i.profileFrameId)?.profileFrameId;
+    if (deco || plate || banner || effect || frame) {
       setUser((prev) => ({
         ...prev,
         ...(deco ? { decoration: deco } : {}),
         ...(plate ? { nameplate: plate } : {}),
         ...(banner ? { bannerImage: banner } : {}),
         ...(effect ? { profileEffect: effect } : {}),
+        ...(frame ? { profileFrame: frame } : {}),
       }));
     }
     showToastMsg(`¡${bundle.title} adquirido y equipado!`);
@@ -1611,15 +1613,17 @@ export default function App() {
     const plate = bundle.items.find((i) => i.nameplateId)?.nameplateId;
     const banner = bundle.items.find((i) => i.bannerUrl)?.bannerUrl;
     const effect = bundle.items.find((i) => i.profileEffectId)?.profileEffectId;
-    if (deco || plate || banner || effect) {
+    const frame = bundle.items.find((i) => i.profileFrameId)?.profileFrameId;
+    if (deco || plate || banner || effect || frame) {
       setUser((prev) => ({
         ...prev,
         ...(deco ? { decoration: deco } : {}),
         ...(plate ? { nameplate: plate } : {}),
         ...(banner ? { bannerImage: banner } : {}),
         ...(effect ? { profileEffect: effect } : {}),
+        ...(frame ? { profileFrame: frame } : {}),
       }));
-      showToastMsg(`Estilo, efecto y banner de ${bundle.title} aplicados en tu perfil`);
+      showToastMsg(`Estilo, marco y efectos de ${bundle.title} aplicados en tu perfil`);
     }
   };
 

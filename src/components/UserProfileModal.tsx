@@ -16,6 +16,7 @@ import { BadgeArtwork } from './BadgesView';
 import {
   NameplateStripBackground,
   ProfileEffectAnimationOverlay,
+  ProfileFrameArtwork,
   StatusIndicator,
   UserAvatar,
 } from './DiscordArt';
@@ -82,22 +83,43 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
       : 'Desconectado';
 
   const hasEffect = profile.profileEffect && profile.profileEffect !== 'none';
+  const frameBorderClass =
+    profile.profileFrame === 'obsidian'
+      ? 'ring-1 ring-white/25 shadow-[0_0_25px_rgba(255,255,255,0.08)]'
+      : profile.profileFrame === 'crimson'
+      ? 'ring-2 ring-[#ef4444]/80 shadow-[0_0_28px_rgba(239,68,68,0.28)]'
+      : profile.profileFrame === 'neon-blue'
+      ? 'ring-2 ring-[#38bdf8]/80 shadow-[0_0_28px_rgba(56,189,248,0.3)]'
+      : profile.profileFrame === 'gold'
+      ? 'ring-2 ring-[#f59e0b]/85 shadow-[0_0_28px_rgba(245,158,11,0.28)]'
+      : profile.profileFrame === 'glitch'
+      ? 'ring-2 ring-[#5865F2]/85 shadow-[0_0_28px_rgba(88,101,242,0.35)]'
+      : '';
+  const hasOrnateFrame =
+    profile.profileFrame &&
+    !['none', 'obsidian', 'crimson', 'neon-blue', 'gold', 'glitch'].includes(profile.profileFrame);
 
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+      className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center ${
+        hasOrnateFrame ? 'p-3 pt-8 sm:p-6' : 'p-0 sm:p-4'
+      }`}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden bg-[#0b0c10] border border-white/15 shadow-2xl relative max-h-[92vh] flex flex-col"
+        className="w-full max-w-md relative max-h-[90vh] flex flex-col"
       >
-        {/* Full Entrance Profile Effect (plays & fades out automatically) */}
-        <ProfileEffectAnimationOverlay
-          effect={profile.profileEffect}
-          playKey={playKey}
-          className="z-30"
-        />
+        <ProfileFrameArtwork frame={profile.profileFrame} />
+        <div
+          className={`w-full rounded-t-3xl sm:rounded-3xl overflow-hidden bg-[#0b0c10] border border-white/15 shadow-2xl relative flex flex-col max-h-[90vh] ${frameBorderClass}`}
+        >
+          {/* Full Entrance Profile Effect (plays & fades out automatically) */}
+          <ProfileEffectAnimationOverlay
+            effect={profile.profileEffect}
+            playKey={playKey}
+            className="z-30"
+          />
 
         {/* Banner */}
         <div
@@ -351,6 +373,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               />
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>

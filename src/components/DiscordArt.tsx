@@ -6,6 +6,7 @@ import {
   NameplateId,
   PresenceStatus,
   ProfileEffectId,
+  ProfileFrameId,
   Server,
 } from '../types/discord';
 
@@ -58,6 +59,20 @@ export const GENERATED_ASSETS = {
   decoRingSukuna: '/src/assets/images/deco_ring_sukuna_1795335722623.jpg',
   decoRingGrabado: '/src/assets/images/deco_ring_grabado_1795335722748.jpg',
   decoRingLobo: '/src/assets/images/deco_ring_lobo_1795335722058.jpg',
+  shopBannerBonanza: '/src/assets/images/shop_banner_bonanza_1795352099929.jpg',
+  shopBannerBorderlands: '/src/assets/images/shop_banner_borderlands_1795352100556.jpg',
+  shopBannerSecretGarden: '/src/assets/images/shop_banner_secret_garden_1795352099587.jpg',
+  shopBannerRawrXd: '/src/assets/images/shop_banner_rawr_xd_1795352099144.jpg',
+  shopMothmanArt: '/src/assets/images/shop_mothman_art_1795352099690.jpg',
+  shopMoonflowersArt: '/src/assets/images/shop_moonflowers_art_1795352099282.jpg',
+  shopJerseyDevilArt: '/src/assets/images/shop_jersey_devil_art_1795352099050.jpg',
+  shopLloronaArt: '/src/assets/images/shop_llorona_art_1795352099493.jpg',
+  shopWaterStalkerArt: '/src/assets/images/shop_water_stalker_art_1795352100251.jpg',
+  shopDbdHookArt: '/src/assets/images/shop_dbd_hook_art_1795352099003.jpg',
+  shopDbdBloodwebArt: '/src/assets/images/shop_dbd_bloodweb_art_1795352099142.jpg',
+  shopStrawberryBunnyArt: '/src/assets/images/shop_strawberry_bunny_art_1795352099320.jpg',
+  shopCelestialMoonArt: '/src/assets/images/shop_celestial_moon_art_1795352098726.jpg',
+  shopRawrSceneArt: '/src/assets/images/shop_rawr_scene_art_1795352102034.jpg',
 };
 
 export const SafeImage: React.FC<{
@@ -1100,11 +1115,509 @@ export const AvatarDecorationRing: React.FC<{
     );
   }
 
+  /* 21. Hora del tentempié (Night Terrors) — Manga Ink Jagged Teeth Ring */
+  if (decoration === 'tentempie') {
+    return (
+      <div className="absolute -inset-[26%] w-[152%] h-[152%] pointer-events-none z-10">
+        <div
+          className="w-full h-full rounded-full overflow-hidden anim-ghost"
+          style={{
+            WebkitMaskImage:
+              'radial-gradient(circle, transparent 41%, black 46%, black 76%, transparent 92%)',
+            maskImage:
+              'radial-gradient(circle, transparent 41%, black 46%, black 76%, transparent 92%)',
+            filter: 'contrast(1.25) drop-shadow(0 2px 10px rgba(0,0,0,0.95))',
+          }}
+        >
+          <img
+            src={GENERATED_ASSETS.decoRingPesadilla}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover scale-108"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  /* 22. Polilla fantasma (Dark Folklore) — Pale Feathered Moth Wings & Delicate Antennae */
+  if (decoration === 'polilla') {
+    return (
+      <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-float">
+          <defs>
+            <linearGradient id="mothWingL" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#f4f4f5" />
+              <stop offset="60%" stopColor="#d4d4d8" />
+              <stop offset="100%" stopColor="#71717a" />
+            </linearGradient>
+          </defs>
+          {/* Feathered Moth Antennae on Top */}
+          <path d="M55 15 Q42 2 24 8 Q34 15 48 18" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1" />
+          <path d="M65 15 Q78 2 96 8 Q86 15 72 18" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1" />
+          {/* Lower Lace Moth Wings Framing Avatar */}
+          <path d="M12 64 Q4 88 22 104 Q40 112 52 98 Q36 86 24 62 Z" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1.2" opacity="0.92" />
+          <path d="M108 64 Q116 88 98 104 Q80 112 68 98 Q84 86 96 62 Z" fill="url(#mothWingL)" stroke="#27272a" strokeWidth="1.2" opacity="0.92" />
+          <circle cx="23" cy="90" r="4" fill="#52525b" opacity="0.55" />
+          <circle cx="97" cy="90" r="4" fill="#52525b" opacity="0.55" />
+          <circle cx="60" cy="60" r="49" fill="none" stroke="#e4e4e7" strokeWidth="1.4" opacity="0.45" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 23. Flores de luna (Dark Folklore) — Blooming Botanical Moonflowers & Climbing Vines */
+  if (decoration === 'flores-luna') {
+    return (
+      <div className="absolute -inset-[26%] w-[152%] h-[152%] pointer-events-none z-10">
+        <div
+          className="w-full h-full rounded-full overflow-hidden anim-sway"
+          style={{
+            WebkitMaskImage:
+              'radial-gradient(circle, transparent 41%, black 47%, black 80%, transparent 96%)',
+            maskImage:
+              'radial-gradient(circle, transparent 41%, black 47%, black 80%, transparent 96%)',
+            filter: 'saturate(1.15) drop-shadow(0 0 10px rgba(187,247,208,0.45))',
+          }}
+        >
+          <img
+            src={GENERATED_ASSETS.shopMoonflowersArt}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover scale-110"
+          />
+        </div>
+        <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full overflow-visible">
+          <circle cx="60" cy="8" r="5" fill="#fef9c3" opacity="0.9" />
+          <circle cx="24" cy="90" r="5.5" fill="#fef08a" stroke="#4d7c0f" strokeWidth="1.2" />
+          <circle cx="96" cy="88" r="5.5" fill="#fef9c3" stroke="#4d7c0f" strokeWidth="1.2" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 24. Cuernos de demonio (Dark Folklore) — Twisted Cryptid Horns & Furry Ears */
+  if (decoration === 'cuernos') {
+    return (
+      <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-float">
+          <defs>
+            <linearGradient id="hornMetal" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#94a3b8" />
+              <stop offset="50%" stopColor="#334155" />
+              <stop offset="100%" stopColor="#09090b" />
+            </linearGradient>
+          </defs>
+          {/* Left & Right Curved Dark Cryptid Horns */}
+          <path d="M26 42 Q8 18 22 4 Q20 20 34 32 Z" fill="url(#hornMetal)" stroke="#cbd5e1" strokeWidth="1" />
+          <path d="M94 42 Q112 18 98 4 Q100 20 86 32 Z" fill="url(#hornMetal)" stroke="#cbd5e1" strokeWidth="1" />
+          {/* Cryptid Ears */}
+          <path d="M16 48 Q4 35 13 28 Q23 36 28 45 Z" fill="#1e293b" stroke="#fb923c" strokeWidth="1.1" />
+          <path d="M104 48 Q116 35 107 28 Q97 36 92 45 Z" fill="#1e293b" stroke="#fb923c" strokeWidth="1.1" />
+          <circle cx="60" cy="60" r="49" fill="none" stroke="#475569" strokeWidth="1.8" opacity="0.55" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 25. Fuegos fatuos (Dark Folklore) — Orbiting Cyan-Emerald Spectral Wisps */
+  if (decoration === 'fuegos-fatuos') {
+    return (
+      <div className="absolute -inset-[26%] w-[152%] h-[152%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-spin-slow">
+          <defs>
+            <radialGradient id="wispGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="40%" stopColor="#5eead4" />
+              <stop offset="100%" stopColor="#0d9488" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="60" cy="60" r="49" fill="none" stroke="#2dd4bf" strokeWidth="2.5" opacity="0.45" />
+          <circle cx="22" cy="30" r="14" fill="url(#wispGlow)" />
+          <circle cx="98" cy="36" r="11" fill="url(#wispGlow)" />
+          <circle cx="88" cy="96" r="15" fill="url(#wispGlow)" />
+          <circle cx="24" cy="86" r="10" fill="url(#wispGlow)" />
+          <circle cx="60" cy="11" r="6" fill="#ccfbf1" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 26. El Ente (Dead by Daylight) — Blazing Orange-Black Entity Spider Claws */
+  if (decoration === 'el-ente') {
+    return (
+      <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ember">
+          <defs>
+            <linearGradient id="entityClaw" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#fb923c" />
+              <stop offset="55%" stopColor="#ea580c" />
+              <stop offset="100%" stopColor="#09090b" />
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="49.5" fill="none" stroke="#f97316" strokeWidth="3" opacity="0.85" />
+          {/* Entity Curved Talons */}
+          <path d="M18 32 Q6 14 28 8 Q18 22 30 32 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.2" />
+          <path d="M102 32 Q114 14 92 8 Q102 22 90 32 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.2" />
+          <path d="M12 76 Q0 96 22 108 Q16 90 24 80 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.2" />
+          <path d="M108 76 Q120 96 98 108 Q104 90 96 80 Z" fill="url(#entityClaw)" stroke="#09090b" strokeWidth="1.2" />
+          <path d="M56 12 Q60 -2 68 8 Q62 14 60 15 Z" fill="#fb923c" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 27. Luna oscura (Dead by Daylight) — Ink Brush Eclipse Ring (supports silver / crimson swatch) */
+  if (decoration === 'luna-oscura') {
+    const ringTone = accentColor === '#ef4444' ? '#ef4444' : '#e2e8f0';
+    return (
+      <div className="absolute -inset-[23%] w-[146%] h-[146%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ghost">
+          <path
+            d="M46 12 A49 49 0 1 0 98 92 A41 41 0 1 1 46 12 Z"
+            fill="#09090b"
+            stroke={ringTone}
+            strokeWidth="2.4"
+          />
+          <circle cx="60" cy="60" r="50.5" fill="none" stroke={ringTone} strokeWidth="1.6" strokeDasharray="34 10 8 6" opacity="0.85" />
+          <circle cx="24" cy="28" r="2.2" fill={ringTone} />
+          <circle cx="94" cy="84" r="2" fill={ringTone} />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 28. Red de sangre (Dead by Daylight) — Organic Crimson Bloodweb Ring */
+  if (decoration === 'red-sangre') {
+    return (
+      <div className="absolute -inset-[27%] w-[154%] h-[154%] pointer-events-none z-10">
+        <div
+          className="w-full h-full rounded-full overflow-hidden anim-ember"
+          style={{
+            WebkitMaskImage:
+              'radial-gradient(circle, transparent 41%, rgba(0,0,0,0.95) 47%, black 78%, transparent 95%)',
+            maskImage:
+              'radial-gradient(circle, transparent 41%, rgba(0,0,0,0.95) 47%, black 78%, transparent 95%)',
+            filter: 'saturate(1.3) drop-shadow(0 0 12px rgba(220,38,38,0.85))',
+          }}
+        >
+          <img
+            src={GENERATED_ASSETS.shopDbdBloodwebArt}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover scale-115"
+          />
+        </div>
+        <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full overflow-visible">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#ef4444" strokeWidth="1.5" opacity="0.7" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 29. Calabazas del Vacío (Dead by Daylight) — Orbiting Fiery Jack-o'-Lantern Ring */
+  if (decoration === 'calabazas') {
+    return (
+      <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ember">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#f97316" strokeWidth="4" opacity="0.85" />
+          <circle cx="60" cy="60" r="53" fill="none" stroke="#fde047" strokeWidth="1.2" strokeDasharray="24 12" opacity="0.7" />
+          {/* Top-Right & Bottom-Left Jack-o'-Lanterns */}
+          <g transform="translate(86, 12)">
+            <circle cx="12" cy="12" r="10.5" fill="#ea580c" stroke="#18181b" strokeWidth="1.4" />
+            <polygon points="7,9 10,12 6,12" fill="#fef08a" />
+            <polygon points="17,9 14,12 18,12" fill="#fef08a" />
+            <path d="M7 15 Q12 19 17 15" stroke="#fef08a" strokeWidth="2" fill="none" />
+          </g>
+          <g transform="translate(8, 86)">
+            <circle cx="12" cy="12" r="10.5" fill="#c2410c" stroke="#18181b" strokeWidth="1.4" />
+            <polygon points="7,9 10,12 6,12" fill="#fde047" />
+            <polygon points="17,9 14,12 18,12" fill="#fde047" />
+            <path d="M7 15 Q12 19 17 15" stroke="#fde047" strokeWidth="2" fill="none" />
+          </g>
+        </svg>
+      </div>
+    );
+  }
+
+  /* 30. Stardust & Lights (¡Luces, cámara...!, Onda cósmica) — Golden/Emerald Shimmering Stardust Ring */
+  if (decoration === 'luces-camara' || decoration === 'onda-cosmica') {
+    const color = decoration === 'onda-cosmica' ? '#4ade80' : '#fbbf24';
+    const glow = decoration === 'onda-cosmica' ? 'rgba(74,222,128,0.85)' : 'rgba(251,191,36,0.85)';
+    return (
+      <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-spin-slow">
+          <circle
+            cx="60"
+            cy="60"
+            r="50"
+            fill="none"
+            stroke={color}
+            strokeWidth="3.2"
+            strokeDasharray="6 3 2 4 12 3"
+            style={{ filter: `drop-shadow(0 0 10px ${glow})` }}
+          />
+          <circle cx="60" cy="60" r="54" fill="none" stroke="#ffffff" strokeWidth="1.2" strokeDasharray="2 7 1 5" opacity="0.8" />
+          <path d="M60 4 L62 9 L67 11 L62 13 L60 18 L58 13 L53 11 L58 9 Z" fill="#ffffff" />
+          <path d="M108 58 L110 61 L113 63 L110 65 L108 68 L106 65 L103 63 L106 61 Z" fill={color} />
+          <path d="M16 88 L17.5 90.5 L20 92 L17.5 93.5 L16 96 L14.5 93.5 L12 92 L14.5 90.5 Z" fill="#ffffff" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 31. Borderlands 4 (boveda, saqueo, claptrap) */
+  if (decoration === 'boveda' || decoration === 'saqueo' || decoration === 'claptrap') {
+    if (decoration === 'claptrap') {
+      return (
+        <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
+          <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-float">
+            <circle cx="60" cy="60" r="49" fill="none" stroke="#facc15" strokeWidth="2.5" opacity="0.7" />
+            {/* Mini Claptrap Dancing at Bottom-Left */}
+            <g transform="translate(8, 66)">
+              <rect x="6" y="4" width="24" height="26" rx="4" fill="#facc15" stroke="#18181b" strokeWidth="2" />
+              <rect x="6" y="14" width="24" height="5" fill="#f8fafc" />
+              <circle cx="18" cy="11" r="4.5" fill="#38bdf8" stroke="#18181b" strokeWidth="1.4" />
+              <line x1="18" y1="0" x2="18" y2="4" stroke="#71717a" strokeWidth="2" />
+              <line x1="2" y1="16" x2="6" y2="14" stroke="#71717a" strokeWidth="2.2" />
+              <line x1="30" y1="14" x2="34" y2="8" stroke="#71717a" strokeWidth="2.2" />
+              <circle cx="18" cy="36" r="5" fill="#27272a" stroke="#18181b" strokeWidth="1.5" />
+            </g>
+          </svg>
+        </div>
+      );
+    }
+    const isRainbow = decoration === 'saqueo';
+    return (
+      <div className="absolute -inset-[25%] w-[150%] h-[150%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-ember">
+          <defs>
+            <linearGradient id={`blGrad-${decoration}`} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor={isRainbow ? '#facc15' : '#38bdf8'} />
+              <stop offset="50%" stopColor={isRainbow ? '#ec4899' : '#c084fc'} />
+              <stop offset="100%" stopColor={isRainbow ? '#22d3ee' : '#f97316'} />
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="50" fill="none" stroke={`url(#blGrad-${decoration})`} strokeWidth="5" />
+          <circle cx="60" cy="60" r="46" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.65" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 32. Celestial & Nocturno (luna-mistica, estrella-nocturna, flores-lunares) */
+  if (decoration === 'luna-mistica' || decoration === 'estrella-nocturna' || decoration === 'flores-lunares') {
+    return (
+      <div className="absolute -inset-[26%] w-[152%] h-[152%] pointer-events-none z-10">
+        <div
+          className="w-full h-full rounded-full overflow-hidden anim-float"
+          style={{
+            WebkitMaskImage:
+              'radial-gradient(circle, transparent 41%, black 47%, black 78%, transparent 95%)',
+            maskImage:
+              'radial-gradient(circle, transparent 41%, black 47%, black 78%, transparent 95%)',
+            mixBlendMode: 'screen',
+            filter: 'saturate(1.25) drop-shadow(0 0 12px rgba(96,165,250,0.85))',
+          }}
+        >
+          <img
+            src={GENERATED_ASSETS.shopCelestialMoonArt}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover scale-115"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  /* 33. Secret Garden (trebol, jardin-secreto, lirio) */
+  if (decoration === 'trebol' || decoration === 'jardin-secreto' || decoration === 'lirio') {
+    const tone = decoration === 'lirio' ? '#34d399' : decoration === 'trebol' ? '#22c55e' : '#a3e635';
+    return (
+      <div className="absolute -inset-[23%] w-[146%] h-[146%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-sway">
+          <circle cx="60" cy="60" r="50" fill="none" stroke={tone} strokeWidth="3.5" opacity="0.88" />
+          <ellipse cx="20" cy="40" rx="8" ry="12" fill="#16a34a" stroke="#14532d" strokeWidth="1.2" transform="rotate(-25 20 40)" />
+          <ellipse cx="100" cy="42" rx="8" ry="12" fill="#22c55e" stroke="#14532d" strokeWidth="1.2" transform="rotate(25 100 42)" />
+          <circle cx="48" cy="12" r="4" fill="#fef9c3" />
+          <circle cx="72" cy="14" r="3.5" fill="#ffffff" />
+          <circle cx="30" cy="96" r="4.5" fill="#bbf7d0" />
+          <circle cx="90" cy="94" r="4.5" fill="#fde047" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* 34. Rawr xD (adorable, random-xd, scene-xd) */
+  if (decoration === 'adorable' || decoration === 'random-xd' || decoration === 'scene-xd') {
+    const primary = decoration === 'scene-xd' ? '#a3e635' : decoration === 'random-xd' ? '#f472b6' : '#c084fc';
+    return (
+      <div className="absolute -inset-[24%] w-[148%] h-[148%] pointer-events-none z-10">
+        <div
+          className="w-full h-full rounded-full overflow-hidden anim-float"
+          style={{
+            WebkitMaskImage:
+              'radial-gradient(circle, transparent 41%, black 47%, black 78%, transparent 94%)',
+            maskImage:
+              'radial-gradient(circle, transparent 41%, black 47%, black 78%, transparent 94%)',
+            filter: `drop-shadow(0 0 10px ${primary})`,
+          }}
+        >
+          <img
+            src={GENERATED_ASSETS.shopRawrSceneArt}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover scale-115"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <svg viewBox="0 0 120 120" className="absolute -inset-[12%] w-[124%] h-[124%] pointer-events-none z-10">
       <circle cx="60" cy="60" r="52" fill="none" stroke="#a855f7" strokeWidth="4" />
     </svg>
   );
+};
+
+/* Ornate Discord Profile Frames (wrap cleanly around profile cards & break outer edge just like screenshots) */
+export const ProfileFrameArtwork: React.FC<{
+  frame?: ProfileFrameId;
+  accentColor?: string;
+}> = ({ frame, accentColor }) => {
+  if (
+    !frame ||
+    frame === 'none' ||
+    frame === 'obsidian' ||
+    frame === 'crimson' ||
+    frame === 'neon-blue' ||
+    frame === 'gold' ||
+    frame === 'glitch'
+  ) {
+    return null;
+  }
+
+  /* Night Terrors: Espectro — Pale Ghoul Climbing Over Top Edge of Profile Card */
+  if (frame === 'espectro') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-zinc-200/45 shadow-[0_0_24px_rgba(255,255,255,0.12)]" />
+        <svg viewBox="0 0 200 180" className="absolute -top-6 inset-x-0 w-full h-auto overflow-visible anim-ghost">
+          <path d="M18 42 Q8 14 38 14 Q48 26 42 40 Z" fill="#18181b" stroke="#e4e4e7" strokeWidth="2.2" />
+          <path d="M36 32 Q72 8 104 22 Q128 8 164 26 Q178 36 168 46 Q128 32 100 34 Q70 30 36 32 Z" fill="#f4f4f5" stroke="#09090b" strokeWidth="2.4" />
+          <circle cx="116" cy="24" r="14" fill="#f4f4f5" stroke="#09090b" strokeWidth="2.2" />
+          <ellipse cx="112" cy="22" rx="3" ry="4" fill="#09090b" />
+          <ellipse cx="121" cy="22" rx="3" ry="4" fill="#09090b" />
+          <ellipse cx="116.5" cy="31" rx="4.5" ry="6" fill="#09090b" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* Night Terrors: Observador — Mass of Staring Ink Eyes Crowning Top & Bottom Edge */
+  if (frame === 'observador') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-[3px] border-black shadow-[0_0_25px_rgba(0,0,0,0.95)] ring-1 ring-white/25" />
+        <svg viewBox="0 0 200 180" className="absolute -top-6 inset-x-0 w-full h-auto overflow-visible">
+          <path d="M10 42 Q26 4 62 10 Q100 -2 138 10 Q174 4 190 42 Q145 30 100 32 Q55 30 10 42 Z" fill="#050507" stroke="#ffffff" strokeWidth="1.2" />
+          <g className="anim-eye-blink">
+            <ellipse cx="64" cy="20" rx="11" ry="5.5" fill="#ffffff" />
+            <circle cx="64" cy="20" r="3" fill="#050507" />
+            <ellipse cx="102" cy="14" rx="13" ry="6.5" fill="#ffffff" />
+            <circle cx="102" cy="14" r="3.5" fill="#050507" />
+            <ellipse cx="140" cy="22" rx="10" ry="5" fill="#ffffff" />
+            <circle cx="140" cy="22" r="2.8" fill="#050507" />
+          </g>
+        </svg>
+      </div>
+    );
+  }
+
+  /* Dark Folklore: Ramas desnudas — Twisted Bare Forest Twigs & Tiny Fairy Sparkles */
+  if (frame === 'ramas-desnudas') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-zinc-400/50 shadow-[0_0_20px_rgba(228,228,231,0.12)]" />
+        <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible">
+          <path d="M12 36 Q18 10 56 12 Q100 4 146 12 Q184 10 188 36" fill="none" stroke="#52525b" strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M16 32 Q12 120 18 168 M184 32 Q188 120 182 168" fill="none" stroke="#3f3f46" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M24 164 Q100 176 176 164" fill="none" stroke="#52525b" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="52" cy="8" r="2.2" fill="#fef9c3" />
+          <circle cx="110" cy="6" r="2.6" fill="#ffffff" />
+          <circle cx="152" cy="10" r="2" fill="#fde047" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* Dark Folklore: Flores de luna — Lush Moonflower Garland Around Profile Card */
+  if (frame === 'flores-luna') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-emerald-400/60 shadow-[0_0_24px_rgba(74,222,128,0.22)]" />
+        <svg viewBox="0 0 200 180" className="absolute -top-5 inset-x-0 w-full h-auto overflow-visible anim-sway">
+          <path d="M14 48 Q20 12 100 16 Q180 12 186 48" fill="none" stroke="#4d7c0f" strokeWidth="5.5" strokeLinecap="round" />
+          <circle cx="44" cy="18" r="10" fill="#fef9c3" stroke="#65a30d" strokeWidth="1.5" />
+          <circle cx="44" cy="18" r="3.5" fill="#fde047" />
+          <circle cx="88" cy="14" r="12" fill="#ffffff" stroke="#65a30d" strokeWidth="1.5" />
+          <circle cx="88" cy="14" r="4.5" fill="#fef08a" />
+          <circle cx="132" cy="16" r="11" fill="#fefce8" stroke="#4d7c0f" strokeWidth="1.5" />
+          <circle cx="132" cy="16" r="4" fill="#fde047" />
+          <circle cx="164" cy="24" r="8" fill="#fef9c3" stroke="#65a30d" strokeWidth="1.4" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* Dark Folklore: Diablo de Jersey — Dense Thorny Bramble Border */
+  if (frame === 'diablo-jersey') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-[3px] border-slate-500/70 shadow-[0_0_22px_rgba(148,163,184,0.22)]" />
+        <svg viewBox="0 0 200 180" className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] overflow-visible">
+          <path d="M12 24 L26 10 L44 20 L66 8 L88 20 L112 8 L134 20 L156 8 L174 20 L188 12" fill="none" stroke="#64748b" strokeWidth="4" strokeLinejoin="round" />
+          <path d="M14 168 L36 156 L58 170 L88 158 L116 170 L146 156 L176 168" fill="none" stroke="#475569" strokeWidth="3.5" strokeLinejoin="round" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* Dead by Daylight: El Ente — Fiery Orange Entity Talons Piercing Top Edge */
+  if (frame === 'el-ente') {
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-orange-500/65 shadow-[0_0_26px_rgba(249,115,22,0.28)]" />
+        <svg viewBox="0 0 200 180" className="absolute -top-6 inset-x-0 w-full h-auto overflow-visible anim-ember">
+          <path d="M24 38 Q16 8 40 4 Q32 22 42 36 Z" fill="#f97316" stroke="#18181b" strokeWidth="1.5" />
+          <path d="M62 34 Q58 4 82 2 Q74 20 80 34 Z" fill="#ea580c" stroke="#18181b" strokeWidth="1.5" />
+          <path d="M118 34 Q126 4 146 8 Q134 22 136 34 Z" fill="#f97316" stroke="#18181b" strokeWidth="1.5" />
+          <path d="M158 38 Q174 6 186 20 Q170 28 172 38 Z" fill="#dc2626" stroke="#18181b" strokeWidth="1.5" />
+        </svg>
+      </div>
+    );
+  }
+
+  /* Dead by Daylight: Luna oscura — Dead Branches + Perched Crows + Full Moon */
+  if (frame === 'luna-oscura') {
+    const moonColor = accentColor === '#ef4444' ? '#fca5a5' : '#f8fafc';
+    return (
+      <div className="absolute -inset-2 pointer-events-none z-20 overflow-visible">
+        <div className="w-full h-full rounded-2xl border-2 border-slate-400/50 shadow-[0_0_24px_rgba(148,163,184,0.2)]" />
+        <svg viewBox="0 0 200 180" className="absolute -top-7 inset-x-0 w-full h-auto overflow-visible">
+          <circle cx="92" cy="22" r="18" fill={moonColor} opacity="0.92" />
+          <path d="M16 40 Q42 18 82 28 Q128 18 184 40" fill="none" stroke="#1e293b" strokeWidth="5" strokeLinecap="round" />
+          {/* Crows */}
+          <path d="M46 24 Q52 14 60 22 L54 27 Z" fill="#09090b" />
+          <path d="M116 20 Q122 10 130 18 L124 23 Z" fill="#09090b" />
+        </svg>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export const UserAvatar: React.FC<{
@@ -1346,6 +1859,31 @@ export const getNameplateArtworkUrl = (nameplate: NameplateId): string | null =>
       return GENERATED_ASSETS.shopTrappedSouls;
     case 'observador':
       return GENERATED_ASSETS.shopObserverEyes;
+    case 'acechador':
+      return GENERATED_ASSETS.shopWaterStalkerArt;
+    case 'diablo-jersey':
+      return GENERATED_ASSETS.shopJerseyDevilArt;
+    case 'fuegos-fatuos':
+    case 'jardin-secreto':
+      return GENERATED_ASSETS.shopBannerSecretGarden;
+    case 'polilla':
+      return GENERATED_ASSETS.shopMothmanArt;
+    case 'flores-luna':
+    case 'jackalope':
+      return GENERATED_ASSETS.shopMoonflowersArt;
+    case 'marcas-aranazos':
+    case 'dbd':
+      return GENERATED_ASSETS.dbdBanner;
+    case 'luna-oscura':
+      return GENERATED_ASSETS.shopLoboLuna;
+    case 'red-sangre':
+      return GENERATED_ASSETS.shopDbdBloodwebArt;
+    case 'conejito-fresero':
+      return GENERATED_ASSETS.shopStrawberryBunnyArt;
+    case 'el-mismo-pato':
+      return GENERATED_ASSETS.shopPatoArt;
+    case 'marea-lluvia':
+      return GENERATED_ASSETS.shopCondenacionEterna;
     case 'vader':
       return GENERATED_ASSETS.shopVaderArt;
     case 'gojo':
@@ -1363,8 +1901,6 @@ export const getNameplateArtworkUrl = (nameplate: NameplateId): string | null =>
     case 'deadpool':
     case 'wolverine':
       return GENERATED_ASSETS.deadpoolBanner;
-    case 'dbd':
-      return GENERATED_ASSETS.dbdBanner;
     case 'vice-city':
       return GENERATED_ASSETS.viceCityBanner;
     default:
@@ -1382,8 +1918,22 @@ export const NameplateStripBackground: React.FC<{
 
   if (artUrl) {
     const isCoralCondenacion = nameplate === 'condenacion' && accentColor === '#fb7185';
+    const isCyanScratch = nameplate === 'marcas-aranazos' && accentColor === '#38bdf8';
+    const isMagentaScratch = nameplate === 'marcas-aranazos' && accentColor === '#d946ef';
+    const isCrimsonMoon = nameplate === 'luna-oscura' && accentColor === '#ef4444';
     const isLightWash = nameplate === 'rama' || nameplate === 'sakura';
     const isVader = nameplate === 'vader';
+
+    const filterStyle = isCoralCondenacion
+      ? 'hue-rotate(155deg) saturate(1.3) contrast(1.06)'
+      : isCyanScratch
+      ? 'hue-rotate(185deg) saturate(1.4) contrast(1.08)'
+      : isMagentaScratch
+      ? 'hue-rotate(285deg) saturate(1.45) contrast(1.08)'
+      : isCrimsonMoon
+      ? 'hue-rotate(95deg) saturate(1.5) contrast(1.1)'
+      : 'saturate(1.12) contrast(1.04)';
+
     return (
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <img
@@ -1392,9 +1942,7 @@ export const NameplateStripBackground: React.FC<{
           referrerPolicy="no-referrer"
           className="absolute right-0 inset-y-0 w-full h-full object-cover object-center transition-all duration-300"
           style={{
-            filter: isCoralCondenacion
-              ? 'hue-rotate(155deg) saturate(1.3) contrast(1.06)'
-              : 'saturate(1.12) contrast(1.04)',
+            filter: filterStyle,
             WebkitMaskImage: isLightWash
               ? 'linear-gradient(90deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.88) 42%, black 75%)'
               : 'linear-gradient(90deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.68) 38%, black 70%)',
@@ -1447,8 +1995,12 @@ export const NameplateRowDecor: React.FC<{ nameplate: NameplateId }> = ({ namepl
     );
   }
 
-  if (nameplate === 'dbd') {
+  if (nameplate === 'dbd' || nameplate === 'marcas-aranazos') {
     return <span className="text-lg z-10 anim-ember drop-shadow">🔥</span>;
+  }
+
+  if (nameplate === 'conejito-fresero') {
+    return <span className="text-lg z-10 anim-float drop-shadow">🍓</span>;
   }
 
   return null;
@@ -1505,6 +2057,132 @@ export const PROFILE_EFFECT_META: Record<
     secondary: '#71717a',
     artUrl: GENERATED_ASSETS.shopVamosAJugar,
     particles: 'horror',
+  },
+  observador: {
+    title: 'OBSERVADOR',
+    primary: '#ffffff',
+    secondary: '#52525b',
+    artUrl: GENERATED_ASSETS.shopObserverEyes,
+    particles: 'horror',
+  },
+  almas: {
+    title: 'ALMAS ATRAPADAS',
+    primary: '#e4e4e7',
+    secondary: '#71717a',
+    artUrl: GENERATED_ASSETS.shopTrappedSouls,
+    particles: 'horror',
+  },
+  'hombre-polilla': {
+    title: 'HOMBRE POLILLA',
+    primary: '#ef4444',
+    secondary: '#94a3b8',
+    artUrl: GENERATED_ASSETS.shopMothmanArt,
+    particles: 'horror',
+  },
+  'flores-luna': {
+    title: 'FLORES DE LUNA',
+    primary: '#fef08a',
+    secondary: '#4ade80',
+    artUrl: GENERATED_ASSETS.shopMoonflowersArt,
+    particles: 'petals',
+  },
+  'diablo-jersey': {
+    title: 'DIABLO DE JERSEY',
+    primary: '#94a3b8',
+    secondary: '#38bdf8',
+    artUrl: GENERATED_ASSETS.shopJerseyDevilArt,
+    particles: 'horror',
+  },
+  llorona: {
+    title: 'LA LLORONA',
+    primary: '#2dd4bf',
+    secondary: '#99f6e4',
+    artUrl: GENERATED_ASSETS.shopLloronaArt,
+    particles: 'sparks',
+  },
+  jackalope: {
+    title: 'JACKALOPE',
+    primary: '#bef264',
+    secondary: '#fde047',
+    artUrl: GENERATED_ASSETS.shopMoonflowersArt,
+    particles: 'petals',
+  },
+  gancho: {
+    title: 'GANCHO DEL ENTE',
+    primary: '#f97316',
+    secondary: '#dc2626',
+    artUrl: GENERATED_ASSETS.shopDbdHookArt,
+    particles: 'embers',
+  },
+  'cuervos-luna': {
+    title: 'CUERVOS DE LUNA OSCURA',
+    primary: '#e2e8f0',
+    secondary: '#475569',
+    artUrl: GENERATED_ASSETS.shopLoboLuna,
+    particles: 'horror',
+  },
+  'red-sangre': {
+    title: 'RED DE SANGRE',
+    primary: '#ef4444',
+    secondary: '#991b1b',
+    artUrl: GENERATED_ASSETS.shopDbdBloodwebArt,
+    particles: 'embers',
+  },
+  'el-ente': {
+    title: 'EL ENTE',
+    primary: '#fb923c',
+    secondary: '#dc2626',
+    artUrl: GENERATED_ASSETS.shopDbdHookArt,
+    particles: 'embers',
+  },
+  boveda: {
+    title: 'MÁS ALLÁ DE LA CÁMARA',
+    primary: '#f97316',
+    secondary: '#38bdf8',
+    artUrl: GENERATED_ASSETS.shopBannerBorderlands,
+    particles: 'lightning',
+  },
+  saqueo: {
+    title: 'SAQUEO ARCOÍRIS',
+    primary: '#facc15',
+    secondary: '#ec4899',
+    artUrl: GENERATED_ASSETS.shopCromaArt,
+    particles: 'sparks',
+  },
+  trebol: {
+    title: 'TRÉBOL DE LA SUERTE',
+    primary: '#4ade80',
+    secondary: '#fde047',
+    artUrl: GENERATED_ASSETS.shopLofiPlants,
+    particles: 'petals',
+  },
+  'jardin-secreto': {
+    title: 'JARDÍN SECRETO',
+    primary: '#2dd4bf',
+    secondary: '#86efac',
+    artUrl: GENERATED_ASSETS.shopBannerSecretGarden,
+    particles: 'petals',
+  },
+  'luna-mistica': {
+    title: 'LUNA MÍSTICA',
+    primary: '#60a5fa',
+    secondary: '#c084fc',
+    artUrl: GENERATED_ASSETS.shopCelestialMoonArt,
+    particles: 'sparks',
+  },
+  adorable: {
+    title: 'ADORABLE',
+    primary: '#f472b6',
+    secondary: '#c084fc',
+    artUrl: GENERATED_ASSETS.shopBannerRawrXd,
+    particles: 'sparks',
+  },
+  'scene-xd': {
+    title: 'SCENE RAWR XD',
+    primary: '#a3e635',
+    secondary: '#ec4899',
+    artUrl: GENERATED_ASSETS.shopRawrSceneArt,
+    particles: 'lightning',
   },
   grabado: {
     title: 'GRABADO JAPONÉS',

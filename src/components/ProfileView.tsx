@@ -45,6 +45,7 @@ import {
   NitroWheelIcon,
   OrbsCrystalIcon,
   ProfileEffectAnimationOverlay,
+  ProfileFrameArtwork,
   ServerIconArt,
   StatusIndicator,
   UserAvatar,
@@ -72,6 +73,32 @@ const BANNER_PRESETS = ['#C41212', '#5865F2', '#10b981', '#dc2626', '#f59e0b', '
 
 const DECORATION_OPTIONS: { id: DecorationId; label: string }[] = [
   { id: 'none', label: 'Ninguno' },
+  { id: 'tentempie', label: 'Tentempié de medianoche' },
+  { id: 'espectro', label: 'Espectro' },
+  { id: 'almas', label: 'Almas atrapadas' },
+  { id: 'observador', label: 'Observador' },
+  { id: 'polilla', label: 'Polilla fantasma' },
+  { id: 'flores-luna', label: 'Flores de luna' },
+  { id: 'cuernos', label: 'Cuernos de demonio' },
+  { id: 'fuegos-fatuos', label: 'Fuegos fatuos' },
+  { id: 'el-ente', label: 'El Ente' },
+  { id: 'luna-oscura', label: 'Luna oscura' },
+  { id: 'red-sangre', label: 'Red de Sangre' },
+  { id: 'calabazas', label: 'Calabazas inquietantes' },
+  { id: 'luces-camara', label: '¡Luces, cámara!' },
+  { id: 'onda-cosmica', label: '¡Onda cósmica!' },
+  { id: 'boveda', label: 'La bóveda' },
+  { id: 'claptrap', label: '¡Estoy bailando!' },
+  { id: 'saqueo', label: '¡Saqueo!' },
+  { id: 'luna-mistica', label: 'Luna mística' },
+  { id: 'estrella-nocturna', label: 'Estrella nocturna' },
+  { id: 'flores-lunares', label: 'Flores lunares' },
+  { id: 'trebol', label: 'Trébol de cuatro hojas' },
+  { id: 'jardin-secreto', label: 'Jardín secreto' },
+  { id: 'lirio', label: 'Estanque de nenúfares' },
+  { id: 'adorable', label: '¡Adorable!' },
+  { id: 'random-xd', label: '¡So random!' },
+  { id: 'scene-xd', label: 'Estética scene' },
   { id: 'gojo', label: 'Satoru Gojo' },
   { id: 'sukuna', label: 'Ryomen Sukuna' },
   { id: 'yuji', label: 'Yuji Itadori' },
@@ -79,7 +106,6 @@ const DECORATION_OPTIONS: { id: DecorationId; label: string }[] = [
   { id: 'llama', label: 'Llama infernal' },
   { id: 'cerbero', label: 'Cerbero' },
   { id: 'pesadilla', label: 'Hora de pesadilla' },
-  { id: 'espectro', label: 'Espectro' },
   { id: 'pato', label: 'el mismo pato' },
   { id: 'grabado', label: 'Grabado japonés' },
   { id: 'lobo', label: 'Lobo y Luna' },
@@ -92,12 +118,28 @@ const DECORATION_OPTIONS: { id: DecorationId; label: string }[] = [
   { id: 'plantas', label: 'Vibras lofi' },
   { id: 'croma', label: 'Onda cromática' },
   { id: 'gato', label: 'Gato cómodo' },
-  { id: 'almas', label: 'Almas atrapadas' },
-  { id: 'observador', label: 'Observador' },
 ];
 
 const PROFILE_EFFECT_OPTIONS: { id: ProfileEffectId; label: string; desc: string }[] = [
   { id: 'none', label: 'Ninguno', desc: 'Sin efecto animado' },
+  { id: 'observador', label: 'Observador', desc: 'Ojos que emergen desde la oscuridad' },
+  { id: 'almas', label: 'Almas atrapadas', desc: 'Manos espectrales sobre el perfil' },
+  { id: 'hombre-polilla', label: 'Hombre Polilla', desc: 'Alas sombrías y ojos luminosos' },
+  { id: 'flores-luna', label: 'Flores de luna', desc: 'Resplandor floral nocturno' },
+  { id: 'diablo-jersey', label: 'Diablo de Jersey', desc: 'Bruma oscura y silueta alada' },
+  { id: 'llorona', label: 'La Llorona', desc: 'Aparición espectral entre niebla' },
+  { id: 'jackalope', label: 'Jackalope', desc: 'Chispas místicas del bosque' },
+  { id: 'gancho', label: 'En el gancho', desc: 'Niebla y destellos de gancho DBD' },
+  { id: 'cuervos-luna', label: 'Cuervos bajo la luna', desc: 'Bandada bajo luna llena' },
+  { id: 'red-sangre', label: 'Red de Sangre', desc: 'Cristales y energía carmesí' },
+  { id: 'el-ente', label: 'El Ente · DBD', desc: 'Garras ígneas del Ente' },
+  { id: 'boveda', label: 'Más allá de la bóveda', desc: 'Portal eridio de Borderlands 4' },
+  { id: 'saqueo', label: 'Saqueo legendario', desc: 'Haces de botín dorado y violeta' },
+  { id: 'trebol', label: 'Lluvia de tréboles', desc: 'Brisa esmeralda de buena suerte' },
+  { id: 'jardin-secreto', label: 'Jardín secreto', desc: 'Luciérnagas y pétalos dorados' },
+  { id: 'luna-mistica', label: 'Eclipse místico', desc: 'Polvo estelar violeta celestial' },
+  { id: 'adorable', label: 'Explosión kawaii', desc: 'Corazones, estrellas y brillo neón' },
+  { id: 'scene-xd', label: 'Caos Rawr xD', desc: 'Destellos scene Y2K eléctricos' },
   { id: 'gojo', label: 'Satoru Gojo · Vacío Púrpura', desc: 'Energía infinita azul y púrpura' },
   { id: 'sukuna', label: 'Ryomen Sukuna · Santuario', desc: 'Cortes y llamas carmesí' },
   { id: 'yuji', label: 'Yuji Itadori · Destello Negro', desc: 'Relámpagos de energía maldita' },
@@ -116,7 +158,12 @@ const PROFILE_EFFECT_OPTIONS: { id: ProfileEffectId; label: string; desc: string
   { id: 'crimson', label: 'Aura Carmesí', desc: 'Resplandor rojo intenso GTA' },
 ];
 
-const PROFILE_FRAME_OPTIONS: { id: ProfileFrameId; label: string; borderClass: string }[] = [
+const PROFILE_FRAME_OPTIONS: {
+  id: ProfileFrameId;
+  label: string;
+  borderClass: string;
+  ornate?: boolean;
+}[] = [
   { id: 'none', label: 'Ninguno', borderClass: '' },
   {
     id: 'obsidian',
@@ -143,14 +190,70 @@ const PROFILE_FRAME_OPTIONS: { id: ProfileFrameId; label: string; borderClass: s
     label: 'Cyber Glitch',
     borderClass: 'ring-2 ring-[#5865F2]/85 shadow-[0_0_28px_rgba(88,101,242,0.35)]',
   },
+  {
+    id: 'espectro',
+    label: 'Espectro',
+    borderClass: 'ring-1 ring-zinc-200/35 shadow-[0_0_24px_rgba(255,255,255,0.12)]',
+    ornate: true,
+  },
+  {
+    id: 'observador',
+    label: 'Observador',
+    borderClass: 'ring-2 ring-white/30 shadow-[0_0_28px_rgba(0,0,0,0.85)]',
+    ornate: true,
+  },
+  {
+    id: 'ramas-desnudas',
+    label: 'Ramas desnudas',
+    borderClass: 'ring-1 ring-zinc-400/45 shadow-[0_0_20px_rgba(228,228,231,0.12)]',
+    ornate: true,
+  },
+  {
+    id: 'flores-luna',
+    label: 'Flores de luna',
+    borderClass: 'ring-2 ring-emerald-400/50 shadow-[0_0_24px_rgba(74,222,128,0.22)]',
+    ornate: true,
+  },
+  {
+    id: 'diablo-jersey',
+    label: 'Diablo de Jersey',
+    borderClass: 'ring-2 ring-slate-400/55 shadow-[0_0_24px_rgba(148,163,184,0.22)]',
+    ornate: true,
+  },
+  {
+    id: 'el-ente',
+    label: 'El Ente',
+    borderClass: 'ring-2 ring-orange-500/65 shadow-[0_0_26px_rgba(249,115,22,0.28)]',
+    ornate: true,
+  },
+  {
+    id: 'luna-oscura',
+    label: 'Luna oscura',
+    borderClass: 'ring-2 ring-slate-300/45 shadow-[0_0_24px_rgba(148,163,184,0.2)]',
+    ornate: true,
+  },
 ];
 
 const NAMEPLATE_OPTIONS: { id: NameplateId; label: string; gradient?: string }[] = [
   { id: 'none', label: 'Ninguno' },
+  { id: 'observador', label: 'Observador', gradient: 'from-zinc-400/25 to-black/70' },
+  { id: 'acechador', label: 'Acechador acuático', gradient: 'from-zinc-500/30 to-slate-950/85' },
+  { id: 'almas', label: 'Almas atrapadas', gradient: 'from-zinc-400/25 to-black/85' },
+  { id: 'polilla', label: 'Polilla fantasma', gradient: 'from-slate-500/35 to-zinc-950/85' },
+  { id: 'flores-luna', label: 'Flores de luna', gradient: 'from-emerald-500/30 to-lime-950/80' },
+  { id: 'diablo-jersey', label: 'Diablo de Jersey', gradient: 'from-slate-600/35 to-zinc-950/85' },
+  { id: 'fuegos-fatuos', label: 'Fuegos fatuos', gradient: 'from-teal-500/30 to-emerald-950/85' },
+  { id: 'jackalope', label: 'Jackalope', gradient: 'from-amber-500/30 to-stone-950/80' },
+  { id: 'marcas-aranazos', label: 'Marcas de arañazos', gradient: 'from-red-600/35 to-black/85' },
+  { id: 'luna-oscura', label: 'Luna oscura', gradient: 'from-slate-400/25 to-slate-950/90' },
+  { id: 'red-sangre', label: 'Red de Sangre', gradient: 'from-rose-700/40 to-black/85' },
+  { id: 'conejito-fresero', label: 'Conejito fresero', gradient: 'from-pink-500/35 to-rose-950/75' },
+  { id: 'el-mismo-pato', label: 'El mismo pato', gradient: 'from-cyan-500/35 to-sky-950/80' },
+  { id: 'marea-lluvia', label: 'Marea de lluvia', gradient: 'from-indigo-500/35 to-slate-950/80' },
+  { id: 'jardin-secreto', label: 'Jardín secreto', gradient: 'from-emerald-600/35 to-teal-950/80' },
   { id: 'rama', label: 'Rama en flor', gradient: 'from-rose-500/35 to-red-950/60' },
   { id: 'vader', label: 'Darth Vader', gradient: 'from-red-700/40 to-black/80' },
   { id: 'condenacion', label: 'Condenación eterna', gradient: 'from-cyan-500/35 to-slate-950/80' },
-  { id: 'almas', label: 'Almas atrapadas', gradient: 'from-zinc-400/25 to-black/85' },
   { id: 'cerbero', label: 'Cerbero', gradient: 'from-fuchsia-600/35 to-amber-900/50' },
   { id: 'gojo', label: 'Satoru Gojo', gradient: 'from-sky-500/35 to-indigo-950/70' },
   { id: 'sukuna', label: 'Ryomen Sukuna', gradient: 'from-orange-600/35 to-red-950/75' },
@@ -162,7 +265,6 @@ const NAMEPLATE_OPTIONS: { id: NameplateId; label: string; gradient?: string }[]
   { id: 'deadpool', label: 'Deadpool', gradient: 'from-red-600/35 to-zinc-900/60' },
   { id: 'wolverine', label: 'Wolverine', gradient: 'from-yellow-500/30 to-zinc-900/60' },
   { id: 'dbd', label: 'Dead by Daylight', gradient: 'from-orange-700/35 to-black/70' },
-  { id: 'observador', label: 'Observador', gradient: 'from-zinc-400/25 to-black/70' },
 ];
 
 const AVATAR_PRESETS: { id: AvatarKey; label: string }[] = [
@@ -303,6 +405,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     ownedCosmetics.effects.has(id) ||
     (nitroEffectsUnlocked && (id === 'sparks' || id === 'cyber' || id === 'crimson'));
   const isNameplateOwned = (id: NameplateId) => ownedCosmetics.nameplates.has(id);
+  const isFrameOwned = (id: ProfileFrameId) => ownedCosmetics.frames.has(id);
 
   const ownedBanners = shopBundles.flatMap((bundle) => {
     if (!ownedBundleIds.includes(bundle.id)) return [];
@@ -434,7 +537,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   return (
     <div className="flex-1 flex flex-col h-full bg-[var(--dc-bg-chat)] text-[var(--dc-text-primary)] relative overflow-hidden">
       <div className="flex-1 overflow-y-auto pb-28">
-        <div className={`relative ${activeFrameClass}`}>
+        <div
+          className={`relative ${
+            PROFILE_FRAME_OPTIONS.find((f) => f.id === (user.profileFrame || 'none'))?.ornate
+              ? 'mx-2.5 mt-5 rounded-2xl overflow-visible'
+              : ''
+          } ${activeFrameClass}`}
+        >
+          <ProfileFrameArtwork frame={user.profileFrame} />
           {/* Full-Profile Entrance Effect (plays when opening profile and fades out) */}
           <ProfileEffectAnimationOverlay
             effect={activeProfileEffect}
@@ -820,11 +930,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         const deco = bundle.items.find((i) => i.decorationId)?.decorationId;
                         const plate = bundle.items.find((i) => i.nameplateId)?.nameplateId;
                         const effect = bundle.items.find((i) => i.profileEffectId)?.profileEffectId;
+                        const frame = bundle.items.find((i) => i.profileFrameId)?.profileFrameId;
                         const banner = bundle.items.find((i) => i.bannerUrl)?.bannerUrl;
                         const isEquipped =
                           (deco && user.decoration === deco) ||
                           (plate && user.nameplate === plate) ||
                           (effect && user.profileEffect === effect) ||
+                          (frame && user.profileFrame === frame) ||
                           (banner && user.bannerImage === banner);
 
                         return (
@@ -837,13 +949,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                             }`}
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <UserAvatar
-                                avatar={user.avatar}
-                                customAvatarUrl={user.customAvatarUrl}
-                                decoration={deco || 'none'}
-                                size="sm"
-                                showStatus={false}
-                              />
+                              {!deco && frame ? (
+                                <div className="relative w-8 h-8 rounded-lg bg-[#1a1c24] border border-white/15 shrink-0 flex items-center justify-center overflow-visible">
+                                  <ProfileFrameArtwork frame={frame} />
+                                </div>
+                              ) : (
+                                <UserAvatar
+                                  avatar={user.avatar}
+                                  customAvatarUrl={user.customAvatarUrl}
+                                  decoration={deco || 'none'}
+                                  size="sm"
+                                  showStatus={false}
+                                />
+                              )}
                               <div className="min-w-0">
                                 <p className="text-xs font-bold text-[var(--dc-text-primary)] truncate">
                                   {bundle.title}
@@ -861,6 +979,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                                     ...(deco && user.decoration === deco ? { decoration: 'none' } : {}),
                                     ...(plate && user.nameplate === plate ? { nameplate: 'none' } : {}),
                                     ...(effect && user.profileEffect === effect ? { profileEffect: 'none' } : {}),
+                                    ...(frame && user.profileFrame === frame ? { profileFrame: 'none' } : {}),
                                     ...(banner && user.bannerImage === banner ? { bannerImage: undefined } : {}),
                                   });
                                 } else {
@@ -868,6 +987,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                                     ...(deco ? { decoration: deco } : {}),
                                     ...(plate ? { nameplate: plate } : {}),
                                     ...(effect ? { profileEffect: effect } : {}),
+                                    ...(frame ? { profileFrame: frame } : {}),
                                     ...(banner ? { bannerImage: banner } : {}),
                                   });
                                 }
@@ -1207,7 +1327,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           <div className="flex-1 overflow-y-auto pb-32">
             {editorTab === 'principal' ? (
               <div className="max-w-xl mx-auto">
-                <div className={`relative transition-all ${draftFrameClass}`}>
+                <div
+                  className={`relative transition-all ${
+                    PROFILE_FRAME_OPTIONS.find(
+                      (f) => f.id === (nitroPreviewActive ? 'neon-blue' : draftFrame)
+                    )?.ornate
+                      ? 'mx-2.5 mt-5 rounded-2xl overflow-visible'
+                      : ''
+                  } ${draftFrameClass}`}
+                >
+                  <ProfileFrameArtwork
+                    frame={nitroPreviewActive ? 'neon-blue' : draftFrame}
+                  />
                   <ProfileEffectAnimationOverlay
                     effect={nitroPreviewActive ? 'sparks' : draftEffect}
                     playKey={editorEffectPlayKey}
@@ -2174,30 +2305,66 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-3"
+                className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-3 max-h-[82vh] overflow-y-auto"
               >
                 <div className="w-10 h-1 bg-white/25 rounded-full mx-auto" />
                 <h3 className="font-display font-bold text-lg text-white text-center">
                   Marco de perfil
                 </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {PROFILE_FRAME_OPTIONS.map((fr) => (
-                    <button
-                      key={fr.id}
-                      type="button"
-                      onClick={() => {
-                        setDraftFrame(fr.id);
-                        setActivePickerSheet(null);
-                      }}
-                      className={`p-3.5 rounded-2xl border text-left cursor-pointer ${
-                        draftFrame === fr.id
-                          ? 'bg-[#5865F2]/20 border-[#5865F2]'
-                          : 'bg-[#14151b] border-white/10'
-                      } ${fr.borderClass}`}
-                    >
-                      <p className="text-sm font-bold text-white">{fr.label}</p>
-                    </button>
-                  ))}
+                <p className="text-xs text-zinc-400 text-center">
+                  Los marcos coleccionables se desbloquean comprándolos en la Tienda.
+                </p>
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  {PROFILE_FRAME_OPTIONS.map((fr) => {
+                    const unlocked = isFrameOwned(fr.id);
+                    const shopMatch = findBundleForCosmetic({ profileFrameId: fr.id }, shopBundles);
+                    return (
+                      <button
+                        key={fr.id}
+                        type="button"
+                        onClick={() => {
+                          if (unlocked) {
+                            setDraftFrame(fr.id);
+                            setActivePickerSheet(null);
+                          } else if (shopMatch) {
+                            setActivePickerSheet(null);
+                            setShowEditProfile(false);
+                            onOpenBundle(shopMatch);
+                          } else {
+                            setActivePickerSheet(null);
+                            setShowEditProfile(false);
+                            onNavigate('tienda');
+                          }
+                        }}
+                        className={`relative p-3.5 rounded-2xl border text-left cursor-pointer flex flex-col gap-2.5 transition-all ${
+                          draftFrame === fr.id
+                            ? 'bg-[#5865F2]/20 border-[#5865F2]'
+                            : unlocked
+                            ? 'bg-[#14151b] border-white/10'
+                            : 'bg-[#0b0c10] border-white/5 opacity-80 hover:opacity-100'
+                        } ${fr.borderClass}`}
+                      >
+                        {!unlocked && (
+                          <span className="absolute top-2 right-2 z-30 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/80 border border-white/15 text-[10px] font-bold text-amber-300 tabular-nums">
+                            <Lock className="w-2.5 h-2.5" />
+                            <span>{shopMatch ? `◈ ${shopMatch.priceOrbs}` : 'Tienda'}</span>
+                          </span>
+                        )}
+                        {fr.ornate && (
+                          <div className="relative h-14 w-full rounded-xl bg-[#181920] border border-white/10 mt-2 overflow-visible flex items-center justify-center">
+                            <ProfileFrameArtwork frame={fr.id} />
+                            <div className="w-7 h-7 rounded-full bg-white/10 border border-white/10" />
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between gap-1.5">
+                          <p className="text-sm font-bold text-white truncate">{fr.label}</p>
+                          {draftFrame === fr.id && (
+                            <Check className="w-4 h-4 text-[#7b85ff] shrink-0" />
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

@@ -3,6 +3,7 @@ import {
   DecorationId,
   NameplateId,
   ProfileEffectId,
+  ProfileFrameId,
   ShopBundle,
   UserProfile,
 } from '../types/discord';
@@ -10,9 +11,19 @@ import {
 export interface OwnedCosmetics {
   decorations: Set<DecorationId>;
   effects: Set<ProfileEffectId>;
+  frames: Set<ProfileFrameId>;
   nameplates: Set<NameplateId>;
   banners: Set<string>;
 }
+
+const BASIC_FREE_FRAMES: ProfileFrameId[] = [
+  'none',
+  'obsidian',
+  'crimson',
+  'neon-blue',
+  'gold',
+  'glitch',
+];
 
 export function getOwnedCosmetics(
   ownedBundleIds: string[],
@@ -20,6 +31,7 @@ export function getOwnedCosmetics(
 ): OwnedCosmetics {
   const decorations = new Set<DecorationId>(['none']);
   const effects = new Set<ProfileEffectId>(['none']);
+  const frames = new Set<ProfileFrameId>(BASIC_FREE_FRAMES);
   const nameplates = new Set<NameplateId>(['none']);
   const banners = new Set<string>();
 
@@ -28,6 +40,7 @@ export function getOwnedCosmetics(
     for (const item of bundle.items) {
       if (item.decorationId) decorations.add(item.decorationId);
       if (item.profileEffectId) effects.add(item.profileEffectId);
+      if (item.profileFrameId) frames.add(item.profileFrameId);
       if (item.nameplateId) nameplates.add(item.nameplateId);
       if (item.bannerUrl) banners.add(item.bannerUrl);
     }
@@ -44,13 +57,14 @@ export function getOwnedCosmetics(
     }
   }
 
-  return { decorations, effects, nameplates, banners };
+  return { decorations, effects, frames, nameplates, banners };
 }
 
 export function findBundleForCosmetic(
   params: {
     decorationId?: DecorationId;
     profileEffectId?: ProfileEffectId;
+    profileFrameId?: ProfileFrameId;
     nameplateId?: NameplateId;
     bannerUrl?: string;
   },
@@ -61,6 +75,7 @@ export function findBundleForCosmetic(
       (item) =>
         (params.decorationId && item.decorationId === params.decorationId) ||
         (params.profileEffectId && item.profileEffectId === params.profileEffectId) ||
+        (params.profileFrameId && item.profileFrameId === params.profileFrameId) ||
         (params.nameplateId && item.nameplateId === params.nameplateId) ||
         (params.bannerUrl && item.bannerUrl === params.bannerUrl)
     )
@@ -91,6 +106,9 @@ export function sanitizeUserShopCosmetics(
       ? currentEffect
       : 'none';
 
+  const currentFrame = user.profileFrame || 'none';
+  const safeFrame: ProfileFrameId = owned.frames.has(currentFrame) ? currentFrame : 'none';
+
   const safeNameplate: NameplateId = owned.nameplates.has(user.nameplate)
     ? user.nameplate
     : 'none';
@@ -105,6 +123,7 @@ export function sanitizeUserShopCosmetics(
     ...user,
     decoration: safeDecoration,
     profileEffect: safeEffect,
+    profileFrame: safeFrame,
     nameplate: safeNameplate,
     bannerImage: safeBannerImage,
   };
