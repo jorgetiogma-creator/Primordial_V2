@@ -1475,6 +1475,83 @@ export const AvatarDecorationRing: React.FC<{
     );
   }
 
+  /* 35. Exclusivo de Nitro (nitro-disco, nitro-auris, nitro-chip) */
+  if (decoration === 'nitro-disco') {
+    return (
+      <div className="absolute -inset-[18%] w-[136%] h-[136%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-spin-slow">
+          <defs>
+            <linearGradient id="nitro-disco-g" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#a3e635" />
+              <stop offset="50%" stopColor="#f4f4f5" />
+              <stop offset="100%" stopColor="#65a30d" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M22 36 A46 46 0 1 1 88 96 L80 86 A36 36 0 1 0 32 44 Z"
+            fill="url(#nitro-disco-g)"
+            stroke="#18181b"
+            strokeWidth="1.8"
+          />
+          <polygon points="94,22 97,28 103,31 97,34 94,40 91,34 85,31 91,28" fill="#bef264" />
+          <polygon points="22,88 24,93 29,95 24,97 22,102 20,97 15,95 20,93" fill="#a3e635" />
+        </svg>
+      </div>
+    );
+  }
+
+  if (decoration === 'nitro-auris') {
+    return (
+      <div className="absolute -inset-[20%] w-[140%] h-[140%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible anim-float">
+          <path
+            d="M20 62 C20 26 100 26 100 62"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="6.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M24 60 C24 30 96 30 96 60"
+            fill="none"
+            stroke="#38bdf8"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+          <rect x="10" y="52" width="15" height="28" rx="6" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+          <rect x="95" y="52" width="15" height="28" rx="6" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+          <circle cx="17.5" cy="66" r="3" fill="#818cf8" />
+          <circle cx="102.5" cy="66" r="3" fill="#818cf8" />
+        </svg>
+      </div>
+    );
+  }
+
+  if (decoration === 'nitro-chip') {
+    return (
+      <div className="absolute -inset-[20%] w-[140%] h-[140%] pointer-events-none z-10">
+        <svg viewBox="0 0 120 120" className="w-full h-full overflow-visible">
+          <defs>
+            <linearGradient id="nitro-chip-g" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#f472b6" />
+              <stop offset="100%" stopColor="#22d3ee" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M16 28 L34 14 L88 14 L104 28 L104 92 L88 106 L34 106 L16 92 Z"
+            fill="none"
+            stroke="url(#nitro-chip-g)"
+            strokeWidth="3.5"
+            strokeLinejoin="round"
+          />
+          <path d="M26 24 H52 M68 96 H94" stroke="#f472b6" strokeWidth="2.5" strokeLinecap="round" />
+          <circle cx="92" cy="24" r="3" fill="#22d3ee" />
+          <circle cx="28" cy="96" r="3" fill="#f472b6" />
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <svg viewBox="0 0 120 120" className="absolute -inset-[12%] w-[124%] h-[124%] pointer-events-none z-10">
       <circle cx="60" cy="60" r="52" fill="none" stroke="#a855f7" strokeWidth="4" />

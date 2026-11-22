@@ -25,6 +25,7 @@ import {
   AvatarKey,
   BadgeId,
   DecorationId,
+  DisplayNameColorPreset,
   DisplayNameStyle,
   MainScreen,
   NameplateId,
@@ -39,18 +40,33 @@ import { BADGE_DEFINITIONS } from '../data/discordData';
 import { BadgeArtwork, isBadgeUnlocked } from './BadgesView';
 import { BoostGemIcon } from './ServerBoostView';
 import {
+  AvatarDecorationRing,
   DiscordLogo,
+  getNameplateArtworkUrl,
   LaurelQuestIcon,
+  NameplateRowDecor,
   NameplateStripBackground,
   NitroWheelIcon,
   OrbsCrystalIcon,
+  PROFILE_EFFECT_META,
   ProfileEffectAnimationOverlay,
   ProfileFrameArtwork,
   ServerIconArt,
   StatusIndicator,
   UserAvatar,
 } from './DiscordArt';
-import { findBundleForCosmetic, getOwnedCosmetics } from '../utils/shopOwnership';
+import {
+  findBundleForCosmetic,
+  getOwnedCosmetics,
+  NITRO_EXCLUSIVE_DECORATIONS,
+  NITRO_EXCLUSIVE_EFFECTS,
+} from '../utils/shopOwnership';
+import {
+  DISPLAY_NAME_COLOR_OPTIONS,
+  DISPLAY_NAME_FONT_OPTIONS,
+  getDisplayNameStyleClass,
+  getDisplayNameTextPresentation,
+} from '../utils/displayNameStyle';
 
 interface ProfileViewProps {
   user: UserProfile;
@@ -118,6 +134,9 @@ const DECORATION_OPTIONS: { id: DecorationId; label: string }[] = [
   { id: 'plantas', label: 'Vibras lofi' },
   { id: 'croma', label: 'Onda cromática' },
   { id: 'gato', label: 'Gato cómodo' },
+  { id: 'nitro-disco', label: 'Fragmento Tóxico' },
+  { id: 'nitro-auris', label: 'Auriculares Neón' },
+  { id: 'nitro-chip', label: 'Placa Cyber' },
 ];
 
 const PROFILE_EFFECT_OPTIONS: { id: ProfileEffectId; label: string; desc: string }[] = [
@@ -276,19 +295,6 @@ const AVATAR_PRESETS: { id: AvatarKey; label: string }[] = [
   { id: 'coffee', label: 'Café' },
 ];
 
-function getDisplayNameStyleClass(style?: DisplayNameStyle): string {
-  switch (style) {
-    case 'gta':
-      return 'font-gta';
-    case 'neon':
-      return 'font-neon text-sky-300';
-    case 'retro':
-      return 'font-retro';
-    default:
-      return 'font-display font-extrabold';
-  }
-}
-
 const ProfileEffectOverlay: React.FC<{ effect?: ProfileEffectId }> = ({ effect }) => {
   if (!effect || effect === 'none') return null;
   if (effect === 'miyabi') {
@@ -375,6 +381,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [draftNameStyle, setDraftNameStyle] = useState<DisplayNameStyle>(
     user.displayNameStyle || 'gta'
   );
+  const [draftNameColorPreset, setDraftNameColorPreset] = useState<DisplayNameColorPreset>(
+    user.displayNameColorPreset || 'none'
+  );
+  const [draftNameCustomColors, setDraftNameCustomColors] = useState<[string, string]>(
+    user.displayNameCustomColors || ['#ef233c', '#06b6d4']
+  );
+  const [draftNameGlow, setDraftNameGlow] = useState<boolean>(user.displayNameGlow ?? true);
   const [draftPronouns, setDraftPronouns] = useState(user.pronouns || '');
   const [draftBio, setDraftBio] = useState(user.bio);
   const [draftBanner, setDraftBanner] = useState(user.bannerColor);
@@ -400,10 +413,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const nitroEffectsUnlocked = user.nitroTier !== 'none';
   const ownedBundles = shopBundles.filter((b) => ownedBundleIds.includes(b.id));
 
-  const isDecoOwned = (id: DecorationId) => ownedCosmetics.decorations.has(id);
+  const isDecoOwned = (id: DecorationId) =>
+    ownedCosmetics.decorations.has(id) ||
+    (nitroEffectsUnlocked && NITRO_EXCLUSIVE_DECORATIONS.includes(id));
   const isEffectOwned = (id: ProfileEffectId) =>
     ownedCosmetics.effects.has(id) ||
-    (nitroEffectsUnlocked && (id === 'sparks' || id === 'cyber' || id === 'crimson'));
+    (nitroEffectsUnlocked && NITRO_EXCLUSIVE_EFFECTS.includes(id));
   const isNameplateOwned = (id: NameplateId) => ownedCosmetics.nameplates.has(id);
   const isFrameOwned = (id: ProfileFrameId) => ownedCosmetics.frames.has(id);
 
@@ -424,6 +439,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const syncDraftFromUser = () => {
     setDraftName(user.displayName);
     setDraftNameStyle(user.displayNameStyle || 'gta');
+    setDraftNameColorPreset(user.displayNameColorPreset || 'none');
+    setDraftNameCustomColors(user.displayNameCustomColors || ['#ef233c', '#06b6d4']);
+    setDraftNameGlow(user.displayNameGlow ?? true);
     setDraftPronouns(user.pronouns || '');
     setDraftBio(user.bio);
     setDraftBanner(user.bannerColor);
@@ -464,6 +482,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     onUpdateUser({
       displayName: draftName.trim() || user.displayName,
       displayNameStyle: draftNameStyle,
+      displayNameColorPreset: nitroEffectsUnlocked ? draftNameColorPreset : 'none',
+      displayNameCustomColors: draftNameCustomColors,
+      displayNameGlow: draftNameGlow,
       pronouns: draftPronouns.trim(),
       bio: draftBio.slice(0, 300),
       bannerColor: draftBanner,
@@ -640,15 +661,26 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
             {/* Display Name & Username & Badges & Server Tag */}
             <div className="relative">
-              <button
-                onClick={() => setShowStatusSheet(true)}
-                className={`inline-flex items-center gap-1.5 text-[24px] text-[var(--dc-text-primary)] tracking-tight hover:opacity-90 cursor-pointer ${getDisplayNameStyleClass(
-                  user.displayNameStyle
-                )}`}
-              >
-                <span>{user.displayName}</span>
-                <ChevronDown className="w-5 h-5 text-[var(--dc-text-secondary)]" />
-              </button>
+              {(() => {
+                const namePres = getDisplayNameTextPresentation({
+                  style: user.displayNameStyle,
+                  colorPreset: user.displayNameColorPreset,
+                  customColors: user.displayNameCustomColors,
+                  glow: user.displayNameGlow,
+                  nitroUnlocked: nitroEffectsUnlocked,
+                });
+                return (
+                  <button
+                    onClick={() => setShowStatusSheet(true)}
+                    className="inline-flex items-center gap-1.5 text-[24px] text-[var(--dc-text-primary)] tracking-tight hover:opacity-90 cursor-pointer"
+                  >
+                    <span className={namePres.className} style={namePres.style}>
+                      {user.displayName}
+                    </span>
+                    <ChevronDown className="w-5 h-5 text-[var(--dc-text-secondary)]" />
+                  </button>
+                );
+              })()}
 
               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                 <span className="text-[14px] text-[var(--dc-text-secondary)]">{user.username}</span>
@@ -1412,13 +1444,24 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
                     {/* Live Preview Name + Username + Badges + Server Tag */}
                     <div className="mt-1 mb-4">
-                      <h3
-                        className={`text-[24px] text-white leading-tight ${getDisplayNameStyleClass(
-                          draftNameStyle
-                        )}`}
-                      >
-                        {draftName || user.displayName}
-                      </h3>
+                      {(() => {
+                        const effectivePreset: DisplayNameColorPreset =
+                          nitroPreviewActive && draftNameColorPreset === 'none'
+                            ? 'crimson-cyan'
+                            : draftNameColorPreset;
+                        const draftPres = getDisplayNameTextPresentation({
+                          style: draftNameStyle,
+                          colorPreset: effectivePreset,
+                          customColors: draftNameCustomColors,
+                          glow: draftNameGlow,
+                          nitroUnlocked: nitroEffectsUnlocked || nitroPreviewActive,
+                        });
+                        return (
+                          <h3 className={`text-[24px] text-white leading-tight ${draftPres.className}`} style={draftPres.style}>
+                            {draftName || user.displayName}
+                          </h3>
+                        );
+                      })()}
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className="text-[14px] text-zinc-300">{user.username}</span>
                         {draftPronouns && (
@@ -1474,59 +1517,64 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Estilos de nombre de visualización */}
+                  {/* Estilos de nombre de visualización + Color Nitro con brillo */}
                   <div>
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
                       <span className="text-[13.5px] font-semibold text-zinc-300">
-                        Estilos de nombre de visualización
+                        Estilos y color de nombre
                       </span>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1e2028] border border-white/10 text-[10.5px] font-bold text-zinc-200 tabular-nums">
-                        <Clock className="w-3 h-3 text-white" />
-                        <span>QUEDA(N) 22 D</span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-fuchsia-500/15 border border-fuchsia-400/30 text-[10.5px] font-bold text-fuchsia-300">
+                        <NitroWheelIcon className="w-3 h-3" />
+                        <span>{nitroEffectsUnlocked ? 'Color + brillo Nitro activo' : 'Exclusivo de Nitro'}</span>
                       </span>
                     </div>
 
                     <div className="rounded-2xl bg-[#090a0d] border border-white/10 overflow-hidden">
                       <div className="px-4 py-4 flex items-center justify-between gap-3">
-                        <span
-                          className={`text-[28px] text-white leading-none truncate ${getDisplayNameStyleClass(
-                            draftNameStyle === 'default' ? 'gta' : draftNameStyle
-                          )}`}
-                        >
-                          {(draftName || user.displayName).toLowerCase()}
-                        </span>
+                        {(() => {
+                          const previewPreset: DisplayNameColorPreset =
+                            nitroPreviewActive && draftNameColorPreset === 'none'
+                              ? 'crimson-cyan'
+                              : draftNameColorPreset;
+                          const pres = getDisplayNameTextPresentation({
+                            style: draftNameStyle === 'default' && !nitroEffectsUnlocked ? 'gta' : draftNameStyle,
+                            colorPreset: previewPreset,
+                            customColors: draftNameCustomColors,
+                            glow: draftNameGlow,
+                            nitroUnlocked: nitroEffectsUnlocked || nitroPreviewActive,
+                          });
+                          return (
+                            <span
+                              className={`text-[28px] leading-none truncate ${pres.className}`}
+                              style={pres.style}
+                            >
+                              {draftName || user.displayName}
+                            </span>
+                          );
+                        })()}
 
                         <button
                           type="button"
-                          role="switch"
-                          aria-checked={draftNameStyle !== 'default'}
-                          onClick={() =>
-                            setDraftNameStyle((prev) => (prev === 'default' ? 'gta' : 'default'))
-                          }
-                          className={`w-12 h-7 rounded-full p-0.5 transition-colors flex items-center cursor-pointer shrink-0 ${
-                            draftNameStyle !== 'default' ? 'bg-[#5865F2]' : 'bg-zinc-700'
-                          }`}
+                          onClick={() => setActivePickerSheet('name-style-info')}
+                          className="px-3.5 py-2 rounded-full dc-btn-primary text-xs font-bold shrink-0 cursor-pointer flex items-center gap-1.5"
                         >
-                          <span
-                            className={`w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                              draftNameStyle !== 'default' ? 'translate-x-5' : 'translate-x-0'
-                            }`}
-                          />
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Personalizar</span>
                         </button>
                       </div>
 
-                      <div className="px-4 py-2.5 bg-gradient-to-r from-[#23192d]/60 via-[#1a1c29]/80 to-[#2b211a]/60 border-t border-white/[0.06] text-[12px] text-zinc-200 flex items-center justify-between gap-2">
-                        <span>
-                          Prueba la fuente de Grand Theft Auto.{' '}
-                          <button
-                            type="button"
-                            onClick={() => setActivePickerSheet('name-style-info')}
-                            className="underline text-white font-semibold cursor-pointer"
-                          >
-                            Más información
-                          </button>
+                      <button
+                        type="button"
+                        onClick={() => setActivePickerSheet('name-style-info')}
+                        className="w-full px-4 py-2.5 bg-gradient-to-r from-[#23192d]/70 via-[#1a1c29]/80 to-[#11242b]/70 border-t border-white/[0.06] text-[12px] text-zinc-200 flex items-center justify-between gap-2 cursor-pointer hover:brightness-110"
+                      >
+                        <span className="text-left">
+                          {nitroEffectsUnlocked
+                            ? 'Elige fuente, degradado especial y brillo para tu nombre.'
+                            : 'Desbloquea Nitro para poner color especial con brillo en tu nombre.'}
                         </span>
-                      </div>
+                        <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />
+                      </button>
                     </div>
                   </div>
 
@@ -2122,321 +2170,1130 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-3"
+                className="w-full max-w-md bg-[#111216] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-4 max-h-[88vh] overflow-y-auto shadow-2xl"
               >
                 <div className="w-10 h-1 bg-white/25 rounded-full mx-auto" />
                 <h3 className="font-display font-bold text-lg text-white text-center">
-                  Estilos de nombre de visualización
+                  Estilo y color de nombre
                 </h3>
+
+                {/* Live Styled Name Preview */}
+                <div className="rounded-2xl bg-[#1a1b22] border border-white/10 px-4 py-5 flex flex-col items-center justify-center gap-2">
+                  {(() => {
+                    const previewPres = getDisplayNameTextPresentation({
+                      style: draftNameStyle,
+                      colorPreset: draftNameColorPreset,
+                      customColors: draftNameCustomColors,
+                      glow: draftNameGlow,
+                      nitroUnlocked: true,
+                    });
+                    return (
+                      <span
+                        className={`text-3xl leading-tight text-center break-all ${previewPres.className}`}
+                        style={previewPres.style}
+                      >
+                        {draftName || user.displayName}
+                      </span>
+                    );
+                  })()}
+                  {!nitroEffectsUnlocked && draftNameColorPreset !== 'none' && (
+                    <span className="text-[11px] font-semibold text-fuchsia-300 inline-flex items-center gap-1">
+                      <NitroWheelIcon className="w-3.5 h-3.5" />
+                      Vista previa · Desbloquea Nitro para equipar este brillo
+                    </span>
+                  )}
+                </div>
+
+                {/* Tipografía */}
                 <div className="space-y-2">
-                  {(
-                    [
-                      { id: 'gta', label: 'Grand Theft Auto', sample: 'zinepth' },
-                      { id: 'default', label: 'Predeterminado Discord', sample: 'zinepth' },
-                      { id: 'neon', label: 'Neón Cibernético', sample: 'zinepth' },
-                      { id: 'retro', label: 'Retro Arcade', sample: 'zinepth' },
-                    ] as { id: DisplayNameStyle; label: string; sample: string }[]
-                  ).map((opt) => (
+                  <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                    Fuente del nombre
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {DISPLAY_NAME_FONT_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setDraftNameStyle(opt.id)}
+                        className={`px-3 py-2.5 rounded-2xl border flex flex-col items-start gap-1 cursor-pointer transition-all ${
+                          draftNameStyle === opt.id
+                            ? 'bg-[#5865F2]/20 border-[#5865F2]'
+                            : 'bg-[#1a1b22] border-white/10 hover:border-white/20'
+                        }`}
+                      >
+                        <span className={`text-lg text-white leading-none ${getDisplayNameStyleClass(opt.id)}`}>
+                          {draftName || user.displayName}
+                        </span>
+                        <span className="text-[11px] text-zinc-400">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Color especial con brillo (Nitro) */}
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                      <NitroWheelIcon className="w-3.5 h-3.5 text-fuchsia-400" />
+                      <span>Color con brillo (Nitro)</span>
+                    </p>
+                    {draftNameColorPreset !== 'none' && (
+                      <button
+                        type="button"
+                        onClick={() => setDraftNameGlow((g) => !g)}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold border cursor-pointer transition-colors ${
+                          draftNameGlow
+                            ? 'bg-fuchsia-500/20 border-fuchsia-400/50 text-fuchsia-200'
+                            : 'bg-[#1a1b22] border-white/10 text-zinc-400'
+                        }`}
+                      >
+                        {draftNameGlow ? '✨ Brillo ON' : 'Brillo OFF'}
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {DISPLAY_NAME_COLOR_OPTIONS.map((preset) => {
+                      const locked = preset.nitroOnly && !nitroEffectsUnlocked;
+                      const selected = draftNameColorPreset === preset.id;
+                      const swatchPres = getDisplayNameTextPresentation({
+                        style: draftNameStyle,
+                        colorPreset: preset.id,
+                        glow: draftNameGlow,
+                        nitroUnlocked: true,
+                      });
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => {
+                            if (!locked) {
+                              setDraftNameColorPreset(preset.id);
+                            } else {
+                              setNitroPreviewActive(true);
+                              setDraftNameColorPreset(preset.id);
+                            }
+                          }}
+                          className={`relative px-3 py-2.5 rounded-2xl border flex flex-col items-start gap-1 cursor-pointer transition-all ${
+                            selected
+                              ? 'bg-[#5865F2]/20 border-[#5865F2]'
+                              : 'bg-[#1a1b22] border-white/10 hover:border-white/20'
+                          }`}
+                        >
+                          {locked && (
+                            <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#111216] border border-white/15 flex items-center justify-center">
+                              <NitroWheelIcon className="w-3 h-3 text-fuchsia-400" />
+                            </span>
+                          )}
+                          <span
+                            className={`text-base leading-tight truncate max-w-[85%] ${swatchPres.className}`}
+                            style={swatchPres.style}
+                          >
+                            {draftName || user.displayName}
+                          </span>
+                          <span className="text-[11px] text-zinc-400">{preset.label}</span>
+                        </button>
+                      );
+                    })}
+
+                    {/* Personalizado 2-color Nitro button */}
                     <button
-                      key={opt.id}
                       type="button"
                       onClick={() => {
-                        setDraftNameStyle(opt.id);
-                        setActivePickerSheet(null);
+                        if (!nitroEffectsUnlocked) setNitroPreviewActive(true);
+                        setDraftNameColorPreset('custom');
                       }}
-                      className={`w-full px-4 py-3 rounded-2xl border flex items-center justify-between cursor-pointer ${
-                        draftNameStyle === opt.id
-                          ? 'bg-[#5865F2]/15 border-[#5865F2]'
-                          : 'bg-[#14151b] border-white/10'
+                      className={`relative px-3 py-2.5 rounded-2xl border flex flex-col items-start gap-1 cursor-pointer transition-all ${
+                        draftNameColorPreset === 'custom'
+                          ? 'bg-[#5865F2]/20 border-[#5865F2]'
+                          : 'bg-[#1a1b22] border-white/10 hover:border-white/20'
                       }`}
                     >
-                      <span className="text-sm font-semibold text-white">{opt.label}</span>
-                      <span className={`text-xl text-white ${getDisplayNameStyleClass(opt.id)}`}>
-                        {opt.sample}
+                      {!nitroEffectsUnlocked && (
+                        <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#111216] border border-white/15 flex items-center justify-center">
+                          <NitroWheelIcon className="w-3 h-3 text-fuchsia-400" />
+                        </span>
+                      )}
+                      <span
+                        className="w-16 h-4 rounded-full border border-white/20"
+                        style={{
+                          backgroundImage: `linear-gradient(90deg, ${draftNameCustomColors[0]}, ${draftNameCustomColors[1]})`,
+                        }}
+                      />
+                      <span className="text-[11px] text-zinc-300 font-semibold">
+                        Personalizado
                       </span>
                     </button>
-                  ))}
+                  </div>
+
+                  {draftNameColorPreset === 'custom' && (
+                    <div className="rounded-2xl bg-[#1a1b22] border border-white/10 p-3 flex items-center justify-between gap-3">
+                      <label className="flex items-center gap-2 text-xs text-zinc-300 cursor-pointer">
+                        <input
+                          type="color"
+                          value={draftNameCustomColors[0]}
+                          onChange={(e) =>
+                            setDraftNameCustomColors([e.target.value, draftNameCustomColors[1]])
+                          }
+                          className="w-8 h-8 rounded-lg bg-transparent border-0 cursor-pointer"
+                        />
+                        <span>Inicio</span>
+                      </label>
+                      <label className="flex items-center gap-2 text-xs text-zinc-300 cursor-pointer">
+                        <input
+                          type="color"
+                          value={draftNameCustomColors[1]}
+                          onChange={(e) =>
+                            setDraftNameCustomColors([draftNameCustomColors[0], e.target.value])
+                          }
+                          className="w-8 h-8 rounded-lg bg-transparent border-0 cursor-pointer"
+                        />
+                        <span>Final</span>
+                      </label>
+                    </div>
+                  )}
+
+                  {!nitroEffectsUnlocked && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActivePickerSheet(null);
+                        setShowEditProfile(false);
+                        onNavigate('nitro');
+                      }}
+                      className="w-full h-11 rounded-full bg-gradient-to-r from-[#8b3dff] to-[#b845c9] text-white text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+                    >
+                      <NitroWheelIcon className="w-4 h-4" />
+                      <span>Obtener Nitro para guardar el brillo</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setActivePickerSheet(null)}
+                    className="w-full h-10 rounded-full dc-btn-primary text-sm font-bold cursor-pointer"
+                  >
+                    Listo
+                  </button>
                 </div>
               </div>
             </div>
           )}
 
-          {activePickerSheet === 'decoration' && (
-            <div
-              onClick={() => setActivePickerSheet(null)}
-              className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-xs flex items-end md:items-center justify-center"
-            >
+          {activePickerSheet === 'decoration' && (() => {
+            const ownedDecoOptions = DECORATION_OPTIONS.filter(
+              (d) =>
+                d.id !== 'none' &&
+                !NITRO_EXCLUSIVE_DECORATIONS.includes(d.id) &&
+                ownedCosmetics.decorations.has(d.id)
+            );
+            const nitroDecoOptions = DECORATION_OPTIONS.filter((d) =>
+              NITRO_EXCLUSIVE_DECORATIONS.includes(d.id)
+            );
+            const shopLockedDecoOptions = DECORATION_OPTIONS.filter(
+              (d) =>
+                d.id !== 'none' &&
+                !NITRO_EXCLUSIVE_DECORATIONS.includes(d.id) &&
+                !ownedCosmetics.decorations.has(d.id)
+            );
+
+            return (
               <div
-                onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-3 max-h-[80vh] overflow-y-auto"
+                onClick={() => setActivePickerSheet(null)}
+                className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-xs flex items-end md:items-center justify-center"
               >
-                <div className="w-10 h-1 bg-white/25 rounded-full mx-auto" />
-                <h3 className="font-display font-bold text-lg text-white text-center">
-                  Decoración de avatar
-                </h3>
-                <p className="text-xs text-zinc-400 text-center">
-                  Solo puedes equipar decoraciones compradas en la Tienda.
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  {DECORATION_OPTIONS.map((dec) => {
-                    const unlocked = isDecoOwned(dec.id);
-                    const shopMatch = findBundleForCosmetic({ decorationId: dec.id }, shopBundles);
-                    return (
-                      <button
-                        key={dec.id}
-                        type="button"
-                        onClick={() => {
-                          if (unlocked) {
-                            setDraftDeco(dec.id);
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-md bg-[#111216] rounded-t-3xl md:rounded-3xl border border-white/10 flex flex-col max-h-[90vh] shadow-2xl overflow-hidden"
+                >
+                  {/* Sheet Handle + Title */}
+                  <div className="pt-3 pb-2 px-5 shrink-0">
+                    <div className="w-10 h-1 bg-white/25 rounded-full mx-auto mb-3" />
+                    <h3 className="font-display font-bold text-[19px] text-white text-center">
+                      Cambiar decoración de avatar
+                    </h3>
+                  </div>
+
+                  {/* Live Multi-Size Avatar Preview Stage (Screenshot 4 Match) */}
+                  <div className="px-6 py-4 flex items-center justify-center gap-6 shrink-0 border-b border-white/[0.06]">
+                    <UserAvatar
+                      avatar={draftAvatar}
+                      customAvatarUrl={draftCustomAvatarUrl}
+                      decoration={draftDeco}
+                      size="2xl"
+                      showStatus={false}
+                    />
+                    <div className="grid grid-cols-2 gap-3 items-center justify-items-center">
+                      <UserAvatar
+                        avatar={draftAvatar}
+                        customAvatarUrl={draftCustomAvatarUrl}
+                        decoration={draftDeco}
+                        size="md"
+                        showStatus={false}
+                      />
+                      <UserAvatar
+                        avatar={draftAvatar}
+                        customAvatarUrl={draftCustomAvatarUrl}
+                        decoration={draftDeco}
+                        status="online"
+                        size="md"
+                        borderColor="#111216"
+                      />
+                      <UserAvatar
+                        avatar={draftAvatar}
+                        customAvatarUrl={draftCustomAvatarUrl}
+                        decoration={draftDeco}
+                        size="sm"
+                        showStatus={false}
+                      />
+                      <UserAvatar
+                        avatar={draftAvatar}
+                        customAvatarUrl={draftCustomAvatarUrl}
+                        decoration={draftDeco}
+                        status="online"
+                        size="sm"
+                        borderColor="#111216"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Scrollable 3-Column Discord Mobile Sections */}
+                  <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+                    {/* Tus decoraciones */}
+                    <div>
+                      <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                        Tus decoraciones
+                      </p>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        {/* Ninguno */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDraftDeco('none');
                             setActivePickerSheet(null);
-                          } else if (shopMatch) {
-                            setActivePickerSheet(null);
-                            setShowEditProfile(false);
-                            onOpenBundle(shopMatch);
-                          } else {
+                          }}
+                          className={`aspect-square rounded-2xl bg-[#1b1c22] border flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                            draftDeco === 'none'
+                              ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                              : 'border-white/10 hover:border-white/25'
+                          }`}
+                        >
+                          <Ban className="w-7 h-7 text-zinc-300" />
+                          <span className="text-[12.5px] font-semibold text-white">Ninguno</span>
+                        </button>
+
+                        {/* Tienda NUEVO */}
+                        <button
+                          type="button"
+                          onClick={() => {
                             setActivePickerSheet(null);
                             setShowEditProfile(false);
                             onNavigate('tienda');
-                          }
-                        }}
-                        className={`relative p-2.5 rounded-2xl border flex flex-col items-center gap-2 cursor-pointer ${
-                          draftDeco === dec.id
-                            ? 'bg-[#5865F2]/20 border-[#5865F2] text-white'
-                            : unlocked
-                            ? 'bg-[#14151b] border-white/10 text-zinc-200'
-                            : 'bg-[#0b0c10] border-white/5 text-zinc-500 opacity-75 hover:opacity-100'
-                        }`}
-                      >
-                        {!unlocked && (
-                          <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full bg-black/75 border border-white/15 text-[9px] font-bold text-amber-300 flex items-center gap-0.5 tabular-nums">
-                            <Lock className="w-2.5 h-2.5" />
-                            {shopMatch ? `${shopMatch.priceOrbs}` : 'Tienda'}
+                          }}
+                          className="relative aspect-square rounded-2xl bg-[#1b1c22] border border-white/10 hover:border-white/25 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all"
+                        >
+                          <span className="absolute -top-2 right-1.5 px-2 py-0.5 rounded-full bg-[#5865F2] text-white text-[9.5px] font-extrabold tracking-wide uppercase shadow">
+                            NUEVO
                           </span>
+                          <Store className="w-7 h-7 text-zinc-200" />
+                          <span className="text-[12.5px] font-semibold text-white">Tienda</span>
+                        </button>
+
+                        {/* Owned Orbs Decorations */}
+                        {ownedDecoOptions.map((dec) => (
+                          <button
+                            key={dec.id}
+                            type="button"
+                            title={dec.label}
+                            onClick={() => {
+                              setDraftDeco(dec.id);
+                              setActivePickerSheet(null);
+                            }}
+                            className={`relative aspect-square rounded-2xl bg-[#1b1c22] border flex items-center justify-center p-3 cursor-pointer transition-all ${
+                              draftDeco === dec.id
+                                ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                                : 'border-white/10 hover:border-white/25'
+                            }`}
+                          >
+                            <div className="relative w-16 h-16 rounded-full bg-[#111216] border border-white/[0.06] flex items-center justify-center">
+                              <AvatarDecorationRing decoration={dec.id} />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Exclusivo de Nitro */}
+                    <div>
+                      <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                        Exclusivo de Nitro
+                      </p>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        {nitroDecoOptions.map((dec) => (
+                          <button
+                            key={dec.id}
+                            type="button"
+                            title={dec.label}
+                            onClick={() => {
+                              if (nitroEffectsUnlocked) {
+                                setDraftDeco(dec.id);
+                                setActivePickerSheet(null);
+                              } else {
+                                setActivePickerSheet(null);
+                                setShowEditProfile(false);
+                                onNavigate('nitro');
+                              }
+                            }}
+                            className={`relative aspect-square rounded-2xl bg-[#1b1c22] border flex items-center justify-center p-3 cursor-pointer transition-all ${
+                              draftDeco === dec.id
+                                ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                                : 'border-white/10 hover:border-white/25'
+                            }`}
+                          >
+                            <span className="absolute -top-1.5 -right-1.5 z-20 w-6 h-6 rounded-full bg-[#111216] border border-white/15 flex items-center justify-center shadow">
+                              <NitroWheelIcon className="w-3.5 h-3.5 text-white" />
+                            </span>
+                            <div className="relative w-16 h-16 rounded-full bg-[#111216] border border-white/[0.05] flex items-center justify-center">
+                              <AvatarDecorationRing decoration={dec.id} />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Échale un vistazo a la Tienda */}
+                    {shopLockedDecoOptions.length > 0 && (
+                      <div>
+                        <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                          Échale un vistazo a la Tienda
+                        </p>
+                        <div className="grid grid-cols-3 gap-2.5">
+                          {shopLockedDecoOptions.map((dec) => {
+                            const shopMatch = findBundleForCosmetic(
+                              { decorationId: dec.id },
+                              shopBundles
+                            );
+                            return (
+                              <button
+                                key={dec.id}
+                                type="button"
+                                title={
+                                  shopMatch
+                                    ? `${dec.label} · ${shopMatch.priceOrbs} Orbs`
+                                    : dec.label
+                                }
+                                onClick={() => {
+                                  setActivePickerSheet(null);
+                                  setShowEditProfile(false);
+                                  if (shopMatch) {
+                                    onOpenBundle(shopMatch);
+                                  } else {
+                                    onNavigate('tienda');
+                                  }
+                                }}
+                                className="relative aspect-square rounded-2xl bg-[#1b1c22] border border-white/10 hover:border-white/25 flex items-center justify-center p-3 cursor-pointer transition-all group"
+                              >
+                                <span className="absolute -top-1.5 -right-1.5 z-20 w-6 h-6 rounded-full bg-[#111216] border border-white/15 flex items-center justify-center shadow">
+                                  <Lock className="w-3 h-3 text-white" />
+                                </span>
+                                <div className="relative w-16 h-16 rounded-full bg-[#111216] border border-white/[0.05] flex items-center justify-center group-hover:scale-105 transition-transform">
+                                  <AvatarDecorationRing decoration={dec.id} />
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {activePickerSheet === 'effect' && (() => {
+            const ownedEffectOptions = PROFILE_EFFECT_OPTIONS.filter(
+              (e) =>
+                e.id !== 'none' &&
+                !NITRO_EXCLUSIVE_EFFECTS.includes(e.id) &&
+                ownedCosmetics.effects.has(e.id)
+            );
+            const nitroEffectOptions = PROFILE_EFFECT_OPTIONS.filter((e) =>
+              NITRO_EXCLUSIVE_EFFECTS.includes(e.id)
+            );
+            const shopLockedEffectOptions = PROFILE_EFFECT_OPTIONS.filter(
+              (e) =>
+                e.id !== 'none' &&
+                !NITRO_EXCLUSIVE_EFFECTS.includes(e.id) &&
+                !ownedCosmetics.effects.has(e.id)
+            );
+
+            return (
+              <div
+                onClick={() => setActivePickerSheet(null)}
+                className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-xs flex items-end md:items-center justify-center"
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-md bg-[#111216] rounded-t-3xl md:rounded-3xl border border-white/10 flex flex-col max-h-[90vh] shadow-2xl overflow-hidden"
+                >
+                  <div className="pt-3 pb-2 px-5 shrink-0">
+                    <div className="w-10 h-1 bg-white/25 rounded-full mx-auto mb-3" />
+                    <h3 className="font-display font-bold text-[19px] text-white text-center">
+                      Cambiar efecto de perfil
+                    </h3>
+                  </div>
+
+                  {/* Live Mini Profile Card Preview (Screenshot 2 Match) */}
+                  <div className="px-6 py-3 shrink-0 border-b border-white/[0.06]">
+                    <div className="w-56 mx-auto rounded-2xl overflow-hidden bg-[#181920] border border-white/10 shadow-xl relative">
+                      <ProfileEffectAnimationOverlay
+                        effect={draftEffect}
+                        playKey={editorEffectPlayKey}
+                        className="z-20"
+                      />
+                      <div
+                        className="h-16 w-full relative overflow-hidden"
+                        style={{ backgroundColor: draftBanner }}
+                      >
+                        {draftBannerImage && (
+                          <img
+                            src={draftBannerImage}
+                            alt=""
+                            referrerPolicy="no-referrer"
+                            className="w-full h-full object-cover"
+                          />
                         )}
+                      </div>
+                      <div className="px-3 pb-3 -mt-7 relative z-10">
+                        <div className="inline-block p-1 rounded-full bg-[#181920]">
+                          <UserAvatar
+                            avatar={draftAvatar}
+                            customAvatarUrl={draftCustomAvatarUrl}
+                            decoration={draftDeco}
+                            size="lg"
+                            showStatus={false}
+                          />
+                        </div>
+                        {(() => {
+                          const miniPres = getDisplayNameTextPresentation({
+                            style: draftNameStyle,
+                            colorPreset: draftNameColorPreset,
+                            customColors: draftNameCustomColors,
+                            glow: draftNameGlow,
+                            nitroUnlocked: nitroEffectsUnlocked || nitroPreviewActive,
+                          });
+                          return (
+                            <p
+                              className={`text-sm text-white leading-tight mt-0.5 truncate ${miniPres.className}`}
+                              style={miniPres.style}
+                            >
+                              {draftName || user.displayName}
+                            </p>
+                          );
+                        })()}
+                        <p className="text-[11px] text-zinc-400 truncate">{user.username}</p>
+                        <div className="mt-2 rounded-xl bg-[#111216] border border-white/[0.06] px-2.5 py-2">
+                          <p className="text-[10px] font-semibold text-zinc-400">Miembro desde</p>
+                          <p className="text-[10px] text-zinc-500 tabular-nums">{user.memberSince}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+                    {/* Tus efectos de perfil */}
+                    <div>
+                      <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                        Tus efectos de perfil
+                      </p>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDraftEffect('none');
+                            setEditorEffectPlayKey((k) => k + 1);
+                            setActivePickerSheet(null);
+                          }}
+                          className={`aspect-square rounded-2xl bg-[#1b1c22] border flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                            draftEffect === 'none'
+                              ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                              : 'border-white/10 hover:border-white/25'
+                          }`}
+                        >
+                          <Ban className="w-7 h-7 text-zinc-300" />
+                          <span className="text-[12.5px] font-semibold text-white">Ninguno</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActivePickerSheet(null);
+                            setShowEditProfile(false);
+                            onNavigate('tienda');
+                          }}
+                          className="relative aspect-square rounded-2xl bg-[#1b1c22] border border-white/10 hover:border-white/25 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all"
+                        >
+                          <span className="absolute -top-2 right-1.5 px-2 py-0.5 rounded-full bg-[#5865F2] text-white text-[9.5px] font-extrabold tracking-wide uppercase shadow">
+                            NUEVO
+                          </span>
+                          <Store className="w-7 h-7 text-zinc-200" />
+                          <span className="text-[12.5px] font-semibold text-white">Tienda</span>
+                        </button>
+
+                        {ownedEffectOptions.map((eff) => {
+                          const meta = eff.id !== 'none' ? PROFILE_EFFECT_META[eff.id] : undefined;
+                          return (
+                            <button
+                              key={eff.id}
+                              type="button"
+                              title={eff.label}
+                              onClick={() => {
+                                setDraftEffect(eff.id);
+                                setEditorEffectPlayKey((k) => k + 1);
+                                setActivePickerSheet(null);
+                              }}
+                              className={`relative aspect-square rounded-2xl overflow-hidden bg-[#1b1c22] border cursor-pointer transition-all ${
+                                draftEffect === eff.id
+                                  ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                                  : 'border-white/10 hover:border-white/25'
+                              }`}
+                            >
+                              {meta?.artUrl ? (
+                                <img
+                                  src={meta.artUrl}
+                                  alt={eff.label}
+                                  referrerPolicy="no-referrer"
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div
+                                  className="w-full h-full"
+                                  style={{
+                                    background: `radial-gradient(circle at 50% 45%, ${meta?.primary || '#5865f2'}55, #111216 80%)`,
+                                  }}
+                                />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Exclusivo de Nitro */}
+                    <div>
+                      <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                        Exclusivo de Nitro
+                      </p>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        {nitroEffectOptions.map((eff) => {
+                          const isCyber = eff.id === 'cyber';
+                          const isSparks = eff.id === 'sparks';
+                          return (
+                            <button
+                              key={eff.id}
+                              type="button"
+                              title={eff.label}
+                              onClick={() => {
+                                if (nitroEffectsUnlocked) {
+                                  setDraftEffect(eff.id);
+                                  setEditorEffectPlayKey((k) => k + 1);
+                                  setActivePickerSheet(null);
+                                } else {
+                                  setActivePickerSheet(null);
+                                  setShowEditProfile(false);
+                                  onNavigate('nitro');
+                                }
+                              }}
+                              className={`relative aspect-square rounded-2xl bg-[#1b1c22] border cursor-pointer transition-all ${
+                                draftEffect === eff.id
+                                  ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                                  : 'border-white/10 hover:border-white/25'
+                              }`}
+                            >
+                              <span className="absolute -top-1.5 -right-1.5 z-20 w-6 h-6 rounded-full bg-[#111216] border border-white/15 flex items-center justify-center shadow">
+                                <NitroWheelIcon className="w-3.5 h-3.5 text-white" />
+                              </span>
+                              <div
+                                className={`w-full h-full rounded-2xl overflow-hidden flex items-center justify-center ${
+                                  isCyber
+                                    ? 'bg-gradient-to-br from-lime-950 via-[#162712] to-[#0f172a]'
+                                    : isSparks
+                                    ? 'bg-gradient-to-br from-[#2b1055] via-[#1b1448] to-[#0e1b3b]'
+                                    : 'bg-gradient-to-br from-[#450a0a] via-[#1f0a17] to-[#09090b]'
+                                }`}
+                              >
+                                {isCyber ? (
+                                  <svg viewBox="0 0 80 80" className="w-16 h-16">
+                                    <ellipse cx="40" cy="46" rx="26" ry="12" fill="none" stroke="#c084fc" strokeWidth="1.4" />
+                                    <ellipse cx="40" cy="46" rx="18" ry="8" fill="none" stroke="#a855f7" strokeWidth="1.2" />
+                                    <path d="M14 14 H66 M14 22 H52" stroke="#84cc16" strokeWidth="3" strokeLinecap="round" />
+                                  </svg>
+                                ) : isSparks ? (
+                                  <svg viewBox="0 0 80 80" className="w-16 h-16">
+                                    <rect x="20" y="20" width="40" height="40" fill="none" stroke="#ec4899" strokeWidth="1.6" />
+                                    <polygon points="40,26 50,40 40,54 30,40" fill="#22d3ee" opacity="0.85" />
+                                    <circle cx="16" cy="18" r="2" fill="#fde047" />
+                                    <circle cx="64" cy="28" r="2" fill="#f472b6" />
+                                  </svg>
+                                ) : (
+                                  <svg viewBox="0 0 80 80" className="w-16 h-16">
+                                    <circle cx="40" cy="40" r="22" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeDasharray="6 4" />
+                                    <circle cx="40" cy="40" r="10" fill="#fb7185" opacity="0.65" />
+                                  </svg>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Échale un vistazo a la Tienda */}
+                    {shopLockedEffectOptions.length > 0 && (
+                      <div>
+                        <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                          Échale un vistazo a la Tienda
+                        </p>
+                        <div className="grid grid-cols-3 gap-2.5">
+                          {shopLockedEffectOptions.map((eff) => {
+                            const shopMatch = findBundleForCosmetic(
+                              { profileEffectId: eff.id },
+                              shopBundles
+                            );
+                            const meta = eff.id !== 'none' ? PROFILE_EFFECT_META[eff.id] : undefined;
+                            return (
+                              <button
+                                key={eff.id}
+                                type="button"
+                                title={
+                                  shopMatch
+                                    ? `${eff.label} · ${shopMatch.priceOrbs} Orbs`
+                                    : eff.label
+                                }
+                                onClick={() => {
+                                  setActivePickerSheet(null);
+                                  setShowEditProfile(false);
+                                  if (shopMatch) {
+                                    onOpenBundle(shopMatch);
+                                  } else {
+                                    onNavigate('tienda');
+                                  }
+                                }}
+                                className="relative aspect-square rounded-2xl bg-[#1b1c22] border border-white/10 hover:border-white/25 cursor-pointer transition-all group"
+                              >
+                                <span className="absolute -top-1.5 -right-1.5 z-20 w-6 h-6 rounded-full bg-[#111216] border border-white/15 flex items-center justify-center shadow">
+                                  <Lock className="w-3 h-3 text-white" />
+                                </span>
+                                <div className="w-full h-full rounded-2xl overflow-hidden">
+                                  {meta?.artUrl ? (
+                                    <img
+                                      src={meta.artUrl}
+                                      alt={eff.label}
+                                      referrerPolicy="no-referrer"
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                    />
+                                  ) : (
+                                    <div
+                                      className="w-full h-full"
+                                      style={{
+                                        background: `radial-gradient(circle at 50% 45%, ${meta?.primary || '#5865f2'}55, #111216 80%)`,
+                                      }}
+                                    />
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {activePickerSheet === 'frame' && (() => {
+            const ownedFrameOptions = PROFILE_FRAME_OPTIONS.filter(
+              (f) => f.id !== 'none' && isFrameOwned(f.id)
+            );
+            const shopLockedFrameOptions = PROFILE_FRAME_OPTIONS.filter(
+              (f) => f.id !== 'none' && !isFrameOwned(f.id)
+            );
+
+            return (
+              <div
+                onClick={() => setActivePickerSheet(null)}
+                className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-xs flex items-end md:items-center justify-center"
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-md bg-[#111216] rounded-t-3xl md:rounded-3xl border border-white/10 flex flex-col max-h-[90vh] shadow-2xl overflow-hidden"
+                >
+                  <div className="pt-3 pb-2 px-5 shrink-0">
+                    <div className="w-10 h-1 bg-white/25 rounded-full mx-auto mb-3" />
+                    <h3 className="font-display font-bold text-[19px] text-white text-center">
+                      Cambiar marco de perfil
+                    </h3>
+                  </div>
+
+                  {/* Live Framed Card Preview */}
+                  <div className="px-6 py-4 shrink-0 border-b border-white/[0.06]">
+                    <div
+                      className={`w-52 mx-auto rounded-2xl bg-[#181920] border border-white/10 relative pt-1 ${
+                        PROFILE_FRAME_OPTIONS.find((f) => f.id === draftFrame)?.borderClass || ''
+                      }`}
+                    >
+                      <ProfileFrameArtwork frame={draftFrame} />
+                      <div className="rounded-2xl overflow-hidden">
+                        <div className="h-12 w-full" style={{ backgroundColor: draftBanner }} />
+                        <div className="px-3 pb-3 -mt-6 flex items-center gap-2">
+                          <div className="p-0.5 rounded-full bg-[#181920]">
+                            <UserAvatar
+                              avatar={draftAvatar}
+                              customAvatarUrl={draftCustomAvatarUrl}
+                              decoration={draftDeco}
+                              size="md"
+                              showStatus={false}
+                            />
+                          </div>
+                          <span className="text-xs font-bold text-white truncate mt-4">
+                            {draftName || user.displayName}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+                    <div>
+                      <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                        Tus marcos de perfil
+                      </p>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDraftFrame('none');
+                            setActivePickerSheet(null);
+                          }}
+                          className={`aspect-square rounded-2xl bg-[#1b1c22] border flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                            draftFrame === 'none'
+                              ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                              : 'border-white/10 hover:border-white/25'
+                          }`}
+                        >
+                          <Ban className="w-7 h-7 text-zinc-300" />
+                          <span className="text-[12.5px] font-semibold text-white">Ninguno</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActivePickerSheet(null);
+                            setShowEditProfile(false);
+                            onNavigate('tienda');
+                          }}
+                          className="relative aspect-square rounded-2xl bg-[#1b1c22] border border-white/10 hover:border-white/25 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all"
+                        >
+                          <span className="absolute -top-2 right-1.5 px-2 py-0.5 rounded-full bg-[#5865F2] text-white text-[9.5px] font-extrabold tracking-wide uppercase shadow">
+                            NUEVO
+                          </span>
+                          <Store className="w-7 h-7 text-zinc-200" />
+                          <span className="text-[12.5px] font-semibold text-white">Tienda</span>
+                        </button>
+
+                        {ownedFrameOptions.map((fr) => (
+                          <button
+                            key={fr.id}
+                            type="button"
+                            title={fr.label}
+                            onClick={() => {
+                              setDraftFrame(fr.id);
+                              setActivePickerSheet(null);
+                            }}
+                            className={`relative aspect-square rounded-2xl bg-[#1b1c22] border p-2.5 flex flex-col items-center justify-end cursor-pointer transition-all ${
+                              draftFrame === fr.id
+                                ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                                : 'border-white/10 hover:border-white/25'
+                            }`}
+                          >
+                            <div
+                              className={`relative w-12 h-14 rounded-lg bg-[#23252f] border border-white/15 mb-1 ${fr.borderClass}`}
+                            >
+                              {fr.ornate && <ProfileFrameArtwork frame={fr.id} />}
+                            </div>
+                            <span className="text-[10.5px] font-semibold text-zinc-200 truncate w-full text-center">
+                              {fr.label}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {shopLockedFrameOptions.length > 0 && (
+                      <div>
+                        <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                          Échale un vistazo a la Tienda
+                        </p>
+                        <div className="grid grid-cols-3 gap-2.5">
+                          {shopLockedFrameOptions.map((fr) => {
+                            const shopMatch = findBundleForCosmetic(
+                              { profileFrameId: fr.id },
+                              shopBundles
+                            );
+                            return (
+                              <button
+                                key={fr.id}
+                                type="button"
+                                title={
+                                  shopMatch
+                                    ? `${fr.label} · ${shopMatch.priceOrbs} Orbs`
+                                    : fr.label
+                                }
+                                onClick={() => {
+                                  setActivePickerSheet(null);
+                                  setShowEditProfile(false);
+                                  if (shopMatch) {
+                                    onOpenBundle(shopMatch);
+                                  } else {
+                                    onNavigate('tienda');
+                                  }
+                                }}
+                                className="relative aspect-square rounded-2xl bg-[#1b1c22] border border-white/10 hover:border-white/25 p-2.5 flex flex-col items-center justify-end cursor-pointer transition-all"
+                              >
+                                <span className="absolute -top-1.5 -right-1.5 z-30 w-6 h-6 rounded-full bg-[#111216] border border-white/15 flex items-center justify-center shadow">
+                                  <Lock className="w-3 h-3 text-white" />
+                                </span>
+                                <div className="relative w-12 h-14 rounded-lg bg-[#23252f] border border-white/15 mb-1">
+                                  <ProfileFrameArtwork frame={fr.id} />
+                                </div>
+                                <span className="text-[10.5px] font-semibold text-zinc-300 truncate w-full text-center">
+                                  {fr.label}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {activePickerSheet === 'nameplate' && (() => {
+            const ownedPlateOptions = NAMEPLATE_OPTIONS.filter(
+              (np) => np.id !== 'none' && isNameplateOwned(np.id)
+            );
+            const shopLockedPlateOptions = NAMEPLATE_OPTIONS.filter(
+              (np) => np.id !== 'none' && !isNameplateOwned(np.id)
+            );
+
+            return (
+              <div
+                onClick={() => setActivePickerSheet(null)}
+                className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-xs flex items-end md:items-center justify-center"
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-md bg-[#111216] rounded-t-3xl md:rounded-3xl border border-white/10 flex flex-col max-h-[90vh] shadow-2xl overflow-hidden"
+                >
+                  <div className="pt-3 pb-2 px-5 shrink-0">
+                    <div className="w-10 h-1 bg-white/25 rounded-full mx-auto mb-3" />
+                    <h3 className="font-display font-bold text-[19px] text-white text-center">
+                      Cambiar la placa de nombre
+                    </h3>
+                  </div>
+
+                  {/* Live Member-List Stack Preview (Screenshot 3 Match) */}
+                  <div className="px-6 py-3 space-y-2 shrink-0 border-b border-white/[0.06]">
+                    {[0, 1].map((i) => (
+                      <div key={`top-${i}`} className="flex items-center gap-2.5 px-2 opacity-25">
+                        <span className="w-6 h-6 rounded-full bg-zinc-600 shrink-0" />
+                        <span className="h-2.5 w-28 rounded-full bg-zinc-600" />
+                      </div>
+                    ))}
+
+                    <div className="relative rounded-xl bg-[#1a1b22] border border-white/15 px-3 py-2 flex items-center gap-2.5 overflow-hidden shadow-lg">
+                      {draftNameplate !== 'none' && (
+                        <>
+                          <NameplateStripBackground nameplate={draftNameplate} />
+                          <NameplateRowDecor nameplate={draftNameplate} />
+                        </>
+                      )}
+                      <div className="relative z-10">
                         <UserAvatar
                           avatar={draftAvatar}
                           customAvatarUrl={draftCustomAvatarUrl}
-                          decoration={dec.id}
-                          size="md"
+                          decoration={draftDeco}
+                          size="sm"
                           showStatus={false}
                         />
-                        <span className="text-[11.5px] font-semibold text-center leading-tight">
-                          {dec.label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activePickerSheet === 'effect' && (
-            <div
-              onClick={() => setActivePickerSheet(null)}
-              className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-xs flex items-end md:items-center justify-center"
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-3 max-h-[80vh] overflow-y-auto"
-              >
-                <div className="w-10 h-1 bg-white/25 rounded-full mx-auto" />
-                <h3 className="font-display font-bold text-lg text-white text-center">
-                  Efecto de perfil
-                </h3>
-                <p className="text-xs text-zinc-400 text-center">
-                  Compra efectos en la Tienda para dejarlos equipados en tu perfil.
-                </p>
-                <div className="space-y-2">
-                  {PROFILE_EFFECT_OPTIONS.map((eff) => {
-                    const unlocked = isEffectOwned(eff.id);
-                    const shopMatch = findBundleForCosmetic({ profileEffectId: eff.id }, shopBundles);
-                    return (
-                      <button
-                        key={eff.id}
-                        type="button"
-                        onClick={() => {
-                          if (unlocked) {
-                            setDraftEffect(eff.id);
-                            setEditorEffectPlayKey((k) => k + 1);
-                            setActivePickerSheet(null);
-                          } else if (shopMatch) {
-                            setActivePickerSheet(null);
-                            setShowEditProfile(false);
-                            onOpenBundle(shopMatch);
-                          } else {
-                            setActivePickerSheet(null);
-                            setShowEditProfile(false);
-                            onNavigate('nitro');
-                          }
-                        }}
-                        className={`w-full px-4 py-3 rounded-2xl border flex items-center justify-between gap-2 cursor-pointer ${
-                          draftEffect === eff.id
-                            ? 'bg-[#5865F2]/20 border-[#5865F2]'
-                            : unlocked
-                            ? 'bg-[#14151b] border-white/10'
-                            : 'bg-[#0b0c10] border-white/5 opacity-80 hover:opacity-100'
-                        }`}
-                      >
-                        <div className="text-left min-w-0">
-                          <p className="text-sm font-semibold text-white truncate">{eff.label}</p>
-                          <p className="text-xs text-zinc-400 truncate">{eff.desc}</p>
-                        </div>
-                        {draftEffect === eff.id ? (
-                          <Check className="w-5 h-5 text-[#7b85ff] shrink-0" />
-                        ) : !unlocked ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-amber-300 shrink-0 tabular-nums">
-                            <Lock className="w-3 h-3" />
-                            <span>{shopMatch ? `◈ ${shopMatch.priceOrbs}` : 'Nitro'}</span>
+                      </div>
+                      {(() => {
+                        const rowPres = getDisplayNameTextPresentation({
+                          style: draftNameStyle,
+                          colorPreset: draftNameColorPreset,
+                          customColors: draftNameCustomColors,
+                          glow: draftNameGlow,
+                          nitroUnlocked: nitroEffectsUnlocked || nitroPreviewActive,
+                        });
+                        return (
+                          <span
+                            className={`relative z-10 text-sm text-white truncate drop-shadow ${rowPres.className}`}
+                            style={rowPres.style}
+                          >
+                            {draftName || user.displayName}
                           </span>
-                        ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
+                        );
+                      })()}
+                    </div>
 
-          {activePickerSheet === 'frame' && (
-            <div
-              onClick={() => setActivePickerSheet(null)}
-              className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-xs flex items-end md:items-center justify-center"
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-3 max-h-[82vh] overflow-y-auto"
-              >
-                <div className="w-10 h-1 bg-white/25 rounded-full mx-auto" />
-                <h3 className="font-display font-bold text-lg text-white text-center">
-                  Marco de perfil
-                </h3>
-                <p className="text-xs text-zinc-400 text-center">
-                  Los marcos coleccionables se desbloquean comprándolos en la Tienda.
-                </p>
-                <div className="grid grid-cols-2 gap-3 pt-1">
-                  {PROFILE_FRAME_OPTIONS.map((fr) => {
-                    const unlocked = isFrameOwned(fr.id);
-                    const shopMatch = findBundleForCosmetic({ profileFrameId: fr.id }, shopBundles);
-                    return (
-                      <button
-                        key={fr.id}
-                        type="button"
-                        onClick={() => {
-                          if (unlocked) {
-                            setDraftFrame(fr.id);
+                    {[0, 1].map((i) => (
+                      <div key={`bot-${i}`} className="flex items-center gap-2.5 px-2 opacity-25">
+                        <span className="w-6 h-6 rounded-full bg-zinc-600 shrink-0" />
+                        <span className="h-2.5 w-32 rounded-full bg-zinc-600" />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Scrollable 3-Column Nameplate Inventory */}
+                  <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+                    <div>
+                      <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                        Tus placas de nombre
+                      </p>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDraftNameplate('none');
                             setActivePickerSheet(null);
-                          } else if (shopMatch) {
-                            setActivePickerSheet(null);
-                            setShowEditProfile(false);
-                            onOpenBundle(shopMatch);
-                          } else {
+                          }}
+                          className={`aspect-square rounded-2xl bg-[#1b1c22] border flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                            draftNameplate === 'none'
+                              ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                              : 'border-white/10 hover:border-white/25'
+                          }`}
+                        >
+                          <Ban className="w-7 h-7 text-zinc-300" />
+                          <span className="text-[12.5px] font-semibold text-white">Ninguno</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
                             setActivePickerSheet(null);
                             setShowEditProfile(false);
                             onNavigate('tienda');
-                          }
-                        }}
-                        className={`relative p-3.5 rounded-2xl border text-left cursor-pointer flex flex-col gap-2.5 transition-all ${
-                          draftFrame === fr.id
-                            ? 'bg-[#5865F2]/20 border-[#5865F2]'
-                            : unlocked
-                            ? 'bg-[#14151b] border-white/10'
-                            : 'bg-[#0b0c10] border-white/5 opacity-80 hover:opacity-100'
-                        } ${fr.borderClass}`}
-                      >
-                        {!unlocked && (
-                          <span className="absolute top-2 right-2 z-30 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/80 border border-white/15 text-[10px] font-bold text-amber-300 tabular-nums">
-                            <Lock className="w-2.5 h-2.5" />
-                            <span>{shopMatch ? `◈ ${shopMatch.priceOrbs}` : 'Tienda'}</span>
+                          }}
+                          className="relative aspect-square rounded-2xl bg-[#1b1c22] border border-white/10 hover:border-white/25 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all"
+                        >
+                          <span className="absolute -top-2 right-1.5 px-2 py-0.5 rounded-full bg-[#5865F2] text-white text-[9.5px] font-extrabold tracking-wide uppercase shadow">
+                            NUEVO
                           </span>
-                        )}
-                        {fr.ornate && (
-                          <div className="relative h-14 w-full rounded-xl bg-[#181920] border border-white/10 mt-2 overflow-visible flex items-center justify-center">
-                            <ProfileFrameArtwork frame={fr.id} />
-                            <div className="w-7 h-7 rounded-full bg-white/10 border border-white/10" />
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between gap-1.5">
-                          <p className="text-sm font-bold text-white truncate">{fr.label}</p>
-                          {draftFrame === fr.id && (
-                            <Check className="w-4 h-4 text-[#7b85ff] shrink-0" />
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
+                          <Store className="w-7 h-7 text-zinc-200" />
+                          <span className="text-[12.5px] font-semibold text-white">Tienda</span>
+                        </button>
 
-          {activePickerSheet === 'nameplate' && (
-            <div
-              onClick={() => setActivePickerSheet(null)}
-              className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-xs flex items-end md:items-center justify-center"
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-[#0e0f14] rounded-t-3xl md:rounded-3xl border border-white/10 p-5 space-y-3 max-h-[80vh] overflow-y-auto"
-              >
-                <div className="w-10 h-1 bg-white/25 rounded-full mx-auto" />
-                <h3 className="font-display font-bold text-lg text-white text-center">
-                  Placa de identificación
-                </h3>
-                <p className="text-xs text-zinc-400 text-center">
-                  Compra placas en la Tienda para desbloquearlas aquí.
-                </p>
-                <div className="space-y-2">
-                  {NAMEPLATE_OPTIONS.map((np) => {
-                    const unlocked = isNameplateOwned(np.id);
-                    const shopMatch = findBundleForCosmetic({ nameplateId: np.id }, shopBundles);
-                    return (
-                      <button
-                        key={np.id}
-                        type="button"
-                        onClick={() => {
-                          if (unlocked) {
-                            setDraftNameplate(np.id);
-                            setActivePickerSheet(null);
-                          } else if (shopMatch) {
-                            setActivePickerSheet(null);
-                            setShowEditProfile(false);
-                            onOpenBundle(shopMatch);
-                          } else {
-                            setActivePickerSheet(null);
-                            setShowEditProfile(false);
-                            onNavigate('tienda');
-                          }
-                        }}
-                        className={`relative overflow-hidden w-full px-4 py-3 rounded-2xl border flex items-center justify-between cursor-pointer ${
-                          np.gradient ? `bg-gradient-to-r ${np.gradient}` : 'bg-[#14151b]'
-                        } ${
-                          draftNameplate === np.id
-                            ? 'border-[#5865F2] ring-1 ring-[#5865F2]'
-                            : unlocked
-                            ? 'border-white/10'
-                            : 'border-white/5 opacity-75 hover:opacity-100'
-                        }`}
-                      >
-                        {np.id !== 'none' && <NameplateStripBackground nameplate={np.id} />}
-                        <span className="relative z-10 text-sm font-bold text-white drop-shadow">
-                          {np.label}
-                        </span>
-                        {draftNameplate === np.id ? (
-                          <Check className="relative z-10 w-5 h-5 text-white drop-shadow" />
-                        ) : !unlocked ? (
-                          <span className="relative z-10 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/70 border border-white/15 text-[11px] font-bold text-amber-300 tabular-nums">
-                            <Lock className="w-3 h-3" />
-                            <span>{shopMatch ? `◈ ${shopMatch.priceOrbs}` : 'Tienda'}</span>
-                          </span>
-                        ) : null}
-                      </button>
-                    );
-                  })}
+                        {ownedPlateOptions.map((np) => {
+                          const artUrl = getNameplateArtworkUrl(np.id);
+                          return (
+                            <button
+                              key={np.id}
+                              type="button"
+                              title={np.label}
+                              onClick={() => {
+                                setDraftNameplate(np.id);
+                                setActivePickerSheet(null);
+                              }}
+                              className={`relative aspect-square rounded-2xl overflow-hidden border bg-[#1b1c22] cursor-pointer transition-all ${
+                                draftNameplate === np.id
+                                  ? 'border-[#5865F2] ring-2 ring-[#5865F2]'
+                                  : 'border-white/10 hover:border-white/25'
+                              }`}
+                            >
+                              {artUrl ? (
+                                <img
+                                  src={artUrl}
+                                  alt={np.label}
+                                  referrerPolicy="no-referrer"
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <NameplateStripBackground nameplate={np.id} />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {shopLockedPlateOptions.length > 0 && (
+                      <div>
+                        <p className="text-[14px] font-semibold text-zinc-200 mb-3">
+                          Échale un vistazo a la Tienda
+                        </p>
+                        <div className="grid grid-cols-3 gap-2.5">
+                          {shopLockedPlateOptions.map((np) => {
+                            const shopMatch = findBundleForCosmetic(
+                              { nameplateId: np.id },
+                              shopBundles
+                            );
+                            const artUrl = getNameplateArtworkUrl(np.id);
+                            return (
+                              <button
+                                key={np.id}
+                                type="button"
+                                title={
+                                  shopMatch
+                                    ? `${np.label} · ${shopMatch.priceOrbs} Orbs`
+                                    : np.label
+                                }
+                                onClick={() => {
+                                  setActivePickerSheet(null);
+                                  setShowEditProfile(false);
+                                  if (shopMatch) {
+                                    onOpenBundle(shopMatch);
+                                  } else {
+                                    onNavigate('tienda');
+                                  }
+                                }}
+                                className="relative aspect-square rounded-2xl bg-[#1b1c22] border border-white/10 hover:border-white/25 cursor-pointer transition-all group"
+                              >
+                                <span className="absolute -top-1.5 -right-1.5 z-20 w-6 h-6 rounded-full bg-[#111216] border border-white/15 flex items-center justify-center shadow">
+                                  <Lock className="w-3 h-3 text-white" />
+                                </span>
+                                <div
+                                  className={`w-full h-full rounded-2xl overflow-hidden relative ${
+                                    np.gradient ? `bg-gradient-to-br ${np.gradient}` : 'bg-[#1b1c22]'
+                                  }`}
+                                >
+                                  {artUrl ? (
+                                    <img
+                                      src={artUrl}
+                                      alt={np.label}
+                                      referrerPolicy="no-referrer"
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                    />
+                                  ) : (
+                                    <NameplateStripBackground nameplate={np.id} />
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       )}
 

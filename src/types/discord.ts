@@ -138,7 +138,10 @@ export type DecorationId =
   | 'lirio'
   | 'adorable'
   | 'random-xd'
-  | 'scene-xd';
+  | 'scene-xd'
+  | 'nitro-disco'
+  | 'nitro-auris'
+  | 'nitro-chip';
 
 export type NameplateId =
   | 'none'
@@ -203,7 +206,16 @@ export interface BadgeDefinition {
   tiers: BadgeTier[];
 }
 
-export type DisplayNameStyle = 'default' | 'gta' | 'neon' | 'retro';
+export type DisplayNameStyle = 'default' | 'gta' | 'neon' | 'retro' | 'gothic' | 'sakura';
+export type DisplayNameColorPreset =
+  | 'none'
+  | 'crimson-cyan'
+  | 'nitro-sunset'
+  | 'cyber-neon'
+  | 'infernal-gold'
+  | 'emerald-pulse'
+  | 'amethyst-prism'
+  | 'custom';
 export type ProfileEffectId =
   | 'none'
   | 'sparks'
@@ -272,6 +284,9 @@ export interface UserProfile {
   phone?: string;
   pronouns?: string;
   displayNameStyle?: DisplayNameStyle;
+  displayNameColorPreset?: DisplayNameColorPreset;
+  displayNameCustomColors?: [string, string];
+  displayNameGlow?: boolean;
   status: PresenceStatus;
   customStatus: string;
   bio: string;
@@ -315,6 +330,10 @@ export interface PublicUserProfile {
   displayName: string;
   username: string;
   pronouns?: string;
+  displayNameStyle?: DisplayNameStyle;
+  displayNameColorPreset?: DisplayNameColorPreset;
+  displayNameCustomColors?: [string, string];
+  displayNameGlow?: boolean;
   avatar: AvatarKey;
   status: PresenceStatus;
   customStatus?: string;

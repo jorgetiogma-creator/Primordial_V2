@@ -46,6 +46,7 @@ import {
 } from '../types/discord';
 import { NameplateStripBackground, UserAvatar } from './DiscordArt';
 import { BoostGemIcon } from './ServerBoostView';
+import { getDisplayNameTextPresentation } from '../utils/displayNameStyle';
 
 export interface RichMessagePayload {
   content: string;
@@ -1000,40 +1001,60 @@ export const ChatView: React.FC<ChatViewProps> = ({
                       {/* Author Line */}
                       {!isGrouped && (
                         <div className="flex items-baseline gap-2 flex-wrap">
-                          <span
-                            onClick={() =>
-                              onInspectUser?.(
-                                msg.authorId,
-                                {
-                                  displayName: msg.authorName,
-                                  avatar: msg.authorAvatar,
-                                  serverTag: msg.authorTag,
-                                  isBot: msg.authorIsBot,
-                                },
-                                getMemberRoles(msg.authorId)
-                              )
-                            }
-                            className={`text-[15px] cursor-pointer hover:underline ${
-                              isMe && currentUser.displayNameStyle === 'gta'
-                                ? 'font-gta'
-                                : 'font-semibold'
-                            }`}
-                            style={
-                              authorRole?.gradientColors
-                                ? {
-                                    backgroundImage: `linear-gradient(90deg, ${authorRole.gradientColors[0]}, ${authorRole.gradientColors[1]})`,
-                                    WebkitBackgroundClip: 'text',
-                                    color: 'transparent',
+                          {(() => {
+                              const myNamePres = isMe
+                                ? getDisplayNameTextPresentation({
+                                    style: currentUser.displayNameStyle,
+                                    colorPreset: currentUser.displayNameColorPreset,
+                                    customColors: currentUser.displayNameCustomColors,
+                                    glow: currentUser.displayNameGlow,
+                                    nitroUnlocked: currentUser.nitroTier !== 'none',
+                                    fallbackColor: authorRole?.color || 'var(--dc-text-primary)',
+                                  })
+                                : null;
+                              const useMyGradient =
+                                isMe &&
+                                currentUser.nitroTier !== 'none' &&
+                                currentUser.displayNameColorPreset &&
+                                currentUser.displayNameColorPreset !== 'none';
+
+                              return (
+                                <span
+                                  onClick={() =>
+                                    onInspectUser?.(
+                                      msg.authorId,
+                                      {
+                                        displayName: msg.authorName,
+                                        avatar: msg.authorAvatar,
+                                        serverTag: msg.authorTag,
+                                        isBot: msg.authorIsBot,
+                                      },
+                                      getMemberRoles(msg.authorId)
+                                    )
                                   }
-                                : { color: authorRole?.color || 'var(--dc-text-primary)' }
-                            }
-                          >
-                            {isMe
-                              ? (mode === 'channel' && server
-                                  ? currentUser.perServerProfiles?.[server.id]?.nickname
-                                  : undefined) || currentUser.displayName
-                              : msg.authorName}
-                          </span>
+                                  className={`text-[15px] cursor-pointer hover:underline ${
+                                    myNamePres ? myNamePres.className : 'font-semibold'
+                                  }`}
+                                  style={
+                                    useMyGradient && myNamePres
+                                      ? myNamePres.style
+                                      : authorRole?.gradientColors
+                                      ? {
+                                          backgroundImage: `linear-gradient(90deg, ${authorRole.gradientColors[0]}, ${authorRole.gradientColors[1]})`,
+                                          WebkitBackgroundClip: 'text',
+                                          color: 'transparent',
+                                        }
+                                      : { color: authorRole?.color || 'var(--dc-text-primary)' }
+                                  }
+                                >
+                                  {isMe
+                                    ? (mode === 'channel' && server
+                                        ? currentUser.perServerProfiles?.[server.id]?.nickname
+                                        : undefined) || currentUser.displayName
+                                    : msg.authorName}
+                                </span>
+                              );
+                            })()}
                           {authorRole && (
                             <span
                               className="px-1.5 py-[1px] rounded-md text-[10px] font-bold bg-white/[0.07] border border-white/10"
@@ -2017,12 +2038,33 @@ export const ChatView: React.FC<ChatViewProps> = ({
                   </div>
                   <div className="min-w-0 flex-1 z-10">
                     <div className="flex items-center gap-1">
-                      <span
-                        className="text-sm font-medium truncate"
-                        style={{ color: role?.color || 'var(--dc-text-primary)' }}
-                      >
-                        {m.name}
-                      </span>
+                      {(() => {
+                        const selfPres =
+                          idx === 0
+                            ? getDisplayNameTextPresentation({
+                                style: currentUser.displayNameStyle,
+                                colorPreset: currentUser.displayNameColorPreset,
+                                customColors: currentUser.displayNameCustomColors,
+                                glow: currentUser.displayNameGlow,
+                                nitroUnlocked: currentUser.nitroTier !== 'none',
+                                fallbackColor: role?.color || 'var(--dc-text-primary)',
+                              })
+                            : null;
+                        return (
+                          <span
+                            className={`text-sm truncate ${
+                              selfPres ? selfPres.className : 'font-medium'
+                            }`}
+                            style={
+                              selfPres
+                                ? selfPres.style
+                                : { color: role?.color || 'var(--dc-text-primary)' }
+                            }
+                          >
+                            {m.name}
+                          </span>
+                        );
+                      })()}
                       {idx === 0 && (currentUser.boostsGiven > 0 || (server.boostCount ?? 0) > 0) && (
                         <span title="Usuario que mejora este servidor">
                           <BoostGemIcon className="w-3.5 h-3.5 shrink-0" />

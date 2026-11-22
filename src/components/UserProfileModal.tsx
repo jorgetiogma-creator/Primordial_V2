@@ -20,6 +20,7 @@ import {
   StatusIndicator,
   UserAvatar,
 } from './DiscordArt';
+import { getDisplayNameTextPresentation } from '../utils/displayNameStyle';
 
 interface UserProfileModalProps {
   profile: PublicUserProfile | null;
@@ -196,9 +197,23 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             )}
             <div className="relative z-10">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="font-display font-black text-xl text-white leading-tight drop-shadow">
-                  {profile.displayName}
-                </h2>
+                {(() => {
+                  const namePres = getDisplayNameTextPresentation({
+                    style: profile.displayNameStyle,
+                    colorPreset: profile.displayNameColorPreset,
+                    customColors: profile.displayNameCustomColors,
+                    glow: profile.displayNameGlow,
+                    nitroUnlocked: profile.nitroTier !== 'none',
+                  });
+                  return (
+                    <h2
+                      className={`text-xl text-white leading-tight drop-shadow ${namePres.className}`}
+                      style={namePres.style}
+                    >
+                      {profile.displayName}
+                    </h2>
+                  );
+                })()}
                 {profile.isBot && (
                   <span className="px-1.5 py-0.5 rounded bg-[#5865F2] text-[10px] font-bold text-white uppercase inline-flex items-center gap-0.5">
                     <Check className="w-2.5 h-2.5 stroke-[3]" /> APP

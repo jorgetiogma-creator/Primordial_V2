@@ -82,6 +82,18 @@ export function findBundleForCosmetic(
   );
 }
 
+export const NITRO_EXCLUSIVE_DECORATIONS: DecorationId[] = [
+  'nitro-disco',
+  'nitro-auris',
+  'nitro-chip',
+];
+
+export const NITRO_EXCLUSIVE_EFFECTS: ProfileEffectId[] = [
+  'cyber',
+  'sparks',
+  'crimson',
+];
+
 /**
  * Ensures a user profile only has shop cosmetics equipped if they actually own
  * the corresponding bundle (user-uploaded data: URLs are preserved).
@@ -92,13 +104,18 @@ export function sanitizeUserShopCosmetics(
   bundles: ShopBundle[] = INITIAL_SHOP_BUNDLES
 ): UserProfile {
   const owned = getOwnedCosmetics(ownedBundleIds, bundles);
+  const hasNitro = user.nitroTier !== 'none';
+  const nitroUnlockedDecorations = new Set<DecorationId>(
+    hasNitro ? NITRO_EXCLUSIVE_DECORATIONS : []
+  );
   const nitroUnlockedEffects = new Set<ProfileEffectId>(
-    user.nitroTier !== 'none' ? ['sparks', 'cyber', 'crimson'] : []
+    hasNitro ? NITRO_EXCLUSIVE_EFFECTS : []
   );
 
-  const safeDecoration: DecorationId = owned.decorations.has(user.decoration)
-    ? user.decoration
-    : 'none';
+  const safeDecoration: DecorationId =
+    owned.decorations.has(user.decoration) || nitroUnlockedDecorations.has(user.decoration)
+      ? user.decoration
+      : 'none';
 
   const currentEffect = user.profileEffect || 'none';
   const safeEffect: ProfileEffectId =
@@ -119,6 +136,8 @@ export function sanitizeUserShopCosmetics(
       ? user.bannerImage
       : undefined;
 
+  const safeColorPreset = hasNitro ? user.displayNameColorPreset || 'none' : 'none';
+
   return {
     ...user,
     decoration: safeDecoration,
@@ -126,5 +145,6 @@ export function sanitizeUserShopCosmetics(
     profileFrame: safeFrame,
     nameplate: safeNameplate,
     bannerImage: safeBannerImage,
+    displayNameColorPreset: safeColorPreset,
   };
 }

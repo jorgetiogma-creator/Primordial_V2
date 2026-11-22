@@ -47,6 +47,7 @@ import {
   UserAvatar,
 } from './DiscordArt';
 import { BoostGemIcon } from './ServerBoostView';
+import { getDisplayNameTextPresentation } from '../utils/displayNameStyle';
 
 interface MessagesPanelProps {
   dms: DirectMessageThread[];
@@ -413,9 +414,23 @@ export const MessagesPanel: React.FC<MessagesPanelProps> = ({
                     <div className="rounded-full speaking-ring">
                       <UserAvatar avatar={currentUser.avatar} size="xs" showStatus={false} />
                     </div>
-                    <span className="text-xs font-medium text-[var(--dc-text-primary)] truncate">
-                      {currentUser.displayName}
-                    </span>
+                    {(() => {
+                      const voicePres = getDisplayNameTextPresentation({
+                        style: currentUser.displayNameStyle,
+                        colorPreset: currentUser.displayNameColorPreset,
+                        customColors: currentUser.displayNameCustomColors,
+                        glow: currentUser.displayNameGlow,
+                        nitroUnlocked: currentUser.nitroTier !== 'none',
+                      });
+                      return (
+                        <span
+                          className={`text-xs truncate ${voicePres.className}`}
+                          style={voicePres.style}
+                        >
+                          {currentUser.displayName}
+                        </span>
+                      );
+                    })()}
                   </div>
                   {voiceSession.muted && <MicOff className="w-3.5 h-3.5 text-[#da373c]" />}
                 </div>

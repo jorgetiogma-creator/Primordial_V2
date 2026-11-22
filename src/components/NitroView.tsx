@@ -120,6 +120,10 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
               <span>2 mejoras de servidor gratis + 30% extra</span>
             </li>
             <li className="flex items-center gap-3">
+              <Sparkles className="w-4 h-4 shrink-0 text-fuchsia-200" />
+              <span>Diseño especial de color de nombre con brillo y fuentes únicas</span>
+            </li>
+            <li className="flex items-center gap-3">
               <UserCheck className="w-4 h-4 shrink-0 text-fuchsia-200" />
               <span>Banners animados, perfiles por servidor y +x1,2 en Misiones</span>
             </li>
@@ -173,6 +177,10 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
               <span>Emojis personalizados en cualquier parte</span>
             </li>
             <li className="flex items-center gap-3">
+              <Sparkles className="w-4 h-4 shrink-0 text-sky-200" />
+              <span>Diseño especial de color de nombre con brillo</span>
+            </li>
+            <li className="flex items-center gap-3">
               <NitroWheelIcon className="w-4 h-4 shrink-0 text-sky-200" />
               <span>Insignia exclusiva de Nitro en tu perfil</span>
             </li>
@@ -220,8 +228,8 @@ export const NitroView: React.FC<NitroViewProps> = ({ user, onBack, onSubscribe 
 
             <p className="text-sm text-zinc-300 leading-relaxed">
               {confirmTier === 'nitro'
-                ? 'Desbloquearás la insignia de Nitro, 2 mejoras de servidor, multiplicador x1,2 en Misiones y personalización completa.'
-                : 'Desbloquearás la insignia de Nitro Basic, emojis personalizados y subidas de 50 MB.'}
+                ? 'Desbloquearás la insignia de Nitro, diseño especial de color de nombre con brillo, decoraciones/efectos Nitro, 2 mejoras de servidor y multiplicador x1,2 en Misiones.'
+                : 'Desbloquearás la insignia de Nitro Basic, diseño especial de color de nombre con brillo, emojis personalizados y subidas de 50 MB.'}
             </p>
 
             <div className="rounded-2xl bg-[#070709] border border-white/10 p-3.5 space-y-2 text-xs">

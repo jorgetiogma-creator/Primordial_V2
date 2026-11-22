@@ -652,6 +652,10 @@ export default function App() {
           displayName: user.displayName,
           username: user.username,
           pronouns: user.pronouns,
+          displayNameStyle: user.displayNameStyle,
+          displayNameColorPreset: user.displayNameColorPreset,
+          displayNameCustomColors: user.displayNameCustomColors,
+          displayNameGlow: user.displayNameGlow,
           avatar: user.avatar,
           status: user.status,
           customStatus: user.customStatus,
@@ -2121,16 +2125,17 @@ export default function App() {
         <NitroView
           user={user}
           onBack={() => setScreen('inicio')}
-          onSubscribe={(tier) => {
+          onSubscribe={(tier, costOrbs) => {
             setUser((prev) => ({
               ...prev,
+              orbs: prev.nitroTier === tier ? prev.orbs : Math.max(0, prev.orbs - costOrbs),
               nitroTier: tier,
               ...unlockBadgeHelper(prev, 'nitro'),
             }));
             showToastMsg(
               tier === 'nitro'
-                ? '¡Discord Nitro activado e insignia Nitro desbloqueada!'
-                : '¡Discord Nitro Basic activado e insignia Nitro desbloqueada!'
+                ? '¡Discord Nitro activado! Ya puedes usar diseños de nombre con brillo y cosméticos Nitro.'
+                : '¡Discord Nitro Basic activado! Ya puedes usar diseños de nombre con brillo y cosméticos Nitro.'
             );
             setScreen('tu');
           }}
